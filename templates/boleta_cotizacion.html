@@ -1,0 +1,294 @@
+<div class="card text-white my-2 mx-2 px-0">
+	<div class="card-header text-center alert-info my-0 mx-0 py-0" style="font-size:1.1rem">
+		Cotización
+	</div>
+	<div class="card-body px-0 py-1 my-0">
+
+		{% if boleta_msg[2]==0: %}
+		<br>
+		<span class="badge w-auto badge-warning" style="font-size:0.7rem">No se encontró ninguna Cotización!</span>
+		<br>
+		{% if datos_estado['id_estado']==2: %}
+		<br><br>
+		<button id="Diag-modal" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+			style="font-size:0.9rem;float:center" data-target="#modal-cotizacion" data-whatever="@mdo">Agregar
+			Cotización</button>
+		{% endif %}
+		{% else %}
+		<div class="form-row my-0">
+
+			<table class="table table-bordered">
+				<thead class="bg-primary">
+					<tr style="text-align: center;color: rgb(255, 255, 255);">
+						<th scope="col" class="px-1 mx-1">
+							<p style="font-size:1rem" class="p-0 m-0">Fecha<br>Usuario</p>
+						</th>
+						<th scope="col" class="px-1 mx-1">
+							<p style="font-size:1rem" class="p-0 m-0">Estado</p>
+						</th>
+						<th scope="col" class="px-1 mx-1">
+							<p style="font-size:1rem" class="p-0 m-0">Monto</p>
+						</th>
+						<th scope="col" class="px-1 mx-1  d-none d-sm-block" style="border: none;">
+							<p style="font-size:1rem" class="p-0 m-0">Envío Por Correo</p>
+						</th>
+						<th scope="col" class="px-1 mx-1">
+							<p style="font-size:1rem" class="p-0 m-0">Info</p>
+						</th>
+						<th scope="col" class="px-1 mx-1 d-none d-sm-block" style="border: none;">
+							<p style="font-size:1rem" class="p-0 m-0 "></p>
+						</th>
+
+					</tr>
+				</thead>
+				<tbody>
+					<!--Ciclo de COTIZACIONES-->
+					{% for rec in boleta_msg[2] %}
+					<tr class="border p-0 m-0 
+					{% if rec['estado']==1: %}alert-primary
+					{% else: %} alert-warning
+					{% endif %}" style="font-size:0.85rem;color:midnightblue;">
+						<td class="p-2 m-0" style="border-color: white;">
+							<p class="p-0 m-0">{{ rec['fecha'] }}<br>{{ rec['username'] }}</p>
+						</td>
+						<td class="p-2 m-0" style="border-color: white;">
+							<p class="p-0 m-0">
+								{% if rec['estado']==1: %}ACTIVA
+								{% else: %} ANULADA
+								{% endif %}
+								{% if rec['reparado']==1: %}<br><b><p style="color:darkred;">(Reparado)</p></b> 
+								{% endif %}
+							</p>
+						</td>
+						<td class="p-2 m-0"  style="border-color: white;">
+							<p class="p-0 m-0">₡{{ '{:0,.2f}'.format(rec['monto']) }}</p>
+						</td>
+						<td class="p-2 m-0 d-none d-sm-block" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{% for correos in rec['correo_envio'].split(';') %}
+								{{ correos }}
+								<br>
+								{% endfor %} </p>
+						</td>
+						<td class="p-1 m-0" style="border-color: white;">
+							<div class="container">
+								<div class="row p-1">
+									<!-- ESTADO CLIENTE CON COTIZACION -->
+									<div class="col-4 py-1">
+										{% if rec['estado']==1: %}
+										<a class="btn btn-primary p-0 m-0" style="width:1.8rem;height:1.8rem;"
+											tabindex="0" data-toggle="popover" data-trigger="focus" data-html=true
+											title="Saldo para el Cliente" data-placement="left"
+											data-content="+ Cotización &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>₡{{ '{:0,.2f}'.format(boleta_msg[10][0]) }}</b><br>+ Otros Cargos &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>₡{{ '{:0,.2f}'.format(boleta_msg[10][1]) }}</b><br>- Pagos/Adelantos <b>₡{{ '{:0,.2f}'.format(boleta_msg[10][2]) }}</b><br><br>Total A Pagar &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>₡{{ '{:0,.2f}'.format(boleta_msg[10][0]+boleta_msg[10][1]-boleta_msg[10][2])}}</b>">
+											<img src="{{ url_for('static', filename='icons_svg/dolar.svg') }}"
+												alt="Info para el cliente" class="img inline"
+												style="width:1.7rem;height:1.3rem;" title="Info para el cliente"></a>
+										{% endif %}
+									</div>
+									<!-- INFO 2 -->
+									<div class="col-4 py-1">
+										<a class="btn btn-primary p-0 m-0" style="width:1.8rem;height:1.8rem;"
+											tabindex="0" data-toggle="popover" data-trigger="focus"
+											title="Info para el Cliente" data-placement="bottom"
+											data-content="{{ rec['mensaje_cliente'] }}">
+											<img src="{{ url_for('static', filename='icons_svg/written-letter.svg') }}"
+												alt="Info para el cliente" class="img inline"
+												style="width:1.7rem;height:1.3rem;" title="Info para el cliente"></a>
+									</div>
+									<!--INFO-->
+									<div class="col-4 py-1">
+										<a class="btn btn-primary p-0 m-0" style="width:1.8rem;height:1.8rem;"
+											tabindex="0" data-toggle="popover" data-trigger="focus"
+											title="Comentario Interno" data-placement="left"
+											data-content="{{ rec['comentario'] }}">
+											<img src="{{ url_for('static', filename='icons_svg/info1.svg') }}"
+												alt="Info" class="img inline" style="width:1.7rem;height:1.3rem;"
+												title="Info"></a>
+									</div>
+								</div>
+							</div>
+						</td>
+
+						{% if rec['estado']==0: %}
+						<td class="p-0 m-0">
+							<p class="p-1 m-0" style="font-size:1rem;color:midnightblue;">
+								<b>Anulado</b> por {{ rec['username_cambia_estado'] }}</p>
+							<p class="p-1 m-0" style="font-size:0.75rem;color:midnightblue;">
+								{{rec['fecha_cambia_estado']}}
+							</p>
+							{% elif rec['estado']==1: %}
+						<td class="p-1 m-0" style="border: none;">
+							<div class="container">
+								<div class="row p-1">
+									<!-- DESCARGA PDF-->
+									<div class="col-3 py-1">
+										<a id="btn-movimiento-descargar" type="button" class="btn btn-primary p-0 m-0"
+											style="width:1.8rem;height:1.8rem;" movimiento="{{rec['id']}}"
+											cliente="{{datos_cliente['id']}}"
+											href="{{ url_for('pdfs_online', id_boleta=id_boleta, tipo_accion=4,extra=1) }}">
+											<img src="{{ url_for('static', filename='icons_svg/download.svg') }}"
+												alt="Descargar" class="img inline" style="width:1.7rem;height:1.3rem;"
+												title="Descargar">
+										</a>
+									</div>
+
+									<!-- ENVIO POR WHASAPP-->
+									<div class="col-3 py-1">
+										<a type="button" class="btn btn-primary p-0 m-0"
+											style="width:1.8rem;height:1.8rem;" target="_blank"
+											href="https://api.whatsapp.com/send?phone=506{{datos_cliente['telefono']}}&text=Buen%20d%C3%ADa.%20Le%20saludamos%20de%20Electr%C3%B3nica%20Torres.%20Anexo%20Cotización%20para su equipo.">
+											<img src="{{ url_for('static', filename='icons_svg/whatsApp-Logo.svg') }}"
+												alt="Enviar WhatsApp (A Teléfono 1)" class="img inline"
+												style="width:1.7rem;height:1.7rem;"
+												title="Enviar WhatsApp (A Teléfono 1)">
+										</a>
+									</div>
+
+									<!--CORREO-->
+									<div class="col-3 py-1">
+										<a id="btn-cotizacion-enviar-correo" type="button"
+											class="btn btn-primary p-0 m-0" style="width:1.8rem;height:1.8rem;"
+											monto="{{ '{:0,.0f}'.format(rec['monto']) }}"
+											data-target="#modal-cotizacion-correo-enviar" data-toggle="modal">
+											<img src="{{ url_for('static', filename='icons_svg/envelope1.svg') }}"
+												alt="Correo" class="img inline" style="width:1.7rem;height:1.3rem;"
+												title="Correo">
+										</a>
+									</div>
+									<!--ANULAR-->
+									<div class="col-3 py-1">
+										{% if datos_estado['id_estado']==2: %}
+										<button id="btn-modal-anular-cotizacion" type="submit"
+											class="btn btn-primary p-0 m-0" style="width:1.8rem;height:1.8rem;"
+											data-toggle="modal" data-target="#modal-anular-cotizacion"
+											data-cotizacion="{{rec['id']}}">
+											<img src="{{ url_for('static', filename='icons_svg/delete.svg') }}"
+												alt="Anular" class="img inline p-0 m-0"
+												style="width:1.7rem;height:1.3rem;" title="Anular">
+										</button>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+							{% endif %}
+						</td>
+
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+
+		</div>
+
+		<!-- BOTON PARA AGREGAR COTIZACION -->
+		{% if datos_estado['id_estado']==2: %}
+		<button id="btn-activar-modal-cotizacion" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+			style="font-size:0.8rem;" data-target="#modal-cotizacion">
+			Agregar Cotización</button>
+		{% endif %}
+		{% endif %}
+
+	</div>
+</div>
+
+
+<!--Modal REALIZAR COTIZACION -->
+<div class="modal fade" id="modal-cotizacion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:0.9rem" id="exampleModalLabel">
+					Agregar Cotización
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id="modal-cotizacion-cuerpo">
+				<label> Detalle (Fecha estimada de entrega e Información sobre la reparación) </label>
+				<textarea id="descripcion-cotizacion" name="descripcion-cotizacion" class="form-control form-control-sm"
+					type="text" rows="5" style="font-size:0.75rem" placeholder="Detalle la Cotización" maxlength="400"
+					required></textarea><br>
+				<label class="text-primary my-0" style="font-size:0.9rem" for="cotizacion-reparado">Equipo
+					Reparado&nbsp;</label><input type="checkbox" id="cotizacion-reparado">
+				<br><br>
+				<label class="text-primary my-0" style="font-size:1rem" for="monto-p">Monto ₡</label>
+
+				<input class="form-control form-control-sm" type=number name="monto-cotizacion" id="monto-cotizacion"
+					style="font-size:1.5rem" value=0 required min=1000 max=500000>
+
+				<br>
+				<br>
+				<label> Notificación (Este mensaje se enviará al cliente en la cotización) </label>
+				<textarea id="descripcion-cotizacion-cliente" name="descripcion-cotizacion-cliente"
+					class="form-control form-control-sm" type="text" rows="5" style="font-size:0.75rem"
+					placeholder="Detalle la Cotización para Cliente" maxlength="650" required></textarea>
+				<br><br>
+				<input type="hidden" value="1" id="tipo-cotizacion" name="tipo-cotizacion">
+			</div>
+			<div class="modal-footer">
+				<div id="guardar-cotizacion-alerta" class="alert alert-danger m-1 p-1" role="alert"
+					style="font-size:0.85rem" hidden>Por favor ingrese un Monto válido
+				</div>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					id="cerrar-modal-pago">Cerrar</button>
+				<button id="btn-ingresar-cotizacion" name="btn-ingresar-cotizacion"
+					class="btn btn-primary">Confirmar</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL PARA CONFIRMAR ENVIO DE CORREO -->
+<div class="modal fade" id="modal-cotizacion-correo-enviar" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-anularm-titulo">
+					Enviar Cotización por Correo</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label id="modal-cotizacion-body" class="text-primary my-0" style="font-size:1.2rem"></label>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal"
+					id="btn-cotizacion-enviar">Enviar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL PARA CONFIRMAR ANULACION DE COTIZACION -->
+<div class="modal fade" id="modal-anular-cotizacion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.3rem">
+					Anular Cotización
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label id="modal-anularm-body" class="text-primary my-0" style="font-size:1.2rem">
+					La Cotización Activa para esta boleta será anulada.<br><br>
+					¿Desea Proceder?
+				</label>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					id="cerrar-modal-pago">Cerrar</button>
+				<button id="btn-anular-cotizacion" class="btn btn-primary">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>

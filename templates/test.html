@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/static/login_files/favicon.ico">
+    <title>KAPP: Electrónica Torres</title>
+    <script type=text/javascript>
+        $SCRIPT_ROOT = "";
+    </script>
+
+    <!-- FUENTES LOCALES-->
+    <style type="text/css">
+        @font-face {
+            font-family: 'Open Sans';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: local('Open Sans Regular'),
+                local('OpenSans-Regular'),
+                url("/static/fonts/mem8YaGs126MiZpBA-UFVZ0b.woff2") format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        @font-face {
+            font-family: 'Open Sans';
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: local('Open Sans Bold'),
+                local('OpenSans-Bold'),
+                url("/static/fonts/mem5YaGs126MiZpBA-UN7rgOUuhp.woff2") format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+    </style>
+
+    <link rel="stylesheet" href="/static/reset.css" />
+    <link rel="stylesheet" href="/static/bs441/css/bootstrap.spacelab.css" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/chosen.css" />
+    <link rel="stylesheet" href="/static/inventario.css" />
+    <script type=text/javascript src="/static/jquery-3.5.1.js"></script>
+    <script type=text/javascript src="/static/bs453/js/bootstrap.bundle.js"></script>
+    <script type=text/javascript src="/static/js/masks.js"></script>
+    <script type=text/javascript src="/static/js/biblioteca.js"></script>
+    <script type=text/javascript src="/static/js/biblioteca2.js"></script>
+    <script type=text/javascript src="/static/js/reportes.js"></script>
+
+</head>
+
+<body>
+
+
+    <!-- Bloqueo de Pagina de espera -->
+    <div id="espera">
+        <button class="btn btn-primary" type="button" style="position: absolute;left: 45%;top: 35%" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Por Favor Espere...
+        </button>
+    </div>
+
+    <input id="id-tipo-display" name="id-tipo-display" type="hidden" value=>
+    <input id="saldo-i" type="hidden" value=>
+    <input id="saldo-cotizacion" type="hidden" value=>
+    <input id="saldo-repuestos" type="hidden" value=>
+
+    <div class="container-fluid border">
+
+        <div class="row bg-warning">
+
+
+            <!-- NOMBRE ELECTRONICA TORRES -->
+            <div class="col-7 col-md-3">
+                <div class="row justify-content-xs-start justify-content-md-center">
+                    <p class="p py-1 my-0 text-white" style="font-size:26px;">
+                        Electrónica Torres
+                    </p><br>
+                    <small style="font-size:.8rem; color: white; "> KAPPS.me - ETGA
+
+                        PRUEBAS
+                        -
+                        <em>kenny2</em>
+                    </small>
+                </div>
+            </div>
+
+            <!-- BOTONES ( HERRAMIENTAS / LOGOUT)-->
+            <div class="col-5 col-md-2 order-md-last">
+                <div class="container-fluid p-0 m-0 py-1">
+                    <div class="row justify-content-end no-gutters">
+                        <button style="height:3rem ;width:3rem" type="button" class="btn btn-primary m-1 p-0 py-1"
+                            onclick="openNav()">
+                            <img src="/static/icons_svg/gear.svg" alt="Configurar" width="30" height="30"
+                                title="Configurar">
+                        </button>
+                        <form action="/logout" id="out" name="out">
+                            <button type="submit" class="btn btn-primary m-1 p-0 py-1"
+                                style="float:left;height:3rem ;width:3rem">
+                                <img src="/static/icons_svg/exit.svg" alt="Salir" width="30" height="30" title="Salir">
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MENU APPS -->
+            <div class="col-12 col-md-3">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <!-- HOME TALLER -->
+
+                        <form action="/home/" method="POST" id="home" name="home">
+                            <button type="submit" class="btn btn-primary p-1 m-2 px-0 mx-0"
+                                style="height:3rem ;width:3rem">
+                                <img font-color="white" src="/static/icons_svg/taller.svg" alt="Inicio" width="30"
+                                    height="30" title="Inicio">
+                            </button>
+                        </form>
+
+                        <!-- TIENDA -->
+                        <form action="/tnd" method="POST" id="tienda" name="tienda">
+                            <input type="hidden" id="tienda-accion" name="tienda-accion" value=1>
+                            <button type="submit" class="btn  btn-success  p-1 m-2 px-0 mx-0"
+                                style="height:3rem ;width:3rem">
+                                <img font-color="white" src="/static/icons_svg/caja-registradora.svg" alt="Inicio"
+                                    width="30" height="30" title="Inicio">
+                            </button>
+                        </form>
+                        <!-- TIENDA ONLINE 
+                        <form action="/home/" method="POST" id="tienda-online" name="tienda-online">
+                            <button type="submit" class="btn btn-primary p-1 m-2 px-0 mx-0" style="height:3rem ;width:3rem">
+                                <img font-color="white"
+                                    src="/static/icons_svg/tienda-online.svg"
+                                    alt="Inicio" width="30" height="30" title="Inicio">
+                            </button>
+                        </form>
+                        -->
+                        <!-- INVENTARIO ONLINE -->
+                        <form action="/inv" method="POST" id="inventario" name="inventario">
+                            <input type="hidden" id="inv-accion" name="inv-accion" value=1>
+                            <button type="submit" class="btn  btn-primary  p-1 m-2 px-0 mx-0"
+                                style="height:3rem ;width:3rem">
+                                <img font-color="white" src="/static/icons_svg/inventario.svg" alt="Inventario"
+                                    width="30" height="30" title="Inventario">
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- MENU BOLETAS -->
+            <div class="col-12 col-md-4">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <!-- NUEVA BOLETA -->
+
+                        <form action="/nueva" method="POST" id="nueva" name="nueva">
+                            <button type="submit" class="btn btn-primary btn-block py-1 my-2 px-0 mx-0"
+                                style="height:3rem; ">Nueva Boleta</button>
+                        </form>
+                        <!-- BUSCAR BOLETA-->
+                        <form id='form-buscar-boleta' class="form-inline" method="POST" action="/boleta1">
+                            <input id="id-boleta" name="id-boleta" class="form-control p-1 my-2 mr-0 ml-1"
+                                placeholder="Boleta" aria-label="Search" type="number"
+                                style="font-size:1.5rem;height:3rem;width:6rem;border-radius: 7px;" required>
+                            <input type="hidden" value=0 id="tipo-display" class="fosrm-control" name="tipo-display">
+                            <button type="submit" class="btn btn-primary btn-sm p-0 my-2 mx-0"
+                                style="height:3rem ;width:3rem">
+                                <img src="/static/icons_svg/search.svg" alt="Buscar" width="25" height="25"
+                                    title="Buscar">
+                            </button>
+                        </form>
+
+                        <!-- BUSQUEDA AVANZADA-->
+
+                        <form method="POST" action="/busqueda">
+                            <button type="submit" class="btn btn-primary p-1 m-2 px-0 mx-0"
+                                style="height:3rem ;width:3rem">
+                                <img src="/static/icons_svg/search2.svg" alt="Búsqueda Avanzada" width="35" height="45"
+                                    title="Búsqueda Avanzada">
+                            </button>
+                            <input type="hidden" name="tipo_busqueda" value=1>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- BUSCAR BOLETA INCOGNITO-->
+            <form id='form-buscar-boleta-i' method="POST" action="/boleta2">
+                <input type="hidden" id="id-boleta-i" name="id-boleta-i">
+                <input type="hidden" id="tipo-display-i" name="tipo-display-i">
+            </form>
+        </div>
+        <div class="row">
+
+
+            <script type=text/javascript src="/static/js/etga.js"></script>
+
+            <div class="container-fluid m-1 p-0">
+                <div class="row no-gutters justify-content-end">
+                    <div class="col-12">
+                        <div class="appslabel">TIENDA</div>
+                    </div>
+                </div>
+                <div class="row no-gutters">
+                    <!-- ESPACIO PARA EL CARRITO -->
+                    <div class="col-12 col-md-4 order-md-last col-lg-3 offset-lg-1">
+                        <div id="espacio_carrito">
+                            <!-- CARRITO INICIO -->
+                            <style>
+                                /* ESTILO CARRITO DE COMPRAS */
+                                .carritoLabel {
+                                    background-color: #00B13B;
+                                    color: white;
+                                    border-radius: 8px;
+                                    text-align: center;
+                                    font-weight: bold;
+                                    display: block;
+                                    width: 100%;
+                                }
+                            </style>
+                            <fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;" class="p-1">
+                                <div class="carritoLabel">
+                                    <div class="row align-items-center">
+                                        <div class="col-4">
+                                            <img font-color="white" src="/static/icons_svg/carrito-de-compras.svg"
+                                                width="90" height="90">
+                                        </div>
+                                        <div class="col-8">
+                                            <h4 class="p-1 m-0 text-white"><b>Carrito de Compras</b></h4>
+                                            <hr class="p-1 m-0">
+                                            <h5 class="p-0 m-0 text-white">
+
+                                                2
+
+                                                Artículos</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <!-- Ciclo de Productos en Carrito -->
+                                <table width=100% style="font-size: 1rem;">
+
+                                    <tr>
+                                        <td class="p-1 m-0" style="vertical-align:top">
+                                            <p class="p-0 m-0">1
+
+                                            </p>
+                                        </td>
+                                        <script>
+                                            $('[data-toggle="popover"]').popover();
+                                        </script>
+                                        <td class="p-1 m-0">
+                                            <p class="p-0 m-0" style="font-size: 0.9rem;">BATERIA LITIO 25W - LG
+                                                <br>R00001 USADO
+                                                (₡8,000)
+                                            </p>
+                                        </td>
+                                        <td class="p-1 m-0" style="vertical-align:top;text-align: right;">
+                                            <p class="p-0 m-0">₡8,000</p>
+                                        </td>
+
+                                        <td class="p-1 m-0" style="vertical-align:top;text-align: right;">
+                                            <img class="img py-0 my-0" id="elementoCarrito" name="elementoCarrito"
+                                                elemento_codigo="R00001" elemento_estado="USADO"
+                                                elemento_nombre="BATERIA LITIO 25W (LG)"
+                                                src="/static/icons_svg/reprove.svg"
+                                                style="float:right;width:0.9rem;height:0.9rem;">
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="p-1 m-0" style="vertical-align:top">
+                                            <p class="p-0 m-0">3
+
+                                            </p>
+                                        </td>
+                                        <script>
+                                            $('[data-toggle="popover"]').popover();
+                                        </script>
+                                        <td class="p-1 m-0">
+                                            <p class="p-0 m-0" style="font-size: 0.9rem;">CONTROL REMOTO TV UNIVERSAL -
+                                                SAMSUNG
+                                                <br>A00001 NUEVO
+                                                (₡1,000)
+                                            </p>
+                                        </td>
+                                        <td class="p-1 m-0" style="vertical-align:top;text-align: right;">
+                                            <p class="p-0 m-0">₡3,000</p>
+                                        </td>
+
+                                        <td class="p-1 m-0" style="vertical-align:top;text-align: right;">
+                                            <img class="img py-0 my-0" id="elementoCarrito" name="elementoCarrito"
+                                                elemento_codigo="A00001" elemento_estado="NUEVO"
+                                                elemento_nombre="CONTROL REMOTO TV UNIVERSAL (SAMSUNG)"
+                                                src="/static/icons_svg/reprove.svg"
+                                                style="float:right;width:0.9rem;height:0.9rem;">
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p class="px-3 m-0"
+                                            style="font-size: 1.3rem; float: right;color:rgb(19, 25, 43) ;">
+                                            Total: <b>₡
+                                                11,000
+
+                                            </b>
+                                        </p>
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <div class="row align-items-center">
+                                    <div class="col-9" style="text-align: center;">
+
+                                        <button class="btn btn-success btn-sm" style="font-size:1.1rem; display: block;"
+                                            id="btn-generarReciboModal" data-toggle="modal"
+                                            data-target="#modal-confirmacion-venta-cliente"><b>Registrar
+                                                Venta</b></button>
+
+                                        <!-- Desactiva boton de generar recibo si hay un problema de disponibilidad. -->
+
+                                    </div>
+                                    <div class="col-3">
+
+                                        <button type="button" class="btn btn-danger btn-sm" id="limpiarCarritoModal"
+                                            data-toggle="modal" data-target="#modal-limpiarCarrito"
+                                            style="font-size:.9rem; float: right;height:2.25rem;">Vaciar</button>
+
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                            <br>
+                        </div>
+                        <!--MODAL VACIAR CARRITO-->
+                        <div class="modal fade" id="modal-limpiarCarrito" tabindex="-1" role="dialog"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-primary" style="font-size:1.4rem"
+                                            id="modal-ajustar-lote-titulo">
+                                            Vaciar Carrito de Compras
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <label class="text-primary" for="ajuste_tipo"><b>¿Está seguro que desea vaciar
+                                                el carrito de
+                                                compras?</b></label>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cerrar</button>
+                                        <button id="btn-limpiarCarritoConfirmacion"
+                                            class="btn btn-primary">Confirmar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--MODAL ELIMINAR ELEMENTO DEL CARRITO-->
+                        <div class="modal fade" id="modal-eliminarECarrito" tabindex="-1" role="dialog"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-primary" style="font-size:1.4rem"
+                                            id="modal-eliminarECarrito-titulo">
+                                            Eliminar producto del Carrito de Compras
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <label class="text-primary" id="modal-eliminarECarrito-mensaje"></label>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="hidden" id="eliminar-producto-id">
+                                        <input type="hidden" id="eliminar-producto-estado">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cerrar</button>
+                                        <button id="btn-eliminarECarrito-Confirmacion"
+                                            class="btn btn-primary">Confirmar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ESPACIO PARA EL PRODUCTO -->
+                    <div class="col-12 col-md-5 order-md-first col-lg-4 border">
+                        <div class="col-12 col-sm-11">
+                            <!-- BUSCAR -->
+                            <div class="row align-items-center p-1">
+                                <div class="col-3 col-sm-4">
+                                    <label class="text-primary" for="precio"><b>Producto</b></label>
+                                </div>
+                                <div class="col-9 col-sm-8">
+                                    <input class="form-control form-control-sm border-success my-0 py-0"
+                                        style="font-size:1rem" type="text" name="cadena" id="cadena"
+                                        placeholder="Buscar"><br>
+                                </div>
+                            </div>
+                            <!-- Codigo para el autocomplete-->
+                            <div id="lista_sugerencias"></div>
+                        </div>
+
+                        <!-- COLLAPSE mas detalles del producto-->
+                        <div class="collapse" id="collapseProducto">
+                            <!-- DATOS DEL PRODUCTO-->
+
+                            <form action="/inv" method="POST" enctype="multipart/form-data" id="form-producto">
+                                <input type="hidden" name="inv-accion" id="inv-accion" value=3>
+                                <input type="hidden" name="inv-accion2" id="inv-accion2" value=1>
+
+                                <fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;" class="p-2">
+                                    <div class="container-fluid inv-form">
+
+                                        <!-- CODIGO DEL PRODUCTO -->
+                                        <div class="row align-items-center p-1">
+                                            <div class="col-3 col-md-5 col-lg-3">
+                                                <label class="text-primary" for="codigo"><b>Código</b></label>
+                                            </div>
+                                            <div class="col-9 col-sm-7 col-lg-9">
+                                                <input class="form-control" type="text" name="codigo" id="codigo"
+                                                    placeholder="Código" maxlength="10">
+                                            </div>
+                                        </div>
+
+
+                                        <!-- NOMBRE DEL PRODUCTO -->
+                                        <div class="row align-items-center p-1">
+                                            <div class="col-3 col-md-5 col-lg-3">
+                                                <label class="text-primary" for="nombre"><b>Producto</b></label>
+                                            </div>
+                                            <div class="col-9 col-sm-7 col-lg-9">
+                                                <input class="form-control" type="text" name="nombre" id="nombre"
+                                                    placeholder="Nombre del Producto" maxlength=30>
+                                            </div>
+                                        </div>
+
+                                        <!-- MARCA -->
+                                        <div class="row align-items-center p-1">
+                                            <div class="col-3 col-md-5 col-lg-3">
+                                                <label class="text-primary" for="marca"><b>Marca</b></label>
+                                            </div>
+                                            <div class="col-9 col-sm-7 col-lg-9">
+                                                <div class="autocomplete">
+                                                    <input class="form-control" type="text" name="marca" id="marca"
+                                                        placeholder="Marca" maxlength="23">
+                                                </div>
+                                                <script>
+                                                    var marcas = [
+
+                                                        ""];
+                                                </script>
+                                            </div>
+                                        </div>
+
+
+                                        <!-- MODELO -->
+                                        <div class="row align-items-center p-1">
+                                            <div class="col-3 col-md-5 col-lg-3">
+                                                <label class="text-primary" for="modelo"><b>Modelo</b></label>
+                                            </div>
+                                            <div class="col-9 col-sm-7 col-lg-9">
+                                                <input class="form-control" type="text" name="modelo" id="modelo"
+                                                    placeholder="Modelo" maxlength="30">
+                                            </div>
+                                        </div>
+
+
+
+                                        <!-- COLLAPSE mas detalles del producto-->
+                                        <div class="collapse" id="collapseProdDetalle">
+
+
+                                            <!-- CATEGORIA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-md-5 col-lg-3">
+                                                    <label class="text-primary" for="categoria"><b>Categoría</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-7 col-lg-9">
+                                                    <select class="form-control" id="categoria" name="categoria">
+                                                        <option value=1>Accesorio</option>
+                                                        <option value=2>Repuesto</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- DESCRIPCION -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-md-5 col-lg-3">
+                                                    <label class="text-primary"
+                                                        for="descripcion"><b>Descripción</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-7 col-lg-9">
+                                                    <textarea class="form-control" rows=4 name="descripcion"
+                                                        id="descripcion" maxlength="75"
+                                                        placeholder="Descripción"></textarea>
+                                                </div>
+                                            </div>
+                                            <!-- GARANTIA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-md-5 col-lg-3">
+                                                    <label class="text-primary" for="garantia"><b>Garantía</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-7 col-lg-9">
+                                                    <input class="form-control" type="number" name="garantia"
+                                                        id="garantia" value=30 max=150 placeholder="Días de Garantía">
+                                                </div>
+                                            </div>
+
+                                            <hr class="hr">
+                                            <!-- SUBIR IMAGENES -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="disponibilidad"><b>Imágenes</b>
+                                                    </label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input type="file" name="files" id="files" placeholder="imagenes"
+                                                        datos-imagenes="" style="display: none;" multiple
+                                                        accept="image/png, image/jpeg">
+
+                                                </div>
+                                                <div class="col-12 col-sm-7"><br>
+                                                    <output id="list"></output>
+                                                </div>
+
+
+                                            </div>
+                                            <hr class="hr">
+
+
+
+                                        </div>
+
+
+                                        <a data-bs-toggle="collapse" href="#collapseProdDetalle" role="button"
+                                            aria-expanded="false" id="btn-collapse-detalle-producto"
+                                            aria-controls="collapseProdDetalle" data-toggle="collapse"
+                                            style="font-weight: bold;font-size: 1.3rem;"></a>
+                                        <script>
+                                            $('#btn-collapse-detalle-producto').text("(+)");
+                                            // Buscar por Cliente por campo DOCUMENTO
+                                            $(document).on('click', "#btn-collapse-detalle-producto", function (e) {
+                                                if ($('#btn-collapse-detalle-producto').text() == "(+)") {
+                                                    $('#btn-collapse-detalle-producto').text("(-)");
+                                                }
+                                                else {
+                                                    $('#btn-collapse-detalle-producto').text("(+)");
+                                                }
+                                            });
+                                        </script>
+
+
+
+                                    </div>
+                                </fieldset>
+                            </form>
+
+                            <!--Modal CONFIRMACION DE CREACION-->
+                            <div class="modal fade bd-example-modal" id="modal-confirmacion-producto" tabindex="-1"
+                                role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title text-primary" style="font-size:1.4rem"
+                                                id="titulo_modal2">
+                                            </h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h3 class="modal-title text-primary" style="font-size:1rem"
+                                                id="modal-mensaje-producto"></h3>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="hidden" value=0 id="current_inv_accion">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Cerrar</button>
+                                            <button id="btn-modal-producto-confirmacion"
+                                                class="btn btn-primary">Confirmar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <style>
+                                .thumb {
+                                    height: 60px;
+                                    border: 1px solid #000;
+                                    margin: 5px 5px 0 0;
+                                }
+                            </style>
+
+                            <script type="text/javascript">
+                                function handleFileSelect(evt) {
+                                    var files = evt.target.files; // FileList object
+                                    $('#list').html("");
+                                    // Loop through the FileList and render image files as thumbnails.
+                                    for (var i = 0, f; f = files[i]; i++) {
+                                        if (i < 3) {
+                                            // Only process image files.
+                                            if (!f.type.match('image.*')) {
+                                                continue;
+                                            }
+
+                                            var reader = new FileReader();
+
+                                            // Closure to capture the file information.
+                                            reader.onload = (function (theFile) {
+                                                return function (e) {
+
+                                                    // Render thumbnail.
+                                                    var span = document.createElement('span');
+                                                    span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                                                        '" title="', escape(theFile.name), '"/>'].join('');
+                                                    document.getElementById('list').insertBefore(span, null);
+
+                                                };
+                                            })
+                                                (f);
+
+                                            // Read in the image file as a data URL.
+                                            reader.readAsDataURL(f);
+                                        };
+                                    }
+                                }
+
+                                document.getElementById('files').addEventListener('change', handleFileSelect, false);
+                            </script>
+
+                            <!-- COLLAPSE mas detalles del producto-->
+                            <div class="collapse" id="collapseRegProducto">
+                                <div class="row m-0 p-0 border">
+                                    <div class="col-12 p-1 alert-info text-center">
+                                        <label style="font-size:1rem">Registrar Lote</label>
+                                    </div>
+                                </div>
+                                <form action="/inv" method="POST" enctype="multipart/form-data" id="form-lote">
+                                    <input type="hidden" name="inv-accion" value=2>
+                                    <input type="hidden" name="inv-accion2" value=1>
+
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6">
+                                            <!-- FACTURA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="factura"><b>Factura</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="number" name="factura"
+                                                        id="factura" maxlength=20 value=0 placeholder="Factura">
+                                                </div>
+                                            </div>
+                                            <!-- MONTO FACTURA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="monto_factura"><b>Monto
+                                                            Factura</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="number" name="monto_factura"
+                                                        id="monto_factura" value=0 placeholder="Monto de la actura">
+                                                </div>
+                                            </div>
+                                            <!-- FECHA DE LA FACTURA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="factura"><b>Fecha
+                                                            Factura</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="date" name="fecha_factura"
+                                                        id="fecha_factura" placeholder="Fecha de la actura">
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <!-- UNIDADES -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="unidades"><b>Unidades</b></label>
+                                                </div>
+                                                <div class="col-5 col-sm-5">
+                                                    <input class="form-control" type="number" name="unidades"
+                                                        id="unidades" value=1 placeholder="Unidades del Producto">
+                                                </div>
+                                                <div class="col-4 col-sm-5">
+                                                    <label class="text-primary" for="unidades"
+                                                        id="costo_unitario_lbl">Costo
+                                                        Unitario<br><b>₡</b></label>
+                                                    <input type="hidden" id="costo_unitario" value=0>
+                                                </div>
+                                            </div>
+                                            <!-- ESTADO -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="estado"><b>Estado</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <select class="form-control" id="estado" name="estado">
+                                                        <option value=1>Nuevo</option>
+                                                        <option value=2>Usado</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <!-- PROVEEDOR -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="proveedor"><b>Proveedor</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="text" name="proveedor"
+                                                        id="proveedor" placeholder="Proveedor">
+                                                </div>
+                                            </div>
+                                            <!-- PROVEEDOR -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="ubicacion"><b>Ubicación en
+                                                            Bodega</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="text" name="ubicacion"
+                                                        id="ubicacion" placeholder="Ubicación">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-6">
+                                            <!-- FLETE -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="flete"><b>Costo Flete</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="number" name="flete" id="flete"
+                                                        placeholder="Costo Flete" value=0>
+                                                </div>
+                                            </div>
+                                            <!-- ADUANA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="aduana"><b>Costo Aduana</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="number" name="aduana" id="aduana"
+                                                        placeholder="Costo Aduana" value=0>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <!-- PRECIO VENTA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="precio"><b>Precio Venta</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <input class="form-control" type="number" name="precio" id="precio"
+                                                        placeholder="precio">
+                                                </div>
+                                            </div>
+                                            <!-- UTILIDAD CALCULADA -->
+                                            <div class="row align-items-center p-1">
+                                                <div class="col-3 col-sm-2">
+                                                    <label class="text-primary" for="unidades"><b>Utilidad
+                                                            Neta</b></label>
+                                                </div>
+                                                <div class="col-9 col-sm-5">
+                                                    <label class="text-primary" id="utilidad"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="hr">
+                                    <!-- SUBMIT Y VALIDACION -->
+                                    <div class="row align-items-center p-1">
+                                        <div class="col-5 col-sm-2">
+                                            <button type="button" class="btn btn-primary" id="crear-lote"
+                                                name="crear-lote">
+                                                Registrar Lote
+                                            </button>
+                                        </div>
+                                        <div class="col-7 col-sm-5">
+                                            <label id="alerta-lote" class="text-danger p-3"
+                                                style="font-size:0.9rem;display: none;">X</label>
+                                            <label id="guardar-boleta-alerta" style="font-size:0.9rem;" hidden></label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+
+                            <!-- Desactiva los inputs del producto para que no se pueda modificar en esta seccion -->
+                            <script>
+                                var elementos = document.getElementById("form-lote").elements;
+                                for (var i = 0; i <= elementos.length - 1; i++) {
+                                    if ((elementos[i].type == 'text' || elementos[i].type == 'date' || elementos[i].type == 'number')) {
+                                        elementos[i].value = "";
+                                    }
+                                }
+                            </script>
+                        </div>
+
+
+                    </div>
+
+                    <!--Modal AJUSTA LOTE-->
+                    <div class="modal fade bd-example-modal" id="modal-ajustar-lote" tabindex="-1" role="dialog"
+                        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-primary" style="font-size:1.4rem"
+                                        id="modal-ajustar-lote-titulo">
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row align-items-center p-1">
+                                        <div class="col-3">
+                                            <label class="text-primary" for="ajustar_unidades"><b>Unidades</b></label>
+                                        </div>
+                                        <div class="col-9">
+                                            <input class="form-control" type="number" name="ajustar_unidades"
+                                                id="ajustar_unidades" value=1>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center p-1">
+                                        <div class="col-3">
+                                            <label class="text-primary" for="ajuste_tipo"><b>Tipo de Ajuste</b></label>
+                                        </div>
+                                        <div class="col-9">
+                                            <select class="form-control" id="ajuste_tipo" name="ajuste_tipo">
+                                                <option value=1>Egreso</option>
+                                                <option value=2>Ingreso</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row align-items-center p-1">
+                                        <div class="col-12 col-sm-3">
+                                            <label class="text-primary"
+                                                for="ajuste-justificacion"><b>Justificación</b></label>
+                                        </div>
+                                        <div class="col-12 col-sm-9">
+                                            <textarea class="form-control" rows=5 name="ajuste-justificacion"
+                                                id="ajuste-justificacion" maxlength="150"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <label id="alerta-ajuste-lote" class="text-danger p-3"
+                                        style="font-size:0.9rem;display: none;">X</label>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                    <button id="modal-ajustar-lote-confirmacion"
+                                        class="btn btn-primary">Confirmar</button>
+                                    <input type="hidden" id="modal_id_lote_ajustar" value=0>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Desactiva los inputs del producto para que no se pueda modificar en esta seccion -->
+                    <script>
+                        var elementos = document.getElementById("form-producto").elements;
+                        for (var i = 0; i <= elementos.length - 1; i++) {
+                            if ((elementos[i].type == 'text' || elementos[i].type == 'textarea' || elementos[i].type == 'number')) {
+                                elementos[i].disabled = true;
+                            }
+                        }
+                    </script>
+                </div>
+                <!-- ESPACIO DE CARGA DEL CARRITO -->
+                <div class="col-12 col-md-3 order-lg-2 offset-lg-1 border">
+                    <br><br>
+                    <div id="espacio_carrito_carga" hidden>
+                        <style>
+                            /* ESTILO CARRITO DE COMPRAS */
+                            .carritoCargaLabelTituloNuevo {
+                                background-color: #6D1B1B;
+                                color: white;
+                                border-radius: 8px 8px 0px 0px;
+                                text-align: center;
+                                font-weight: bold;
+                                display: block;
+                                width: 100%;
+                            }
+
+                            .carritoCargaLabelTituloUsado {
+                                background-color: #D61818;
+                                color: white;
+                                border-radius: 8px 8px 0px 0px;
+                                text-align: center;
+                                font-weight: bold;
+                                display: block;
+                                width: 100%;
+                            }
+
+                            .carritoCargaLabelNuevo {
+                                background-color: #6D1B1B;
+                                color: white;
+                                border-radius: 4px;
+                                text-align: center;
+                                display: block;
+                                width: 100%;
+                                font-size: 1.1rem;
+                            }
+
+                            .carritoCargaLabelUsado {
+                                background-color: #D61818;
+                                color: white;
+                                border-radius: 4px;
+                                text-align: center;
+                                display: block;
+                                width: 100%;
+                                font-size: 1.1rem;
+                            }
+
+
+                            .pCarritoCarga {
+                                color: #333FAA;
+                                text-align: center;
+                                display: block;
+                                width: 100%;
+                                font-size: .8rem;
+                            }
+
+                            .btnNuevo {
+                                background-color: #6D1B1B;
+                                color: white;
+                                border-radius: 4px;
+                                text-align: center;
+                                font-weight: bold;
+                                display: block;
+                            }
+
+                            .btnUsado {
+                                background-color: #D61818;
+                                color: white;
+                                border-radius: 4px;
+                                text-align: center;
+                                font-weight: bold;
+                                display: block;
+                            }
+                        </style>
+                        <!-- Nuevo -->
+                        <div class="row">
+                            <div class="col-6 offset-3 carritoCargaLabelTituloNuevo">
+                                Nuevo
+                            </div>
+                        </div>
+                        <fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-5 pCarritoCarga" style="border-right: 1px solid #a2b2fc;">
+                                    <br>
+                                    Disponibilidad
+                                    <br>
+                                    <p class="carritoCargaLabelNuevo py-2" id="lblDisponibilidadNueva">
+                                    </p>
+                                    <input type="hidden" id="valorUnidadesNuevas" value=0>
+                                    <br>
+                                    Precio
+                                    <p class="carritoCargaLabelNuevo py-2" id="lblPrecioNuevo">
+                                    </p>
+                                </div>
+                                <div class="col-5 offset-1">
+                                    <div class="row no-gutters">
+
+                                        <div class="col-6">
+
+                                            <input type="number" class="form-control" style="font-size: 1.2rem;"
+                                                id="compraNuevos" value=1 max="300" min="1">
+                                        </div>
+                                        <div class="col">
+                                            <button class="btnNuevo" id="botonNuevo" style="display: block;">
+                                                <img font-color="white" id="botonNuevoIimg"
+                                                    src="/static/icons_svg/carrito-de-compras-flecha.svg">
+
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p id="alertaNuevos" style="color:red; font-size:0.7rem; visibility:hidden;">
+                                        Disponibilidad Insuficiente</p>
+                                </div>
+                        </fieldset>
+                        <br>
+                        <br>
+                        <br>
+                        <!-- Usado -->
+                        <div class="row">
+                            <div class="col-6 offset-3 carritoCargaLabelTituloUsado">
+                                Usado
+                            </div>
+                        </div>
+                        <fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-5 pCarritoCarga" style="border-right: 1px solid #a2b2fc;">
+                                    <br>
+                                    Disponibilidad
+                                    <br>
+                                    <p class="carritoCargaLabelUsado py-2" id="lblDisponibilidadUsada">
+                                    </p>
+                                    <input type="hidden" id="valorUnidadesUsadas" value=0>
+                                    <br>
+                                    Precio
+                                    <p class="carritoCargaLabelUsado py-2" id="lblPrecioUsado">
+                                    </p>
+                                </div>
+                                <div class="col-5 offset-1">
+                                    <div class="row no-gutters">
+
+                                        <div class="col-6">
+
+                                            <input type="number" class="form-control" style="font-size: 1.2rem;"
+                                                id="compraUsados" value=1 max="300" min="1">
+                                        </div>
+                                        <div class="col">
+                                            <button class="btnUsado" id="botonUsado" style="display: block;">
+                                                <img font-color="white" id="botonUsadoIimg"
+                                                    src="/static/icons_svg/carrito-de-compras-flecha.svg">
+
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p id="alertaUsados" style="color:red; font-size:0.7rem; visibility:hidden;">
+                                        Disponibilidad Insuficiente</p>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <br>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script type=text/javascript src="/static/js/inventario.js"></script>
+
+        <!--Modal Confirmar Cliente-->
+        <div class="modal fade bd-example-modal" id="modal-confirmacion-venta-cliente" tabindex="-1" role="dialog"
+            aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary" style="font-size:1.4rem" id="modal-ajustar-lote-titulo">
+                            Registra Venta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- DATOS DEL CLIENTE-->
+                        <fieldset class="border p-1 my-0">
+                            <legend class="w-auto text-primary my-0" style="font-size:1.4rem">Cliente</legend>
+
+
+                            <div class="form-row my-0 py-0">
+                                <div class="form-group col-5 my-0">
+                                    <label class="text-primary my-0 " style="font-size:1rem"
+                                        for="documento">Tipo</label>
+                                    <select class="form-control form-control-sm px-0" id="tipo-documento"
+                                        style="font-size:1rem;height:2.2rem;">
+                                        <option value=1>Cédula</option>
+                                        <option value=2>Residencia</option>
+                                        <option value=3>Pasaporte</option>
+                                        <option value=4>Cédula Jurídica</option>
+                                        <option value=5>Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-5 mx-0 px-0">
+                                    <label class="text-primary m-0" style="font-size:1rem" for="documento">N°</label>
+                                    <input class="form-control form-control-sm m-0 px-1 block" type="text"
+                                        name="documento" id="documento" placeholder="Documento" style="font-size:1rem">
+                                </div>
+                                <div class="form-group col-2 m-0 px-1">
+                                    <br>
+                                    <button type="button" id="boton-buscar-padron" name="boton-buscar-padron"
+                                        class="btn btn-primary btn-sm-2 p-0" style="width:2.3rem;height:2.15rem;">
+                                        <img font-color="white" src="/static/icons_svg/search.svg" alt="Buscar"
+                                            width="15" height="15" title="Buscar">
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="nuevo-alerta" class="alert alert-danger mx-0 px-0" role="alert"
+                                style="font-size:0.80rem" hidden>
+                            </div>
+                            <br>
+
+                            <!--NOMBRES Y APELLIDOS-->
+                            <hr class="hr pb-0 mb-0">
+
+                            <div class="form-row my-0 py-0">
+                                <div class="form-group col-5 my-0 py-0">
+                                    <label class="text-primary my-0 py-0" style="font-size:1rem"
+                                        for="nombres"><b>Nombres</b></label>
+                                </div>
+                                <div class="form-group col-5 my-0 py-0">
+                                    <label class="text-primary my-0 py-0" style="font-size:1rem"
+                                        for="apellidos">Apellidos</label>
+                                </div>
+                                <div class="form-group col-2 my-0 py-0">
+                                    <img id="check-ok-padron" class="img py-0 my-0" src="/static/icons_svg/approve.svg"
+                                        style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                                    <img id="check-nok-padron" class="img py-0 my-0" src="/static/icons_svg/reprove.svg"
+                                        style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                                </div>
+                            </div>
+                            <div class="form-row my-0 py-0">
+                                <div class="form-group col-5 my-0 py-0">
+                                    <input class="form-control form-control-sm border-success my-0 py-0"
+                                        style="font-size:1rem" type="text" name="nombres" id="nombres"
+                                        placeholder="Nombres">
+                                </div>
+                                <div class="form-group col-7 my-0 py-0">
+                                    <input class="form-control form-control-sm my-0 py-0" style="font-size:1rem"
+                                        type="text" name="apellidos" id="apellidos" placeholder="Apellidos" disabled>
+                                </div>
+                            </div>
+                            <br>
+
+                            <!-- DATOS EN PLATAFORMA-->
+                            <hr class="hr pb-0 mb-0">
+                            <div class="form-row my-0 py-0">
+                                <div class="form-group col-2 my-0">
+                                    <label class="text-primary my-0" style="font-size:1rem">Código</label>
+                                </div>
+                                <div class="form-group col-3 my-0 py-0">
+                                    <label class="text-primary my-0" style="font-size:1rem">Tipo Cliente</label>
+                                </div>
+                                <div class="form-group col-5 my-0 py-0">
+                                    <label class="text-primary my-0" style="font-size:1rem">Correo Electrónico</label>
+                                </div>
+                                <div class="form-group col-2 my-0 py-0">
+                                    <img id="check-ok-etga" class="img py-0 my-0" src="/static/icons_svg/approve.svg"
+                                        style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                                    <img id="check-nok-etga" class="img py-0 my-0" src="/static/icons_svg/reprove.svg"
+                                        style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                                </div>
+                            </div>
+                            <div class="form-row my-0">
+                                <div class="form-group col-2 my-0">
+                                    <input class="form-control form-control-sm" type="number" name="codigo-cliente"
+                                        id="codigo-cliente" style="font-size:1rem;height:2rem;" disabled>
+                                </div>
+                                <div class="form-group col-3 my-0">
+                                    <select class="form-control form-control-sm" id="tipo-cliente"
+                                        style="font-size:1rem;height:2rem;" disabled>
+                                        <option value=1>Natural</option>
+                                        <option value=2>Jurídico</option>
+                                        <option value=3>Exhonerado</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-7 my-0">
+                                    <input class="form-control form-control-sm" type="email" name="correo" id="correo"
+                                        style="font-size:1rem;height:2rem;" placeholder="Correo Electronico" disabled>
+                                </div>
+
+                            </div>
+                            <div class="form-row my-0">
+                                <div class="form-group col-4 my-0">
+                                    <label class="text-primary my-0 py-0" style="font-size:1rem">Teléfono 1</label>
+                                    <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem"
+                                        type="number" name="telefono" id="telefono" placeholder="" min=20000000
+                                        max=89999999 disabled>
+                                </div>
+                                <div class="form-group col-4 my-0">
+                                    <label class="text-primary my-0 py-0" style="font-size:1rem">Teléfono 2</label>
+                                    <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem"
+                                        type="number" name="telefono2" id="telefono2" placeholder="" min=20000000
+                                        max=89999999 disabled>
+                                </div>
+                                <div class="form-group col-4 my-0">
+                                    <label class="text-primary my-0 py-0" style="font-size:1rem">Teléfono 3</label>
+                                    <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem"
+                                        type="number" name="telefono2" id="telefono3" placeholder="" min=20000000
+                                        max=89999999 disabled>
+                                </div>
+                            </div>
+                            <div class="form-row my-0">
+                                <div class="form-group col-5 my-0">
+                                    <label class="text-primary my-0 py-0" style="font-size:1rem">Provincia</label>
+                                    <select class="form-control form-control-sm" id="provincia" style="font-size:1rem;"
+                                        disabled>
+                                        <option value=1>Alajuela</option>
+                                        <option value=2>Heredia</option>
+                                        <option value=3>San José</option>
+                                        <option value=4>Puntarenas</option>
+                                        <option value=5>Cartago</option>
+                                        <option value=6>Guanacaste</option>
+                                        <option value=7>Limón</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-7 my-0">
+                                    <label class="text-primary my-0 py-0" style="font-size:1rem">Zona</label><br>
+                                    <div class="autocomplete">
+                                        <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem"
+                                            type="text" name="zona" id="zona" placeholder="Zona" maxlength="25"
+                                            value="Alajuela" disabled>
+                                    </div>
+                                    <script>
+                                        var zonas = [
+
+                                            ""];
+                                    </script>
+
+                                </div>
+                            </div>
+                            <div id="guardar-alerta" class="alert alert-danger m-1 p-1" role="alert"
+                                style="font-size:0.85rem" hidden>
+                            </div>
+
+                        </fieldset>
+
+                        <!--Botones para edicion de Cliente-->
+                        <div id=botones class="mt-2">
+                            <button id="boton-editar-cliente" type="button" data-target="#modal_editar_cliente"
+                                class="btn btn-info btn-sm" style="font-size:0.7rem;float:left" disabled=true
+                                data-toggle="modal">Editar</button>
+                            <button id="boton-guardar-cliente" name="boton-guardar-cliente" type="button"
+                                class="btn btn-info btn-sm" style="font-size:0.7rem;float:right"
+                                disabled>Guardar</button>
+
+                            <!-- <button id="boton_cliente_anonimo" type="button" class="btn btn-info btn-sm"
+                    style="font-size:0.7rem;float:right">Anónimo</button>-->
+                        </div>
+                        <br><br>
+                        <div id="lista_sugerencias_clientes"></div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button id="btn-confirmacion-venta-cliente" class="btn btn-primary" disabled>Confirmar
+                            Cliente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Modal Confirmar Venta-->
+        <div class="modal fade bd-example-modal" id="modal-generar-recibo" tabindex="-1" role="dialog"
+            aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary" style="font-size:1.4rem">
+                            Generar Recibo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="espacio_carrito_recibo">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button id="btn-modal-confirmacion-venta" class="btn btn-primary">Confirmar Venta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+
+    <!-- MENU SIDEBAR-->
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+        <!--FORMULARIO REPORTERIA-->
+        <form id="frm-reporte-inicio" method="POST" action="/reportes">
+            <input type="number" id="tipo-reporte" name="tipo-reporte" hidden>
+            <input type="number" id="tipo-accion" name="tipo-accion" hidden>
+            <input type="date" id="fecha-inicio" name="fecha-inicio" hidden>
+            <input type="date" id="fecha-fin" name="fecha-fin" hidden>
+        </form>
+        <!--FORMULARIO CATALOGOS-->
+        <form id="frm-catalogo" method="POST" action="/crud_catalogo">
+            <input type="number" id="tipo-catalogo" name="tipo-catalogo" hidden>
+            <input type="number" id="tipo-accion-catalogo" name="tipo-accion-catalogo" hidden>
+            <input type="text" id="catalogo-parametro" name="catalogo-parametro" hidden>
+        </form>
+
+
+        <div id="accordion">
+
+            <div class="card">
+                <div class="card-header m-0 p-1 collapsed" id="headingOne"
+                    style="height: 2.3rem;background-color: rgba(4, 20, 51, 0.945);" data-toggle="collapse"
+                    data-target="#collapseOnex" aria-expanded="false" aria-controls="collapseOnex">
+                    <h5> Reportes </h5>
+                </div>
+            </div>
+            <div id="collapseOnex" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    <button id="btn-reporte-inicio" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                        style="height:3rem ;width:5rem">
+                        Pagos
+                    </button>
+                    <button id="btn-reporte-iniciof" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                        style="height:3rem ;width:5rem">
+                        Facturación
+                    </button>
+                    <br>
+                    <button id="btn-reporte-inicio-boletas" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                        style="height:3rem ;width:5rem">
+                        Boletas
+                    </button>
+                    <button id="btn-reporte-inicio-tiempos" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                        style="height:3rem ;width:5rem">
+                        Tiempos
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header m-0 p-1 collapsed" id="headingTwo"
+                style="height: 2.3rem;background-color: rgba(4, 20, 51, 0.945);" data-toggle="collapse"
+                data-target="#collapseTwox" aria-expanded="false" aria-controls="collapseTwox">
+                <h5> Catálogos </h5>
+            </div>
+        </div>
+        <div id="collapseTwox" class="collapse" aria-labelledby="headingTwox" data-parent="#accordion">
+            <div class="card-body">
+                <button id="btn-catalogo-zonas" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                    style="height:3rem ;width:7rem">
+                    ZONAS
+                </button>
+                <button id="btn-catalogo-marcas" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                    style="height:3rem ;width:7rem">
+                    MARCAS
+                </button>
+                <br>
+                <button id="btn-catalogo-equipos" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                    style="height:3rem ;width:7rem">
+                    TIPOS EQUIPO
+                </button>
+                <button id="btn-catalogo-repuestos" class="btn btn-primary btn-sm p-0 my-2 mx-1"
+                    style="height:3rem ;width:7rem">
+                    REPUESTOS
+                </button>
+            </div>
+        </div>
+
+        <!--FORMULARIO USUARIOS ADMIN-->
+        <form id="frm-usuarios" name="frm-usuarios" method="POST" action="/usuarios">
+
+            <div class="card">
+                <div class="card-header m-0 p-1 collapsed" id="headingTwo"
+                    style="height: 2.3rem;background-color: rgba(4, 20, 51, 0.945);" data-toggle="collapse"
+                    data-target="#collapse3x" aria-expanded="false" aria-controls="collapse3x">
+                    <h5> Usuarios </h5>
+                </div>
+            </div>
+            <div id="collapse3x" class="collapse" aria-labelledby="heading3x" data-parent="#accordion">
+                <div class="card-body">
+                    <button id="btn-usuarios-admin" class="btn btn-primary btn-sm p-0 my-2 mx-1" type="submit"
+                        style="height:3rem ;width:7rem">
+                        Administrar
+                    </button>
+
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+
+    <!--Modal EDITAR CLIENTE-->
+    <div class="modal fade bd-example-modal" id="modal_editar_cliente" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary" style="font-size:1.4rem" id="titulo_modal">
+                        Editar Cliente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body" style="width: 30rem;">
+
+
+                    <div class="form-row my-0">
+                        <div class="form-group col-sm-5 my-0"><label class="text-primary my-0" style="font-size:1rem"
+                                for="nombres">Nombres</label>
+                            <input class="form-control form-control-sm" style="font-size:1rem" type="text"
+                                name="nombres2" id="nombres2" placeholder="Nombres">
+                        </div>
+                        <div class="form-group col-sm-7 my-0">
+                            <label class="text-primary my-0" style="font-size:1rem" for="apellidos">Apellidos</label>
+                            <input class="form-control form-control-sm" style="font-size:1rem" type="text"
+                                name="apellidos2" id="apellidos2" placeholder="Apellidos">
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-row my-0">
+                        <div class="form-group col-sm-4 my-0">
+                            <label class="text-primary my-0" style="font-size:1rem" for="codigo">Tipo
+                                Cliente</label>
+                            <select class="form-control form-control-sm" id="tipo-cliente2">
+                                <option value=1>Natural</option>
+                                <option value=2>Jurídico</option>
+                                <option value=3>Exhonerado</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-sm-8 my-0">
+                            <label class="text-primary my-0" style="font-size:1rem" for="correo2">Correo
+                                Electrónico</label>
+                            <input class="form-control form-control-sm" style="font-size:0.9rem" type="email"
+                                name="correo2" id="correo2" placeholder="Correo Electronico">
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-row my-0">
+                        <div class="form-group col-4 my-0"><label class="text-primary my-0" style="font-size:1rem"
+                                for="codigo">Teléfono 1</label>
+                            <input class="form-control form-control-sm" style="font-size:0.95rem" type="number"
+                                name="telefono12" id="telefono12" placeholder="Telefono">
+                        </div>
+                        <div class="form-group col-4 my-0"><label class="text-primary my-0" style="font-size:1rem"
+                                for="codigo">Teléfono 2</label>
+                            <input class="form-control form-control-sm" style="font-size:0.95rem" type="number"
+                                name="telefono22" id="telefono22" placeholder="Telefono">
+                        </div>
+                        <div class="form-group col-4 my-0"><label class="text-primary my-0" style="font-size:1rem"
+                                for="codigo">Teléfono 3</label>
+                            <input class="form-control form-control-sm" style="font-size:0.95rem" type="number"
+                                name="telefono23" id="telefono32" placeholder="Telefono">
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-row my-0">
+                        <div class="form-group col-5 my-0">
+                            <label class="text-primary my-0 py-0" style="font-size:1rem">Provincia</label>
+                            <select class="form-control form-control-sm" id="provincia2" style="font-size:1rem;">
+                                <option value=1>Alajuela</option>
+                                <option value=2>Heredia</option>
+                                <option value=3>San José</option>
+                                <option value=4>Puntarenas</option>
+                                <option value=5>Cartago</option>
+                                <option value=6>Guanacaste</option>
+                                <option value=7>Limón</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-7 my-0">
+                            <label class="text-primary my-0 py-0" style="font-size:1rem">Zona</label><br>
+                            <div class="autocomplete">
+                                <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem" type="text"
+                                    name="zona2" id="zona2" placeholder="Zona" maxlength="25" value="Alajuela">
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <br>
+                    <div id="guardar-alerta2" class="alert alert-danger m-1 p-1" role="alert" style="font-size:0.85rem"
+                        hidden>
+                    </div>
+
+                </div>
+
+                <input id="tipo_accion_cliente" name="tipo_accion_cliente" type="hidden" value=1>
+                <br>
+                <div id="nuevo_cliente_alerta"></div>
+                </form>
+
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-secondary" data-dismiss="modal" value="Cerrar" />
+                    <input type="button" class="btn btn-primary" id="btn-actualizar-cliente"
+                        name="btn-actualizar-cliente" value="Guardar" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--Modal INGRESO DE NUEVO ELEMENTO (MARCA/TIPOEQUIPO/ZONA/REPUESTO) -->
+    <div class="modal fade bd-example-modal" id="modal-ingreso-elemento" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <img src="/static/icons_svg/warning.svg" alt="" class="img inline" style="width:2rem;height:2rem;"
+                        title="">
+                    <h5 class="modal-title text-primary" style="font-size:1.4rem" id="modal-ingreso-elemento-header">
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <br><br>
+                    <label id="modal-ingreso-elemento-label" class="text-primary my-0" style="font-size:1.3rem">
+                    </label>
+                    <br>
+                    <br>
+                    <input id="modal-ingreso-elemento-accion" type="hidden">
+                    <input id="modal-ingreso-elemento-valor" type="hidden">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        id="cerrar-modal-pago">Cerrar</button>
+                    <button id="btn-ingreso-elemento-confirmacion" class="btn btn-primary">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA CONFIRMAR ENVIO DE CORREO (YA SE ENVIO)-->
+    <div class="modal fade" id="modal-movimiento-correo-enviado" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-anularm-titulo">
+                        Correo enviado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <label id="modal-anularm-body" class="text-primary my-0" style="font-size:1.2rem">El
+                        correo
+                        ha
+                        sido enviado</label>
+                    <label id="modal-anularm-body" class="text-primary my-0" style="font-size:0.85rem">Si el
+                        correo
+                        proporcionado está correcto, debería recibirse dentro de un minuto
+                        apróximadamente.</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        id="cerrar-modal-pago">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--MODAL NOTIFICACION-->
+    <div class="modal fade" id="modal-notificacion" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary" style="font-size:1.4rem" id="modal-notificacion-titulo">
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <img src="/static/icons_svg/alerta.svg" alt="Alerta" width="50" height="50" title="Alerta">
+                        </div>
+                        <div class="col">
+                            <label class="text-primary" id="modal-notificacion-mensaje"></label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</body>
+
+</html>

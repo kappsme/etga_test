@@ -1,0 +1,161 @@
+<style>
+    /* ESTILO CARRITO DE COMPRAS */
+    .carritoCargaLabelTituloNuevo {
+        background-color: #6D1B1B;
+        color: white;
+        border-radius: 8px 8px 0px 0px;
+        text-align: center;
+        font-weight: bold;
+        display: block;
+        width: 100%;
+    }
+
+    .carritoCargaLabelTituloUsado {
+        background-color: #D61818;
+        color: white;
+        border-radius: 8px 8px 0px 0px;
+        text-align: center;
+        font-weight: bold;
+        display: block;
+        width: 100%;
+    }
+
+    .carritoCargaLabelNuevo {
+        background-color: #6D1B1B;
+        color: white;
+        border-radius: 4px;
+        text-align: center;
+        display: block;
+        width: 100%;
+        font-size: 1.1rem;
+    }
+
+    .carritoCargaLabelUsado {
+        background-color: #D61818;
+        color: white;
+        border-radius: 4px;
+        text-align: center;
+        display: block;
+        width: 100%;
+        font-size: 1.1rem;
+    }
+
+
+    .pCarritoCarga {
+        color: #333FAA;
+        text-align: center;
+        display: block;
+        width: 100%;
+        font-size: .8rem;
+    }
+
+    .btnNuevo {
+        background-color: #6D1B1B;
+        color: white;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: bold;
+        display: block;
+    }
+
+    .btnUsado {
+        background-color: #D61818;
+        color: white;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: bold;
+        display: block;
+    }
+</style>
+<!-- Nuevo -->
+<div class="row">
+    <div class="col-6 offset-3 carritoCargaLabelTituloNuevo">
+        Nuevo
+    </div>
+</div>
+<fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;">
+    <div class="row no-gutters align-items-center">
+        <div class="col-5 pCarritoCarga" style="border-right: 1px solid #a2b2fc;">
+            <br>
+            Disponibilidad
+            <br>
+            <p class="carritoCargaLabelNuevo py-2" id="lblDisponibilidadNueva">
+            </p>
+            <input type="hidden" id="valorUnidadesNuevas" value=0>
+            <br>
+            Precio
+            <p class="carritoCargaLabelNuevo py-2" id="lblPrecioNuevo">
+            </p>
+        </div>
+        <div class="col-5 offset-1">
+            <div class="row no-gutters">
+            {% if id_boleta %}
+                <div class="col-12">
+            {% else %}
+                <div class="col-6">
+            {% endif %}
+                    <input type="number" class="form-control" style="font-size: 1.2rem;" id="compraNuevos" value=1
+                        max="300" min="1">
+                </div>
+                <div class="col">
+                       <button class="btnNuevo" id="botonNuevo" style="display: block;">
+                            {% if id_boleta %}Agregar a Boleta
+                            {% else %}<img font-color="white" id="botonNuevoIimg"
+                                src="{{ url_for('static', filename='icons_svg/carrito-de-compras-flecha.svg') }}">
+                            {% endif %}
+                        </button>
+                </div>
+            </div>
+            <p id="ubicacionNuevos" style="color:rgb(25, 0, 255); font-size:0.7rem; visibility:hidden;"></p>
+            <p id="alertaNuevos" style="color:red; font-size:0.7rem; visibility:hidden;">Disponibilidad Insuficiente</p>
+        </div>
+</fieldset>
+<br>
+<br>
+<br>
+<!-- Usado -->
+<div class="row">
+    <div class="col-6 offset-3 carritoCargaLabelTituloUsado">
+        Usado
+    </div>
+</div>
+<fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;">
+    <div class="row no-gutters align-items-center">
+        <div class="col-5 pCarritoCarga" style="border-right: 1px solid #a2b2fc;">
+            <br>
+            Disponibilidad
+            <br>
+            <p class="carritoCargaLabelUsado py-2" id="lblDisponibilidadUsada">
+            </p>
+            <input type="hidden" id="valorUnidadesUsadas" value=0>
+            <br>
+            Precio
+            <p class="carritoCargaLabelUsado py-2" id="lblPrecioUsado">
+            </p>
+        </div>
+        <div class="col-5 offset-1">
+            <div class="row no-gutters">
+                {% if id_boleta: %}
+                    <div class="col-12">
+                {% else %}
+                    <div class="col-6">
+                {% endif %}
+                    <input type="number" class="form-control" style="font-size: 1.2rem;" id="compraUsados" value=1
+                        max="300" min="1">
+                </div>
+                <div class="col">
+                    <button class="btnUsado" id="botonUsado" style="display: block;">
+                        {% if id_boleta %}Agregar a Boleta
+                        {% else %}<img font-color="white" id="botonUsadoIimg"
+                            src="{{ url_for('static', filename='icons_svg/carrito-de-compras-flecha.svg') }}">
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+            <p id="ubicacionUsados" style="color:rgb(25, 0, 255); font-size:0.7rem; visibility:hidden;"></p>
+            <p id="alertaUsados" style="color:red; font-size:0.7rem; visibility:hidden;">Disponibilidad Insuficiente</p>
+        </div>
+    </div>
+</fieldset>
+<br>
+<br>

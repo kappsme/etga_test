@@ -1,0 +1,136 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+
+<div class="col-12 m-0 p-0">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<div class="text-primary my-0" style="font-size:1.2rem">
+					<b><br><br>Catálogo de {% if tipo_catalogo == 1: %}Zonas
+						{% elif tipo_catalogo==2: %}Marcas
+						{% elif tipo_catalogo==3: %}Tipos de Equipo
+						{% elif tipo_catalogo==4: %}Repuestos
+						{% elif tipo_catalogo==5: %}Proveedores
+						{% endif %}
+					</b>
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1">
+				<table class="table table-striped border">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">ID</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">
+									{% if tipo_catalogo == 1: %}Zona
+									{% elif tipo_catalogo==2: %}Marca
+									{% elif tipo_catalogo==3: %}Tipo de Equipo
+									{% elif tipo_catalogo==4: %}Repuesto
+									{% elif tipo_catalogo==5: %}Proveedores
+									{% endif %}</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">Fecha Creación</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">Usuario</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">Estado</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0"></p>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						{% for rec in datos %}
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+							<td class="p-1 m-0" style="border-color: white;">
+								<p class="p-0 m-0">{{ rec['id'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border-color: white;">
+								<p class="p-0 m-0">{{ rec['nombre'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rec['fecha_ingreso'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rec['username'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border-color: white;">
+								<p class="p-0 m-0">
+									{% if rec['estado'] == 1: %}Activo
+									{% else: %}Desactivo
+									{% endif %}
+								</p>
+							</td>
+							<td class="p-1 m-0" style="border-color: white;">
+								<a id="btn-editar-catalogo-modal" type="button" class="btn btn-primary p-0 m-0"
+									style="width:1.8rem;height:1.8rem;"
+									cat-id="{{ rec['id'] }}" cat-nombre="{{ rec['nombre'] }}" cat-estado="{{ rec['estado'] }}"
+									>
+									<img src="{{ url_for('static', filename='icons_svg/edit1.svg') }}" alt="Editar"
+										class="img inline" style="width:1.3rem;height:1.3rem;" title="Editar">
+								</a>
+							</td>
+						</tr>
+						{% endfor %}
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL PARA CONFIRMACION DE ANULACION DE MOVIMIENTO-->
+<div class="modal fade" id="modal-editar-catalogo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-editar-catalogo-titulo">
+				Editar {% if tipo_catalogo == 1: %}Zona
+				{% elif tipo_catalogo==2: %}Marca
+				{% elif tipo_catalogo==3: %}Tipo de Equipo
+				{% elif tipo_catalogo==4: %}Repuesto
+				{% elif tipo_catalogo==5: %}Proveedor
+				{% endif %}
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<label class="text-primary my-0" style="font-size:1.2rem">Actual</label>
+				<input id="catalogo-nombre-viejo" name="catalogo-nombre-viejo" style="font-size:1.2rem" type="text" maxlength="23" disabled><br><br>
+				<label class="text-primary my-0" style="font-size:1.2rem">Nuevo</label>
+				<input id="catalogo-nombre-nuevo" name="catalogo-nombre-nuevo" style="font-size:1.2rem" type="text" maxlength="23"><br><br>
+				<label class="text-primary my-0" style="font-size:1.2rem">Activo</label>
+				<input type="checkbox" id="catalogo-estado">
+				
+				<input id="id-catalogo-elemento" name="id-catalogo-elemento" type="hidden">
+				<input id="tipo-catalogo2" name="tipo-catalogo2" type="hidden" value="{{tipo_catalogo}}"><br><br>
+				<div id="alerta-ingreso-catalogo" class="alert alert-danger" hidden></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					id="cerrar-modal-pago">Cerrar</button>
+				<button id="btn-editar-catalogo-confirmar" class="btn btn-primary">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

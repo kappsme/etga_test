@@ -1,0 +1,69 @@
+{% extends 'base_layout.html' %} {% block content %}
+<script type=text/javascript src="{{ url_for('static', filename='js/inventario.js') }}"></script>
+
+<div class="container-fluid m-1 p-0">
+
+    <div class="row no-gutters justify-content-end">
+        <div class="col-12 col-sm-10 order-sm-last">
+            <div class="appslabel">INVENTARIO</div>
+        </div>
+    </div>
+
+    <div class="row no-gutters">
+
+        <!-- BOTONES -->
+        <div class="col-12 col-md-2">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-6 col-md-12 p-1">
+                        <form action="{{ url_for('inv') }}" method="POST" id="buscar" name="buscar">
+                            <input type="hidden" name="inv-accion" value=1>
+                            <button type="submit"
+                                class="btn {% if inv_accion==1: %} btn-success {% else: %} btn-primary {% endif %} btn-block my-0 p-1"
+                                style="height: 6rem;">
+                                <img font-color="white" src="{{ url_for('static', filename='icons_svg/search.svg') }}"
+                                    alt="Buscar" style="height: 80%;" title="Buscar"><br>BUSCAR
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- <div class="col-4 col-md-12 p-1">
+                        <form action="{{ url_for('inv') }}" method="POST" id="registrar" name="registrar">
+                            <input type="hidden" name="inv-accion" value=2>
+                            <button type="submit" class="btn {% if inv_accion==2: %} btn-success {% else: %} btn-primary {% endif %} btn-block my-0 p-1" style="height: 6rem;">
+                                <img font-color="white"
+                                    src="{{ url_for('static', filename='icons_svg/document1.svg') }}" alt="Registrar"
+                                    style="height: 80%;" title="Registrar"><br>REGISTRAR
+                            </button>
+                        </form>
+                    </div> -->
+
+
+                    <div class="col-6 col-md-12 p-1">
+                        <form action="{{ url_for('inv') }}" method="POST" id="producto" name="producto">
+                            <input type="hidden" name="inv-accion" value=3>
+                            <button type="submit"
+                                class="btn {% if inv_accion==3: %} btn-success {% else: %} btn-primary {% endif %} btn-block my-0 p-1"
+                                style="height: 6rem;">
+                                <img font-color="white" src="{{ url_for('static', filename='icons_svg/edit1.svg') }}"
+                                    alt="Producto" style="height: 80%;" title="Producto"><br>PRODUCTO
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="col-12 col-md-8">
+            <br> {% if inv_accion==1: %} {% include 'inv_buscar.html' %} {% endif %} {% if inv_accion==2: %} {% include
+            'inv_registrar.html' %} {% endif %} {% if inv_accion==3: %} {% include 'inv_producto.html' %} {% endif %}
+        </div>
+
+       
+
+    </div>
+</div>
+
+
+{% endblock %}

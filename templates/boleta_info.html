@@ -1,0 +1,620 @@
+<div class="card text-white my-2 mx-0 px-0">
+	<div class="card-header text-center bg-primary my-0 mx-0 py-0" style="font-size:1.8rem">
+		<div class="row">
+			<div class="col-12 p-0 m-0">
+				INFO
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4 p-0 m-0">
+				{% if boleta_msg[8] == 0 and datos_estado['id_estado']<10 and datos_boleta['cierre_anticipado']==0 and datos_estado['id_estado']!=7: %}
+				<img src="{{ url_for('static', filename='icons_svg/volver3.svg') }}" alt="Enviar a Nueva" width="18"
+					height="18" title="Enviar a Nueva" class="btn btn-info p-0 m-0" id='btn-enviar-a-nueva'
+					style="height:1.5rem ;width:1.5rem" data-toggle="modal" data-target="#modal-cambio-estado">
+				{% endif %}
+				<img src="{{ url_for('static', filename='icons_svg/comment2.svg') }}" alt="Agregar Comentario"
+					width="18" height="18" title="Agregar comentario" class="btn btn-info p-0 m-0"
+					id='btn-agregar-comentario' style="height:1.5rem ;width:1.5rem" data-toggle="modal"
+					data-target="#modal-comentario-boleta">
+				{% if datos_estado['id_estado']<10: %}
+				<div class="btn btn-info p-0 m-0" id='btn-enviar-a-rechazo' name="btn-enviar-a-rechazo">
+					<img src="{{ url_for('static', filename='icons_svg/rejection.svg') }}" alt="Enviar a Rechazo"
+						width="18" height="18" title="Enviar a Rechazo" style="height:1.5rem ;width:1.5rem">
+				</div>
+				{% endif %}
+			</div>
+
+			<div class="col-8 p-0 m-0">
+				{% if datos_estado['id_estado']==0: %}
+				<span class="badge w-auto badge-success" style="font-size:0.8rem">Nueva!</span>
+				{% elif datos_estado['id_estado']==1: %}
+				<span class="badge w-auto badge-warning" style="font-size:0.8rem">En Diagnóstico</span>
+				{% elif datos_estado['id_estado']==2: %}
+				<span class="badge w-auto badge-info" style="font-size:0.8rem">Cotización</span>
+				{% elif datos_estado['id_estado']==3: %}
+				<span class="badge w-auto badge-danger" style="font-size:0.8rem">Espera Confirmación
+					Cliente</span>
+				{% elif datos_estado['id_estado']==4: %}
+				<span class="badge w-auto badge-primary" style="font-size:0.8rem">Reparación</span>
+				{% elif datos_estado['id_estado']==5: %}
+				<span class="badge w-auto badge-success" style="font-size:0.8rem">Listo para Retiro</span>
+				{% elif datos_estado['id_estado']==6: %}
+				<span class="badge w-auto" style="font-size:0.8rem;background-color: teal; color:white;">En
+					Facturación</span>
+				{% elif datos_estado['id_estado']==7: %}
+				<span class="badge w-auto" style="font-size:0.8rem;background-color:darkslategrey; color:white;">
+					Rechazada</span>
+				{% elif datos_estado['id_estado']==10: %}
+				<span class="badge w-auto"
+					style="font-size:0.8rem;background-color:#373738; color:white;">Cerrada</span>
+				{% endif %}
+				{% if datos_boleta['cierre_anticipado']==1: %}
+				<span class="badge w-auto" style="font-size:0.8rem;background-color:#373738; color:white;">Cierre
+					Anticipado</span>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<div class="card-body px-1 py-1 my-0">
+
+		<!--Estados de la Boleta-->
+		<div class="alert alert-info px-1 mx-0 py-1 my-0" role="alert" style="font-size:0.9rem">
+			Ingreso {% if datos_boleta['boleta_tipo']==1 and datos_boleta['boleta_garantia']!=0: %}
+			(Por Garantía)
+			{% endif %}
+			<br><b style="font-size:1rem">{{datos_boleta['fecha']}}</b>
+			({{datos_boleta['username']}})
+		</div>
+		{% if datos_estado['id_estado']!=0: %}
+		<div class="alert alert-info px-1 mx-0 py-1 my-0" role="alert" style="font-size:0.9rem">
+			Estado: <b>
+
+				{% if datos_estado['id_estado']==1: %}
+				En Diagnóstico
+				{% elif datos_estado['id_estado']==2: %}
+				En Cotización
+				{% elif datos_estado['id_estado']==3: %}
+				En Confirmación de Cliente
+				{% elif datos_estado['id_estado']==4: %}
+				En Reparación
+				{% elif datos_estado['id_estado']==5: %}
+				Listo para Retiro
+				{% elif datos_estado['id_estado']==6: %}
+				En Facturación
+				{% elif datos_estado['id_estado']==7: %}
+				Rechazada
+				{% elif datos_estado['id_estado']==10: %}
+				Cerrada
+				{% endif %}
+			</b>
+			{% if datos_boleta['cierre_anticipado']==1: %}
+			(Cierre Anticipado)
+			{% endif %}
+			<br><b style="font-size:1rem">{{datos_estado['fecha']}}</b>
+			({{datos_estado['username']}})
+		</div>
+		{% endif %}
+		<br>
+		{% if datos_boleta['boleta_tipo']==1 and datos_boleta['boleta_original']!=0: %}
+		<div class="border border-danger p-2 m-2 rounded text-primary">
+			<label style="font-size:1.3rem">Boleta Garantía:</label>
+			<label style="font-size:1rem">Se aplicó garantía por la Boleta
+				<b><a href=# onclick="enviar_boleta({{datos_boleta['boleta_original']}})"
+						style="font-size: 1.4rem;">{{ datos_boleta['boleta_original'] }}</a></b></label>
+		</div>
+		{% endif %}
+		<!--Seccion de Saldo y Pagos-->
+		<fieldset class="border p-1 my-0">
+			<legend class="w-auto text-primary my-0" style="font-size:1.2rem">Saldo de Boleta</legend>
+			<div class="row mx-1">
+
+				<div class="form-group col-5 m-0 p-0">
+					{% if saldo<0: %}
+					<p class="p text-primary m-0 y-0">En Contra</p>
+					<div id="saldo" class="alert alert-danger px-1 m-0 p-1" style="font-size:1.3rem;height: 2rem;"
+						role="alert">₡
+						{{ '{:0,.0f}'.format(-saldo) }}
+					</div>
+					{% elif saldo>0: %}
+					<p class="p text-primary m-0 y-0">A Favor</p>
+					<div id="saldo" class="alert alert-success px-1 m-0 p-1" style="font-size:1.3rem;height: 2rem;"
+						role="alert">₡
+						{{ '{:0,.0f}'.format(saldo) }}
+					</div>
+					{% elif saldo==0: %}
+					<p class="p text-primary m-0 y-0"></p>
+					<div id="saldo" class="alert alert-success px-1 m-0 p-1" style="font-size:1.3rem;height: 2rem;"
+						role="alert">₡
+						{{ '{:0,.0f}'.format(saldo) }}
+					</div>
+					{% endif %}
+				</div>
+
+				<div class="form-group col-7 m-0 p-0">
+
+
+					{% if boleta_msg[8] == 0 and datos_estado['id_estado']<10 and datos_boleta['cierre_anticipado']==0: %}
+					<div class="row mx-1">
+						<!--Registrar Pago-->
+						<div class="form-group col-4 m-0 p-0">
+							<button id="boton-collapse-pago" class="btn btn-primary btn-block mx-1 px-0"
+								data-toggle="collapse" href="#collapsePago" role="button" aria-expanded="false"
+								aria-controls="collapsePago" style="height: 3.3rem;" data-whatever="Pago">
+								<p style="font-size:1rem;">Pago</p>
+							</button>
+						</div>
+						<!-- Registrar Cargo-->
+						<div class="form-group col-4 m-0 p-0">
+							<button id="boton-collapse-cargo" class="btn btn-primary btn-block mx-1 px-0"
+								data-toggle="collapse" href="#collapseCargo" role="button" aria-expanded="false"
+								aria-controls="collapseCargo" style="height: 3.3rem;" data-whatever="Cargo">
+								<p style="font-size:1rem;">Cargo</p>
+							</button>
+						</div>
+						<!--Ver Movimientos-->
+						<div class="form-group col-4 m-0 p-0">
+							<button class="btn btn-primary btn-block mx-1 px-0" id="boton-ver-pagos"
+								name="boton-ver-pagos" type="button" style="font-size:1rem;height: 3.3rem;">
+								<img src="{{ url_for('static', filename='icons_svg/document1.svg') }}" alt="Ver Lista"
+									class="img inline" style="width:1.5rem;height:2rem;" title="Ver Lista">
+							</button>
+						</div>
+
+						{% endif %}
+					</div>
+				</div>
+				<br>
+				<!-- COLLAPSE PARA REALIZAR PAGO-->
+				<div class="collapseP" id="collapsePago" hidden>
+					<div class="row m-0 p-0 border">
+						<div class="col-12 p-1 alert-info text-center">
+							<label style="font-size:1rem">Pago</label>
+						</div>
+					</div>
+					<div class="row m-0 p-0 border">
+						<div class="col-10">
+							<div class="row border">
+
+								<div class="col-7 p-1">
+									<label class="text-primary my-0" style="font-size:0.8rem" for="monto-p">Monto
+										₡</label>
+									<input class="form-control form-control-sm" type="number" name="monto-p"
+										id="monto-p" style="font-size:1.2rem" value=0 required min="0" max="500000">
+								</div>
+								<div class="col-5 p-1 border">
+									<input type="radio" id="pago-efectivo" name="tipo_pago" value="1" checked>
+									<label class="text-primary my-0" style="font-size:1rem"
+										for="pago-efectivo">Efectivo</label><br>
+									<input type="radio" id="pago-tarjeta" name="tipo_pago" value="2">
+									<label class="text-primary my-0" style="font-size:1rem"
+										for="pago-tarjeta">Tarjeta</label><br>
+									<input type="radio" id="pago-transferencia" name="tipo_pago" value="3">
+									<label class="text-primary my-0" style="font-size:1rem"
+										for="pago-transferencia">Transf.</label>
+								</div>
+							</div>
+							<div class="row p-1">
+								<label class="text-primary my-0" style="font-size:1rem" for="monto">Concepto</label>
+								<input class="form-control" type="text" name="concepto-p" id="concepto-p"
+									style="font-size:1rem" maxlength="25">
+							</div>
+						</div>
+						<div class="col-2 p-1">
+							<button id="boton-pago-collapse" type="button" class="btn btn-primary p-0"
+								data-toggle="modal" data-target="#pagoModal" data-whatever="@mdo"
+								style="width:3.2rem;height: 8rem;">
+								OK</button>
+
+						</div>
+					</div>
+				</div>
+				<!-- COLLAPSE PARA REALIZAR CARGO-->
+				<div class="collapseC" id="collapseCargo" hidden>
+					<div class="row m-0 p-0 border">
+						<div class="col-12 p-1 alert-warning">
+							<label style="font-size:1rem">Cargo</label>
+						</div>
+					</div>
+					<div class="row m-0 p-0 border">
+						<div class="col-10 p-1">
+							<div class="row m-0 p-0 border">
+								<div class="col-6 p-1">
+									<label class="text-primary my-0" style="font-size:0.8rem">Monto ₡</label>
+									<input class="form-control form-control-sm" type="number" name="monto-c"
+										id="monto-c" style="font-size:1.2rem;" value=0 required min="100" max="500000">
+								</div>
+								<div class="col-6 p-1 border">
+									<input type="radio" id="tipo-cargo-revision" name="tipo-cargo" value="5" checked>
+									<label class="text-primary my-0" style="font-size:0.9rem">Revisión</label><br>
+									<input type="radio" id="tipo-cargo-otro" name="tipo-cargo" value="2">
+									<label class="text-primary my-0" style="font-size:0.9rem">Otro</label><br>
+									<div id="cargo-pago">
+										<input type="checkbox" id="cargo-pago-revision" checked>
+										<label class="text-primary my-0" style="font-size:0.9rem"
+											for="cargo-pago-efectivo">Pago</label><br>
+										&nbsp;&nbsp;&nbsp;<input type="radio" id="cargo-pago-efectivo"
+											name="cargo-tipo_pago" value="1" checked>
+										<label class="text-primary my-0" style="font-size:1rem"
+											for="cargo-pago-efectivo">Efectivo</label><br>
+										&nbsp;&nbsp;&nbsp;<input type="radio" id="cargo-pago-tarjeta"
+											name="cargo-tipo_pago" value="2">
+										<label class="text-primary my-0" style="font-size:1rem"
+											for="cargo-pago-tarjeta">Tarjeta</label><br>
+										&nbsp;&nbsp;&nbsp;<input type="radio" id="cargo-pago-transferencia"
+											name="cargo-tipo_pago" value="3">
+										<label class="text-primary my-0" style="font-size:1rem"
+											for="cargo-pago-transferencia">Transf.</label>
+									</div>
+									<div id="cargo-otro" hidden>
+										&nbsp;&nbsp;&nbsp;<label class="text-primary my-0"
+											style="font-size:0.9rem">Impuesto %</label>
+										&nbsp;&nbsp;&nbsp;<input class="form-control form-control-sm" type="number"
+											name="cargo-otro-impuesto" id="cargo-otro-impuesto"
+											style="font-size:0.9rem;width: 4rem;" value=0 required min=0 max=100>
+									</div>
+								</div>
+							</div>
+							<div class="row m-0 p-0">
+								<label class="text-primary my-0" style="font-size:1rem" for="monto">Concepto</label>
+								<input class="form-control" type="text" name="concepto-c" id="concepto-c"
+									style="font-size:1rem" maxlength="25" value="Revisión de Equipo">
+							</div>
+						</div>
+						<div class="col-2 p-1 border">
+							<button id="boton-cargo-collapse" type="button" class="btn btn-primary p-0"
+								data-toggle="modal" data-target="#cargoModal" data-whatever="@mdo"
+								style="width:3.2rem;height: 8rem;">
+								OK</button>
+
+						</div>
+					</div>
+				</div>
+
+
+		</fieldset>
+
+		
+	</div>
+	{% if datos_boleta['cierre_anticipado']==1: %}
+	<br>
+	<div class="border border-danger p-2 m-2 rounded text-primary">
+		<label style="font-size:1.3rem">Motivo Cierre Anticipado:</label>
+		<label style="font-size:1rem">{{ datos_boleta['cierre_comentario'] }}</label>
+	</div>
+	{% endif %}
+	{% if datos_boleta['rechazada']==1: %}
+	<br>
+	<div class="border border-danger p-2 m-2 rounded text-primary">
+		<label style="font-size:1.2rem">Rechazo Ingresado por: <b>{{ boleta_msg[11]['username'] }}</b><br>
+			Fecha: <b>{{ boleta_msg[11]['fecha'] }}</b><br>
+			{{ boleta_msg[11]['comentario'] }}</label>
+	</div>
+	{% endif %}
+
+	<!-- SECCION ACCIONES -->
+	<br>
+	<fieldset class="border p-1 my-0">
+		<legend class="w-auto text-primary my-0" style="font-size:1.2rem">Acciones</legend>
+
+		<!-- VERIFICAR SI YA ESTA CON COMPROBANTE EMITIDO PARA NO MOSTRAR TODOS LAS OPCIONES DE LA BOLETA Y SI NO ESTA RECHAZADA-->
+		{% if boleta_msg[8] == 0 and datos_estado['id_estado']<10 and datos_boleta['cierre_anticipado']==0 and datos_boleta['rechazada']==0: %}
+		<!-- DIAGNOSTICO -->
+		<div class="form-row my-0">
+			<div class="form-group col-8 my-0 p-0">
+				<button id="btn-enviar-a-diagnostico" type="button" class="btn btn-warning mx-1 " data-toggle="modal"
+					data-target="#modal-cambio-estado" style="font-size:0.8rem;height: 3.3rem;width: 9rem;"
+					{% if datos_estado['id_estado']==1: %} disabled="true"
+					title="Este equipo ya se encuentra esperando Diagnóstico" {% endif %}>
+					Enviar a<br>&lt; En Diagnóstico &gt;
+				</button>
+			</div>
+			<div class="form-group col-4 my-0 p-0">
+				<button id="boton-editar-diagnostico-ver" type="button" class="btn btn-warning mx-1 p-0"
+					style="font-size:0.8rem;height: 3.3rem;width:6rem" {% if datos_estado['id_estado']!=1: %} hidden
+					{% endif %}>Ver
+					Diagnóstico</button>
+				</form>
+			</div>
+		</div>
+		<hr class="my-2">
+
+		<!-- COTIZACION -->
+		<div class="form-row my-0">
+			<div class="form-group col-8 my-0 p-0">
+				<button id="btn-enviar-a-cotizacion" type="button" class="btn btn-info mx-1" data-toggle="modal"
+					data-target="#modal-cambio-estado" data-estado="Cotización"
+					style="font-size:0.8rem;height: 3.3rem;width: 9rem;" {% if datos_estado['id_estado']<1: %} hidden
+					{% endif %} {% if datos_estado['id_estado']==2: %} disabled="true"
+					title="Este equipo ya se encuentra esperando Cotización" {% endif %}>
+					Enviar a<br>&lt; Cotización &gt;
+				</button>
+			</div>
+			<div class="form-group col-4 my-0 p-0">
+				<button id="boton-editar-cotizacion-ver" type="button" class="btn btn-info mx-1 p-0"
+					style="font-size:0.8rem;height: 3.3rem;width:6rem" {% if datos_estado['id_estado']!=2: %} hidden
+					{% endif %}>Editar
+					Cotización</button>
+				</form>
+			</div>
+		</div>
+
+		<hr class="my-2">
+
+		<!-- CONFIRMACION DE CLIENTE -->
+		<div class="form-row my-0">
+			<div class="form-group col-8 my-0 p-0">
+				<button id="btn-enviar-a-espera-confirmacion" type="button" class="btn btn-danger mx-1"
+					data-toggle="modal" data-target="#modal-cambio-estado"
+					data-estado="En Espera de Confirmación De Cliente"
+					style="font-size:0.8rem;height: 3.3rem;width: 9rem;" {% if datos_estado['id_estado']<2: %} hidden
+					{% endif %} {% if datos_estado['id_estado']==3: %} disabled="true"
+					title="Este equipo ya se encuentra esperando Confirmación de Cliente" {% endif %}>
+					Enviar a<br>&lt; Espera C.C. &gt;
+				</button>
+			</div>
+			<div class="form-group col-4 my-0 p-0">
+				<!-- BOTON PARA VER INFO -->
+				{% if datos_estado['id_estado']==3: %}
+				<button id="btn-ver-info-esperacc" type="button" class="btn btn-danger btn-sm"
+					style="font-size:0.8rem;height: 3.3rem;width:6rem">
+					Ver</button>
+				{% endif %}
+			</div>
+		</div>
+
+		<hr class="my-2">
+
+		<!-- REPARACION -->
+		<div class="form-row my-0">
+			<div class="form-group col-8 my-0 p-0">
+				<button id="btn-enviar-a-reparacion" type="button" class="btn btn-primary mx-1" data-toggle="modal"
+					data-target="#modal-cambio-estado" data-estado="Reparación"
+					style="font-size:0.8rem;height: 3.3rem;width: 9rem;" {% if datos_estado['id_estado']<3: %} hidden
+					{% endif %} {% if datos_estado['id_estado']==4: %} disabled="true"
+					title="Este equipo ya se encuentra en Reparación" {% endif %}>
+					Enviar a<br>&lt; Reparación &gt;
+				</button>
+			</div>
+			<div class="form-group col-4 my-0 p-0">
+				<!-- BOTON PARA VER INFO -->
+				{% if datos_estado['id_estado']==4: %}
+				<button id="btn-ver-info-reparacion" type="button" class="btn btn-primary btn-sm"
+					style="font-size:0.8rem;height: 3.3rem;width:6rem">
+					Ver</button>
+				{% endif %}
+			</div>
+		</div>
+
+		<hr class="my-2">
+
+		<!-- LISTO PARA RETIRO -->
+		<div class="form-row my-0">
+			<div class="form-group col-8 my-0 p-0">
+				<button id="btn-enviar-a-retiro" type="button" class="btn btn-success mx-1" data-toggle="modal"
+					data-target="#modal-cambio-estado" style="font-size:0.8rem;height: 3.3rem;width: 9rem;"
+					{% if datos_estado['id_estado']<4: %} hidden {% endif %} {% if datos_estado['id_estado']==5: %}
+					disabled="true" title="Este equipo ya se encuentra Listo Para Retirar" {% endif %}>
+					Enviar a<br>&lt; Listo para Retiro &gt;
+				</button>
+			</div>
+			<div class="form-group col-4 my-0 p-0">
+				<!-- BOTON PARA VER INFO -->
+				{% if datos_estado['id_estado']==5: %}
+				<button id="btn-ver-info-retiro" type="button" class="btn btn-success btn-sm"
+					style="font-size:0.8rem;height: 3.3rem;width:6rem">
+					Ver</button>
+				{% endif %}
+			</div>
+		</div>
+		<hr class="my-2">
+		{% endif %}
+
+		{% if datos_estado['id_estado']<10 and datos_estado['id_estado']!=7: %}
+		<!-- FACTURAR -->
+		<!-- BOTON FACTURAR SI NO ESTA CERRADA Y SI NO ES RECHAZO -->
+		<div class="form-row my-0">
+			<div class="form-group col-8 my-0 p-0">
+				<button id="btn-enviar-a-facturar" type="button" class="btn mx-1" data-toggle="modal"
+					data-target="#modal-cambio-estado"
+					style="font-size:0.8rem;height: 3.3rem;width: 9rem;background-color: teal; color:white;"
+					{% if datos_estado['id_estado']<5: %} hidden {% endif %} {% if datos_estado['id_estado']==6: %}
+					disabled="true" title="Este equipo ya se encuentra en Facturar" {% endif %}>
+					Enviar a<br>&lt; Facturar &gt;
+				</button>
+			</div>
+			<div class="form-group col-4 my-0 p-0">
+				<!-- BOTON PARA VER INFO -->
+				{% if datos_estado['id_estado']==6: %}
+				<button id="btn-ver-info-facturar" type="button" class="btn"
+					style="font-size:0.8rem;height: 3.3rem;width:6rem;background-color: teal; color:white;">
+					Ver</button>
+				{% endif %}
+			</div>
+		</div>
+		{% endif %}
+
+		{% if datos_estado['id_estado']==7 and datos_boleta['equipo_retirado'] == 0: %}
+		<!-- SACAR DE RECHAZO -->
+		<div class=" form-row my-0">
+					<div class="form-group col-5 my-0 p-0">
+						<button id="btn-enviar-a-diagnostico" type="button" class="btn mx-1" data-toggle="modal"
+							data-target="#modal-cambio-estado"
+							style="font-size:0.8rem;height: 3.3rem;width: 9rem;background-color:darkslategrey; color:white;">
+							Devolver Boleta a Diagnóstico
+						</button>
+					</div>
+					<div class="form-group col-3 my-0 p-0">
+						<!-- ENVIAR POR WHATSAPP-->
+						<a id="link-wa-rechazo" type="button" class="btn mx-1 px-0"
+							style="font-size:0.8rem;height: 3.3rem;width: 3.3rem;background-color:darkslategrey; color:white;"
+							target="_blank" href="">
+							<img src="{{ url_for('static', filename='icons_svg/whatsApp-Logo.svg') }}"
+								alt="Enviar WhatsApp (A Teléfono 1)" class="img inline p-0 m-0"
+								style="width:2.6rem;height:2.6rem;" title="Enviar WhatsApp (A Teléfono 1)">
+						</a>
+					</div>
+
+					<div class="form-group col-4 my-0 p-0">
+						<!-- BOTON PARA VER INFO -->
+						<button id="btn-ver-info-facturar" type="button" class="btn"
+							style="font-size:0.8rem;height: 3.3rem;width:6rem;background-color: darkslategrey; color:white;">
+					Ver</button>
+				</div>
+		</div>
+		{% endif %}
+
+		<!-- GARANTIA -->
+		{% if datos_estado['id_estado']==10: %}
+			{% if datos_boleta['boleta_tipo']==0 and datos_boleta['cierre_anticipado']==0 and datos_boleta['rechazada']==0: %}
+				{% if datos_boleta['dias_cerrada']<=datos_boleta['dias_garantia']: %}
+					<div class=" form-row my-0">
+							<div class="form-group col-8 my-0 p-0">
+								<button id="btn-enviar-a-garantia" type="button" class="btn btn-warning mx-1 "
+									data-toggle="modal" data-target="#modal-cambio-estado"
+									style="font-size:0.8rem;height: 3.3rem;width: 12rem;">
+									APLICAR GARANTIA
+								</button>
+							</div>
+					</div>
+					{% else: %}
+					<div class="border border-danger p-2 m-2 rounded text-primary">
+						<label style="font-size:1.3rem">Garantía:</label>
+						<label style="font-size:1rem">Esta boleta ya no aplica a Garantía dado que tiene
+							<b>{{ datos_boleta['dias_cerrada'] }}</b> días desde que el equipo fue entregado.<br><br>
+							Días cubiertos por garantía: <b>{{ datos_boleta['dias_garantia'] }}</b></label>
+					</div>
+					{% endif %}
+					{% else: %}
+					{% if datos_boleta['boleta_tipo']==1 and datos_boleta['cierre_anticipado']==0: %}
+					<div class="border border-danger p-2 m-2 rounded text-primary">
+						<label style="font-size:1.3rem">Garantía:</label>
+						<label style="font-size:1rem">Esta Boleta generó garantía. <a href=#
+								onclick="enviar_boleta({{datos_boleta['boleta_garantia']}})"
+								style="font-size: 1.4rem;"><b>{{ datos_boleta['boleta_garantia'] }}</b></a></label>
+					</div>
+					{% endif %}
+					{% if datos_boleta['cierre_anticipado']==1 or datos_boleta['rechazada']==1: %}
+					<div class="border border-danger p-2 m-2 rounded text-primary">
+						<label style="font-size:1.3rem">Garantía:</label>
+						<label style="font-size:1rem">Esta Boleta tuvo cierre anticipado o fue Rechazada, por lo que <b>No Aplica para
+								Garantía</b></label>
+					</div>
+					{% endif %}
+					{% endif %}
+					{% endif %}
+	</fieldset>
+	<script>
+		//SUBMIT BOLETA
+		function enviar_boleta(id_boleta) {
+			$('#id-boleta-i').val(id_boleta);
+			$('#tipo-display-i').val(6); // VISUALIZAR
+			document.getElementById("form-buscar-boleta-i").submit();
+		}
+	</script>
+
+	<!-- MODAL PARA CONFIRMACION DE CAMBIO ESTADO-->
+	<div class="modal fade" id="modal-cambio-estado" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-primary" style="font-size:1.2rem" id="modal-cambio-estado-header">
+					</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<label id="modal-cambio-estado-label" class="text-primary my-0" style="font-size:1.1rem">¿Está
+						seguro que desea enviar el equipo de la boleta {{id_boleta}} a la Pila de
+					</label>
+					<textarea name="comentario-rechazo" id="comentario-rechazo" class="form-control"
+						style="font-size:1.1rem" rows="6" placeholder="Motivo del Rechazo" maxlength="170"
+						hidden></textarea>
+					<input id="modal-cambio-estado-accion" type="hidden">
+					<input id="modal-cambio-estado-accion2" type="hidden">
+					<input id="modal-cambio-estado-display" type="hidden">
+					
+					<br><br>
+					<!-- Para ingresar tiempos de reparacion-->
+					<fieldset class="border p-1 my-0" id="tiempo-reparacion" hidden>
+						<legend class="w-auto text-primary my-0" style="font-size:1rem">Tiempo de Reparación</legend>
+						<div class="form-row">
+							<div class="col-3">
+								<label class="text-primary" style="font-size:.75rem">Horas</label>
+							</div>
+							<div class="col-3">
+								<label class="text-primary" style="font-size:.75rem">Minutos</label>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="col-3">
+								<input class="form-control form-control-sm" type="number" name="r-horas" id="r-horas"
+									style="font-size:1rem;height:2rem;" placeholder="horas" min="0" max="23" value=0>
+							</div>
+							<div class="col-3">
+								<input class="form-control form-control-sm" type="number" name="r-minutos" id="r-minutos"
+									style="font-size:1rem;height:2rem;" placeholder="minutos" min=0 max=59 value=0>
+							</div>
+						</div>
+					</fieldset>
+
+
+				</div>
+				<div class="modal-footer">
+					<div id="guardar-cambio-estado-alerta" class="alert alert-danger m-1 p-1" role="alert"
+						style="font-size:0.8rem" hidden>
+					</div>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal"
+						id="cerrar-modal-pago">Cerrar</button>
+					<button id="btn-envio-estado-confirmacion" class="btn btn-primary">Confirmar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+
+<!--Modal para agregar COMENTARIOS a la Boleta-->
+<div class="modal fade bd-example-modal" id="modal-comentario-boleta" tabindex="-1" role="dialog"
+	aria-labelledby="mySmallModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.4rem" id="titulo_modal2">
+					{% if datos_estado['id_estado'] < 10: %}Agregar Comentario <br><small>(Máximo 280 caracteres)</small>
+					{% else: %}Comentarios
+					{% endif %}
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				{% if datos_estado['id_estado']<10: %}
+				<textarea name="comentario2" id="comentario2" class="form-control" style="font-size:1.3rem"
+					rows="5" maxlength="280"></textarea>
+				<div id="guardar-comentario-alerta" class="alert alert-danger m-1 p-1" role="alert"
+					style="font-size:0.7rem" hidden>Por favor ingrese un comentario válido (15 caracteres
+					mínimo)
+				</div>
+				<input type="button" class="btn btn-primary btn-sm px-1" id="btn-guardar-comentario"
+					name="boton-guardar-comentario" value="Guardar" />
+				{% endif %}
+			</div>
+			<div class="modal-footer">
+				<table id='tbl-historial-comentarios' class="table table-responsive border m-0 p-0"
+					style="font-size:0.75rem;">
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>var repuestos = '';</script>

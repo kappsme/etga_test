@@ -1,0 +1,24 @@
+mysql -u root -psecret01 < localhost.sql 
+
+GRANT select, insert, update, delete on etga.* to 'etga_usuario1'@'%';
+GRANT select, insert, update, delete on kapps_db.* to 'etga_usuario1'@'%';
+
+
+# Saber passwords
+select username, kapp_id
+, convert(aes_decrypt(password2,UNHEX(SHA2("@#Parangaturimicuaro&&191410",512))),char) pass
+from kapps_db.accounts
+where kapp_id=2
+
+
+# Cada vez que se cambia de computadora para trabajar
+git pull
+
+# agrega archivos al tracking de versiones
+git add .
+
+# empaqueta el stage
+git commit -m "inicializacion"
+
+# ENVIAR CAMBIOS
+git push -u origin master

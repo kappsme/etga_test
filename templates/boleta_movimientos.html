@@ -1,0 +1,315 @@
+<div class="card text-white my-1 mx-1 px-0 border">
+	<div class="card-header text-center bg-primary my-0 mx-0 py-0" style="font-size:1.1rem">
+		Movimientos Realizados
+	</div>
+
+	<!-- ESTADO -->
+	<div class="card-body px-0 py-1 my-0">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12 col-md-2 order-md-last m-0 p-0">
+					<table class="table table-bordered">
+						<thead>
+							<tr style="text-align: center;color: rgb(255, 255, 255);">
+								<th scope="col" class="px-1 mx-1 py-1 bg-primary">
+									<p style="font-size:1.5rem" class="p-1 m-0">&nbsp;&nbsp;Saldo&nbsp;&nbsp;</p>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="px-1 py-4" style="font-size: 1.6rem;text-align: center;vertical-align:middle">
+									<b>₡{{ '{:0,.0f}'.format(saldo) }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col-12 col-md-5 m-0 p-0">
+					<table class="table table-bordered">
+						<thead>
+							<tr style="text-align: center;color: rgb(255, 255, 255);">
+								<th scope="col" colspan=5 class="px-1 mx-1 alert-warning">
+									<p style="font-size:1rem" class="p-0 m-0">Cargos</p>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr style="text-align: center;font-size: small;">
+								<td class="p-1">
+									Revisión
+								</td>
+								<td class="p-1">
+									Reparación
+								</td>
+								<td class="p-1">
+									Otros / Bodegaje
+								</td>
+								<td class="p-1">
+									Descuentos
+								</td>
+								<td class="p-1" style="font-size: 1.2rem;">
+									<b>&nbsp;&nbsp;Total&nbsp;&nbsp;</b>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									₡{{ '{:0,.0f}'.format(datos_saldo['monto_revision']) }}
+								</td>
+								<td>
+									₡{{ '{:0,.0f}'.format(datos_saldo["monto_cotizacion"]) }}
+								</td>
+								<td>
+									₡{{ '{:0,.0f}'.format(datos_saldo['monto_otros_cargos'] + datos_saldo["bodegaje_monto"] + datos_saldo["bodegaje_monto_impuesto"]) }}
+								</td>
+								<td>{% if datos_estado['id_estado'] >= 4 and datos_estado['id_estado']!=7 and datos_boleta['cierre_anticipado']!=1 and datos_boleta['rechazada']!=1 : %}
+									₡-{{ '{:0,.0f}'.format(datos_saldo["monto_revision"]+datos_saldo["total_descuentos_con_impuestos"]) }}
+									{% else: %}
+									₡ 0.00
+									{% endif %}
+								</td>
+								<td class="td p-1" style="font-size: 1.2rem;">
+									<b>{% if datos_estado['id_estado'] >= 4 and datos_estado['id_estado']!=7 and datos_boleta['cierre_anticipado']!=1 and datos_boleta['rechazada']!=1: %}
+										₡{{ '{:0,.0f}'.format(datos_saldo['monto_otros_cargos'] + datos_saldo["monto_cotizacion"] + datos_saldo["bodegaje_monto"] + datos_saldo["bodegaje_monto_impuesto"]
+										-(datos_saldo["total_descuentos_con_impuestos"])) }}
+										{% else: %}
+										₡{{ '{:0,.0f}'.format(datos_saldo['monto_revision'] + datos_saldo['monto_otros_cargos'] + datos_saldo["bodegaje_monto"] + datos_saldo["bodegaje_monto_impuesto"]) }}
+										{% endif %}
+
+									</b>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col-12 col-md-5 m-0 p-0">
+					<table class="table table-bordered">
+						<thead>
+							<tr style="text-align: center;color: rgb(255, 255, 255);">
+								<th scope="col" colspan=4 class="px-1 mx-1 alert-primary">
+									<p style="font-size:1rem" class="p-0 m-0">Pagos</p>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr style="text-align: center;font-size: small;">
+								<td class="p-1">
+									Efectivo
+								</td>
+								<td class="p-1">
+									Tarjeta
+								</td>
+								<td class="p-1">
+									Transferecias
+								</td>
+								<td class="p-1 py-2" style="font-size: 1.2rem;">
+									<b>&nbsp;&nbsp;Total&nbsp;&nbsp;</b>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									₡{{ '{:0,.0f}'.format(datos_saldo['monto_efectivo']) }}
+								</td>
+								<td>
+									₡{{ '{:0,.0f}'.format(datos_saldo['monto_tarjeta']) }}
+								</td>
+								<td>
+									₡{{ '{:0,.0f}'.format(datos_saldo['monto_transferencia']) }}
+								</td>
+								<td class="p-1" style="font-size: 1.2rem; text-align: center;">
+									<b>₡{{ '{:0,.0f}'.format(datos_saldo['monto_efectivo'] + datos_saldo['monto_tarjeta'] + datos_saldo['monto_transferencia']) }}</b>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- MOVIMIENTOS -->
+	<br>
+	<table class="table table-bordered">
+		<thead class="bg-primary">
+			<tr style="text-align: center;color: rgb(255, 255, 255);">
+				<th scope="col" class="px-1 mx-1">
+					<p style="font-size:1rem" class="p-0 m-0">Fecha</p>
+				</th>
+				<th scope="col" class="p-1 mx-1 d-none d-sm-block" style="border: none;">
+					<p style="font-size:1rem" class="p-0 m-0"><br>Doc</p>
+				</th>
+				<th scope="col" class="p-1 mx-1">
+					<p style="font-size:1rem" class="p-0 m-0">Tipo</p>
+				</th>
+				<th scope="col" class="p-1 mx-1">
+					<p style="font-size:1rem" class="p-0 m-0">Medio</p>
+				</th>
+				<th scope="col" class="p-1 mx-1">
+					<p style="font-size:1rem" class="p-0 m-0">Monto</p>
+				</th>
+				<th scope="col" class="p-1 mx-1">
+					<p style="font-size:1rem" class="p-0 m-0 d-none d-sm-block">Concepto<br>(Usuario)</p>
+				</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			<!--Ciclo de Movimientos-->
+			{% for rmov in datos_saldo['tabla_movimientos'] %}
+			<tr class="border p-0 m-0 
+				{% if rmov.tipo==1 or rmov.tipo==7: %}alert-primary
+				{% elif (rmov.tipo==2 or rmov.tipo==5 or rmov.tipo==6): %} alert-warning
+				{% endif %}" style="font-size:0.9rem;color:midnightblue;">
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">{{ rmov['fecha'] }}</p>
+				</td>
+				<td class="p-1 m-0 d-none d-sm-block" style="border: none;" style="border-color: white;">
+					<p class="p-0 m-0">
+						{{ rmov['id'] }}</p>
+				</td>
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">{% if rmov['estado']==0: %} <del>
+							{% endif %}
+							{% if rmov['tipo']==1: %} Pago
+							{% elif rmov['tipo']==2: %} Cargo (imp:{{rmov['impuesto']}}%)
+							{% elif rmov['tipo']==3: %} Pago
+							{% elif rmov['tipo']==5: %} Cargo Revisión
+							{% elif rmov['tipo']==7: %} Descuento
+							{% endif %}
+					</p>
+				</td>
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">{% if rmov['medio']!='4': %}
+						{{ rmov['medio'] }}
+						{% endif %}
+					</p>
+				</td>
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">
+						{% if rmov['estado']==0: %} <del>
+							{% endif %}
+							₡{{ '{:0,.0f}'.format(rmov['monto']) }}</p>
+				</td>
+				<td class="d-none d-sm-block p-1 m-0">
+					<p class="p-0 m-0">{{ rmov['concepto'] }}</p>
+					<p style="font-size:0.75rem" class="p-0 m-0">({{ rmov['username'] }})</p>
+				</td>
+
+				{% if rmov['estado']==0: %}
+				<td class="p-0 m-0">
+					<p class="p-1 m-0" style="font-size:1rem;color:midnightblue;">
+						<b>Anulado</b> por {{ rmov['username_anula'] }}</p>
+					<p class="p-1 m-0" style="font-size:0.75rem;color:midnightblue;">
+						{{rmov['fecha_anula']}}
+					</p>
+					{% elif rmov['estado']==1: %}
+				<td class="p-0 m-0" style="border: none;">
+					<div class="container">
+						<div class="row p-1">
+							<!--CORREO-->
+							<div class="col-3 py-1">
+								{% if rmov['tipo']==1: %}
+								<a id="btn-movimiento-enviar-correo" type="button" class="btn btn-primary p-0 m-0"
+									style="width:1.8rem;height:1.8rem;" movimiento="{{rmov['id']}}"
+									cliente="{{datos_cliente['id']}}" data-target="#modal-movimiento-correo-enviado"
+									data-toggle="modal">
+									<img src="{{ url_for('static', filename='icons_svg/envelope1.svg') }}" alt="Correo"
+										class="img inline" style="width:1.7rem;height:1.3rem;" title="Correo">
+								</a>
+								{% endif %}
+							</div>
+							<!--DESCARGAR-->
+							<div class="col-3 py-1">
+								{% if rmov['tipo']==1: %}
+								<a id="btn-movimiento-descargar" type="button" class="btn btn-primary p-0 m-0"
+									style="width:1.8rem;height:1.8rem;" movimiento="{{rmov['id']}}"
+									cliente="{{datos_cliente['id']}}"
+									href="{{ url_for('pdfs_online', id_boleta=id_boleta, tipo_accion=1,extra=rmov.id) }}">
+									<img src="{{ url_for('static', filename='icons_svg/download.svg') }}"
+										alt="Descargar" class="img inline" style="width:1.7rem;height:1.3rem;"
+										title="Descargar">
+								</a>
+								{% endif %}
+							</div>
+							<!-- ENVIAR POR WHATSAPP-->
+							<div class="col-3 py-1">
+								{% if rmov['tipo']==1: %}
+								<a id="link-whatsapp-movimiento" type="button" class="btn btn-primary p-0 m-0"
+									style="width:1.8rem;height:1.8rem;" target="_blank"
+									href="https://api.whatsapp.com/send?phone=506{{datos_cliente['telefono']}}&text=Buen%20d%C3%ADa.%20Le%20saludamos%20de%20Electr%C3%B3nica%20Torres.%20Anexo%20Recibo%20solicitado.">
+									<img src="{{ url_for('static', filename='icons_svg/whatsApp-Logo.svg') }}"
+										alt="Enviar WhatsApp (A Teléfono 1)" class="img inline"
+										style="width:1.7rem;height:1.7rem;" title="Enviar WhatsApp (A Teléfono 1)">
+								</a>
+								{% endif %}
+							</div>
+							<!--ANULAR-->
+							<div class="col-3 py-1">
+								{% if rmov['medio']!='4' and boleta_msg[8] == 0 and (rmov['tipo']==1 or rmov['tipo']==2 or rmov['tipo']==5 or rmov['tipo']==7): %}
+								<button id="anular-movimiento" type="submit" class="btn btn-primary p-0 m-0"
+									style="width:1.8rem;height:1.8rem;" data-toggle="modal"
+									data-target="#modal-anular-movimiento" data-movimiento="{{rmov['id']}}"
+									data-monto={{rmov.monto}} data-tipo="{% if rmov['tipo']==1: %}Pago{% elif rmov['tipo']==2 or rmov['tipo']==5: %}Cargo{% elif rmov['tipo']==7: %}Descuento{% endif %}">
+									<img src="{{ url_for('static', filename='icons_svg/delete.svg') }}" alt="Anular"
+										class="img inline p-0 m-0" style="width:1.7rem;height:1.3rem;" title="Anular">
+								</button>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+			{% if datos_saldo['bodegaje_dias']>0: %}
+			<tr class="border p-0 m-0 alert-warning" style="font-size:0.9rem;color:midnightblue;">
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">{{ datos_saldo['hoy'] }}</p>
+				</td>
+				<td class="p-1 m-0 " style="border-color: white;">
+				</td>
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">Cargo</p>
+				</td>
+				<td class="p-1 m-0 " style="border-color: white;">
+				</td>
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">
+						₡{{ '{:0,.0f}'.format(datos_saldo['bodegaje_monto']+datos_saldo['bodegaje_monto_impuesto']) }}
+					</p>
+				</td>
+				<td class="p-1 m-0" style="border-color: white;">
+					<p class="p-0 m-0">{{ datos_saldo['bodegaje_concepto'] }}</p>
+				</td>
+				<td class="p-0 m-0" style="border: none;"></td>
+			</tr>
+			{% endif %}
+		</tbody>
+	</table>
+
+	<!-- MODAL PARA CONFIRMACION DE ANULACION DE MOVIMIENTO-->
+	<div class="modal fade" id="modal-anular-movimiento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-anularm-titulo">
+					</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+
+					<label id="modal-anularm-body" class="text-primary my-0" style="font-size:1.2rem"></label>
+					<input id="id-movimiento-anular" name="id-movimiento-anular" type="hidden">
+					<input id="tipo-movimiento-anular" name="tipo-movimiento-anular" type="hidden">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal"
+						id="cerrar-modal-pago">Cerrar</button>
+					<button id="boton-anular-movimiento" class="btn btn-primary">Confirmar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

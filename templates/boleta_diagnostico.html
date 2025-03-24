@@ -1,0 +1,109 @@
+<div class="card text-white my-2 mx-2 px-0">
+	<div class="card-header text-center alert-info my-0 mx-0 py-0" style="font-size:1.1rem">
+		Diagnóstico
+	</div>
+	<div class="card-body px-0 py-1 my-0">
+
+		{% if boleta_msg[1]==0: %}
+		<br>
+		<span class="badge w-auto badge-warning" style="font-size:0.7rem">No se encontró ningún Diagnóstico!</span>
+		<br><br><br>
+		{% if datos_estado['id_estado']==1: %}
+		<button id="Diag-modal" type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+			style="font-size:0.9rem;float:center" data-target="#DiagModal" data-whatever="@mdo">Agregar
+			Diagnóstico</button>
+		{% endif %}
+		{% else %}
+		<div class="form-row my-0">
+			<div class="form-group col-3 my-0">
+				<label class="text-primary my-0" style="font-size:0.8rem" for="fecha-diagnostico">Fecha</label>
+				<input class="form-control form-control-sm" type="text" name="fecha-diagnostico" id="fecha-diagnostico"
+					readonly style="font-size:0.8rem" value="{{boleta_msg[1]['fecha']}}">
+				<label class="text-primary my-0" style="font-size:0.8rem" for="diagnostico-por">Ingresado por:</label>
+				<input class="form-control form-control-sm" type="text" name="diagnostico-por" id="diagnostico-por"
+					readonly style="font-size:0.8rem" value="{{boleta_msg[1]['username']}}">
+				<label class="text-primary my-0" style="font-size:0.8rem" for="d-tiempo">Tiempo:</label>
+				<input class="form-control form-control-sm" type="text" name="d-tiempo" id="d-tiempo" readonly
+					style="font-size:0.8rem" value="{{boleta_msg[1]['horas']}}h {{boleta_msg[1]['minutos']}}m">
+			</div>
+			<div class="form-group col-9 my-0">
+				<label class="text-primary my-0" style="font-size:0.8rem" for="diagnostico">Diagnóstico:</label>
+				<textarea class="form-control form-control-sm" type="text" name=diagnostico id="diagnostico" rows="6"
+					style="font-size:0.80rem" readonly>{{ boleta_msg[1]['descripcion'] }}</textarea>
+			</div>
+		</div>
+		{% if datos_estado['id_estado']==1: %}
+		<!-- BOTON PARA EDITAR EL DIAGNOSTIVO EXISTENTE-->
+		<br>
+		<button id="Diag-modal" type="button" class="btn btn-primary btn-sm mt-1" data-toggle="modal"
+			style="font-size:0.85rem;" data-target="#DiagModal" data-whatever="@mdo">Editar</button>
+		{% endif %}
+		{% endif %}
+	</div>
+</div>
+<br>
+
+<!--Modal Para Agregar Info al Diagnostico-->
+<div class="modal fade" id="DiagModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:0.9rem" id="exampleModalLabel">
+					{% if boleta_msg[1]==0: %}
+					Agregar Diagnóstico
+					{% else %}
+					Agregar a Diagnóstico
+					{% endif %}
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				{% if boleta_msg[1]==0: %}
+				<input type="hidden" value="1" id="tipo-diagnostico" name="tipo-diagnostico">
+				{% else %}
+				<input type="hidden" value="2" id="tipo-diagnostico" name="tipo-diagnostico">
+				{% endif %}
+
+				<textarea id="descripcion-diagnostico" name="descripcion-diagnostico"
+					class="form-control form-control-sm" type="text" rows="8" style="font-size:0.75rem"
+					placeholder="Detalle el Diagnóstico" required></textarea><br><br>
+
+				{% if boleta_msg[1]==0: %}
+				<fieldset class="border p-1 my-0">
+					<legend class="w-auto text-primary my-0" style="font-size:1rem">Tiempo de Diagnóstico</legend>
+					<div class="form-row">
+						<div class="col-3">
+							<label class="text-primary" style="font-size:.75rem">Horas</label>
+						</div>
+						<div class="col-3">
+							<label class="text-primary" style="font-size:.75rem">Minutos</label>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="col-3">
+							<input class="form-control form-control-sm" type="number" name="d-horas" id="d-horas"
+								style="font-size:1rem;height:2rem;" placeholder="horas" min="0" max="23" value=0>
+						</div>
+						<div class="col-3">
+							<input class="form-control form-control-sm" type="number" name="d-minutos" id="d-minutos"
+								style="font-size:1rem;height:2rem;" placeholder="minutos" min=0 max=59 value=0>
+						</div>
+					</div>
+				</fieldset>
+				{% endif %}
+			</div>
+			<div class="modal-footer">
+				<div id="guardar-diagnostico-alerta" class="alert alert-danger m-1 p-1" role="alert"
+					style="font-size:0.65rem" hidden>
+				</div>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					id="cerrar-modal-pago">Cerrar</button>
+				<button type="button" class="btn btn-primary" id="boton-editar-diagnostico"
+					name="boton-editar-diagnostico">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,11 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Environments
+.env
+
+# Imagenes
+**/static/inv_imagenes
+
+#DUMP SQL
+#localhost.sql

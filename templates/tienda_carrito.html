@@ -1,0 +1,145 @@
+<!-- CARRITO INICIO -->
+<style>
+    /* ESTILO CARRITO DE COMPRAS */
+    .carritoLabel {
+        background-color: #00B13B;
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: bold;
+        display: block;
+        width: 100%;
+    }
+</style>
+<fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;" class="p-1">
+    <div class="carritoLabel">
+        <div class="row align-items-center">
+            <div class="col-4">
+                <img font-color="white" src="{{ url_for('static', filename='icons_svg/carrito-de-compras.svg') }}"
+                    width="90" height="90">
+            </div>
+            <div class="col-8">
+                <h4 class="p-1 m-0 text-white"><b>Carrito de Compras</b></h4>
+                <hr class="p-1 m-0">
+                <h5 class="p-0 m-0 text-white">
+                    {% if datos_carrito['conteo']: %}
+                    {{ datos_carrito['conteo'] }}
+                    {% else: %}
+                    0
+                    {% endif %}
+                    Artículos</h5>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- Ciclo de Productos en Carrito -->
+    <table width=100% style="font-size: 1rem;">
+        {% for rmov in datos_carrito['elementos'] %}
+        <tr>
+            <td class="p-1 m-0" style="vertical-align:top">
+                <p class="p-0 m-0">{{ rmov['unidades'] }}
+                    {% if rmov['unidades'] > rmov['disponibilidad']: %}
+                    <img src="{{ url_for('static', filename='icons_svg/info1_red.svg') }}" alt="Info"
+                        class="img inline p-0 m-0" style="width:0.9rem;height:0.9rem;" title="Info" tabindex="0"
+                        data-toggle="popover" data-trigger="focus" title="Información" data-placement="left"
+                        data-html=true
+                        data-content="Hay únicamente {{ rmov['disponibilidad'] }} unidades disponibles.<br>Por favor modifique la cantidad de unidades solicitadas.">
+                    {% endif %}
+                </p>
+            </td>
+            <script>
+                $('[data-toggle="popover"]').popover();
+            </script>
+            <td class="p-1 m-0">
+                <p class="p-0 m-0" style="font-size: 0.9rem;">{{ rmov['nombre'] }} - {{ rmov['marca'] }}
+                    <br>{{ rmov['codigo_producto'] }} {{ rmov['estado_producto'] }}
+                    (₡{{ '{:0,.0f}'.format(rmov['precio']) }})
+                </p>
+            </td>
+            <td class="p-1 m-0" style="vertical-align:top;text-align: right;">
+                <p class="p-0 m-0">₡{{ '{:0,.0f}'.format(rmov['precio']*rmov['unidades']) }}</p>
+            </td>
+            {% if modificable==1: %}
+            <td class="p-1 m-0" style="vertical-align:top;text-align: right;">
+                <img class="img py-0 my-0" id="elementoCarrito" name="elementoCarrito"
+                    elemento_codigo="{{ rmov['codigo_producto'] }}" elemento_estado="{{ rmov['estado_producto'] }}"
+                    elemento_nombre="{{ rmov['nombre'] + ' ('+rmov['marca']+')' }}"
+                    src="{{ url_for('static', filename='icons_svg/reprove.svg') }}"
+                    style="float:right;width:0.9rem;height:0.9rem;">
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    <hr>
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-7">
+                    {% if modificable==0: %}
+                    <div class="row">
+                        <div class="col-7">
+                            <p class="px-3 m-0" style="font-size: 0.9rem; color:rgb(19, 25, 43) ;">
+                                Total ₡
+                            </p>
+                        </div>
+                        <div class="col-5">
+                            <p class="px-3 m-0" style="font-size: 1rem; color:rgb(19, 25, 43); float: right;">
+                                {{ '{:0,.2f}'.format(datos_carrito['monto']) }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">
+                            <p class="px-3 m-0" style="font-size: 0.9rem; color:rgb(19, 25, 43) ;">
+                                Impuestos ₡
+                            </p>
+                        </div>
+                        <div class="col-5">
+                            <p class="px-3 m-0" style="font-size: 1rem; color:rgb(19, 25, 43); float: right;">
+                                {{ '{:0,.2f}'.format(datos_carrito['impuestos']) }}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% endif %}
+                </div>
+                <div class="col-5 ">
+                    <p class="px-2 m-0 py-1 border" style="font-size: 1.3rem; text-align: right;color:rgb(19, 25, 43) ;">
+                        Total<b><br>₡ {% if datos_carrito['monto_a_pagar']: %}
+                            {{ '{:0,.0f}'.format(datos_carrito['monto_a_pagar']) }}
+                            {% else: %}
+                            0.00
+                            {% endif %}
+                        </b>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {% if modificable==1: %}
+    <div class="row align-items-center">
+        <div class="col-9" style="text-align: center;">
+            {% if datos_carrito['conteo']: %}
+            <button class="btn btn-success btn-sm" style="font-size:1.1rem; display: block;" id="btn-generarReciboModal"
+                data-toggle="modal" data-target="#modal-confirmacion-venta-cliente"><b>Registrar Venta</b></button>
+            {% endif %}
+            <!-- Desactiva boton de generar recibo si hay un problema de disponibilidad. -->
+            {% if datos_carrito['error_disponibilidad']==1: %}
+            <script>
+                document.getElementById('btn-generarReciboModal').disabled = true;
+            </script>
+            {% endif %}
+        </div>
+        <div class="col-3">
+            {% if datos_carrito['conteo']: %}
+            <button type="button" class="btn btn-danger btn-sm" id="limpiarCarritoModal" data-toggle="modal"
+                data-target="#modal-limpiarCarrito"
+                style="font-size:.9rem; float: right;height:2.25rem;">Vaciar</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</fieldset>
+<br>

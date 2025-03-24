@@ -1,0 +1,362 @@
+{% extends 'base_layout.html' %} {% block content %}
+
+<!-- liquidacion inicio-->
+{% if tipo == 1: %}
+<div class="col-12 p-1 m-0 no-gutters">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12 col-sm-6">
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Liquidación Tienda > Taller</div>
+					
+				<div class="row">
+					<div class="col-9">
+						<hr class="my-0 py-0">
+						<div class="text-center mx-0 px-0" style="font-size: 1.3rem;color: midnightblue;">
+							<small>Monto Sin Liquidar: </small><b>
+								₡ {{'{:0,.0f}'.format(monto) }}
+							</b>
+							<br>
+							<small>Repuestos: </small><b>{{
+								'{:0,.0f}'.format(total_repuestos) }}
+							</b>
+							<br>
+							<small>Boletas: </small><b>{{
+								'{:0,.0f}'.format(boletas) }}
+							</b>
+						</div>
+						<hr>
+					</div>
+					<div class="col-3">
+						{% if boletas>0: %}
+						<button id="btn-reporte-liquidacion" class="btn btn-primary m-0 p-0" type="button"
+							data-toggle="modal" data-target="#modalLiquidacion" style="height: 80%; width: 3rem;"
+							title="Registrar Liquidación" alt="Registrar Liquidación">
+							<img src="{{ url_for('static', filename='icons_svg/billing.svg') }}">
+						</button>
+						{% endif %}
+					</div>
+
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6">
+				Últimas Liquidaciones
+				<table class="table table-striped border m-0" style="font-size: .9rem;">
+					<thead class="bg-primary">
+						<thead>
+							<tr>
+								<th class="th border p-1">Fecha</th>
+								<th class="th border p-1">Usuario</th>
+								<th class="th border p-1">Monto</th>
+							</tr>
+						</thead>
+					<tbody>
+						<!--Ciclo de Liquidaciones -->
+						{% for rmov in ultimas_liquidaciones %}
+	
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov["fecha"] }}
+								</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov["usuario"] }}
+								</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									₡ {{ '{:0,.0f}'.format(rmov["monto"]) }}
+								</p>
+							</td>
+	
+	
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+	</div>
+
+	<br>
+	<div class="row">
+		<div class="col-12">
+			<table class="table table-striped border m-0" style="font-size: 12px;">
+				<thead class="bg-primary">
+					<thead>
+						<tr>
+							<th class="th border p-1">N°</th>
+							{% for i in campos %}
+							{% if i[0] != "id": %}
+							<th class="th border p-1">{{ i[0].upper() }}</th>
+							{% endif %}
+							{% endfor %}
+						</tr>
+					</thead>
+				<tbody>
+					<!--Ciclo de Movimientos -->
+					{% for rmov in datos %}
+
+					<tr class="p-0 m-0" style="font-size:10px;color:midnightblue;">
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">{{ loop.index }}</p>
+						</td>
+						{% for i in campos %}
+						{% if i[0] != "id": %}
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{% if i[1]==5: %}
+								{% if i[0]=='costo' or i[0]=='factura': %}
+								₡
+								{% endif %}
+								{{ '{:0,.0f}'.format(rmov[i[0]]) }}
+								{% else: %}
+								{% if i[0]=='boleta': %}
+								<b>
+								<a href=# onclick="enviar_boleta({{rmov['boleta']}})">{{
+										rmov[i[0]] }}</a></b>
+								{% else: %}
+								{{ rmov[i[0]] }}
+								{% endif %}
+								{% endif %}
+							</p>
+						</td>
+						{% endif %}
+						{% endfor %}
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0"><b>
+
+							</p>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<script>
+				//SUBMIT BOLETA
+				function enviar_boleta(id_boleta) {
+					$('#id-boleta-i').val(id_boleta);
+					$('#tipo-display-i').val(1); // VISUALIZAR MOVIMIENTOS
+					document.getElementById("form-buscar-boleta-i").submit();
+				}
+
+				// Consulta Venta
+				function ver_venta(id_venta) {
+					$.post($SCRIPT_ROOT + '/tnd', {
+						"tienda-accion": 12, // CONSULTA Venta
+						"id_venta": id_venta
+					}, function (datos) {
+						$('#modal-venta-body').html(datos);
+					});
+					$("#modal-venta").modal("show");
+				}
+			</script>
+		</div>
+	</div>
+</div>
+</div>
+
+<!-- MODAL EFECTUAR LIQUIDACION-->
+<div class="modal fade" id="modalLiquidacion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+
+				<div class="row">
+					<div class="col-4">
+						<img id="modalNotificacion-imagen3"
+							src="{{ url_for('static', filename='icons_svg/alerta.svg') }}"
+							style="width:3rem;height:3rem;">
+					</div>
+					<div class="col-8">
+						<label id="modalNotificacion-mensaje" class="text-primary my-0" style="font-size:1.2rem">
+							¿Desea registrar la liquidación de ₡ {{'{:0,.0f}'.format(monto) }}?
+						</label>
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button id="modalLiquidacion-btnOk" class="btn btn-primary" type="button" name="modalLiquidacion-btnOk">
+					<t>Registrar</t>
+					<span class="spinner-border spinner-border-sm text-info" role="status"
+						style="visibility: hidden;"></span>
+				</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<!-- FACTURACION -->
+{% if tipo == 3: %}
+<div class="col-12">
+	<div class="container-fluid mx-1 px-1">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Reporte de Facturación</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1 border">
+
+				<div class="container-fluid">
+					<div class="row my-0 py-0">
+
+						<div class="col-5 my-0 block border">
+							<!-- FECHAS-->
+							<label class="text-primary my-0 " style="font-size:0.75rem"
+								for="fecha-inicio">Inicio</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-inicio2"
+								name="fecha-inicio2" value="{{ fecha_inicio }}">
+							<label class="text-primary my-0 " style="font-size:0.75rem" for="fecha-fin">Fin</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-fin2"
+								name="fecha-fin2" value="{{ fecha_fin }}">
+						</div>
+						<div class="col-3">
+							<button id="btn-reporte-facturas" class="btn btn-primary" style="height: 6rem;width: 5rem;">
+								Generar</button>
+						</div>
+						{% if nivel==1: %}
+						<div class="col-3">
+							<img id="reporte-descarga-excel-facturas" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 5rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+
+			{% if nivel!=1: %}
+			<script>
+				document.getElementById('fecha-inicio2').disabled = true;
+				document.getElementById('fecha-fin2').disabled = true;
+			</script>
+			{% endif %}
+		</div>
+		<br>
+		Reporte para el Período {{ fecha_inicio}} a {{ fecha_fin }}
+
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<table class="table table-bordered" style="max-width: 250px;">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" class="px-1 mx-1 alert-success">
+								<p style="font-size:1rem" class="p-0 m-0">Gravado</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">Impuestos</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-warning">
+								<p style="font-size:1rem" class="p-0 m-0">Facturación</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-danger">
+								<p style="font-size:1rem" class="p-0 m-0">Facturas</p>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr style="text-align: center;">
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[0][0]) }}
+							</td>
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[0][1]) }}
+							</td>
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[0][0]+datos[0][1]) }}
+							</td>
+							<td class="p-1" style="font-size:1.2rem;">
+								{{ '{:0,.0f}'.format(datos[0][2]) }}
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<br>
+			<div class="col-12">
+				<table class="table table-striped border m-0" style="font-size: .9rem;">
+					<thead class="bg-primary">
+						<thead>
+							<tr>
+								<th class="th border p-1">N°</th>
+								<th class="th border p-1">Fecha Ingreso</th>
+								<th class="th border p-1">Comprobante</th>
+								<th class="th border p-1">Monto</th>
+								<th class="th border p-1">Impuestos</th>
+								<th class="th border p-1">Total Factura</th>
+								<th class="th border p-1">Estado</th>
+								<th class="th border p-1">Boleta</th>
+								<th class="th border p-1">Factura</th>
+							</tr>
+						</thead>
+					<tbody>
+						<!--Ciclo de Movimientos-->
+						{% for rmov in datos[1] %}
+
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ loop.index }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ rmov['fecha_ingreso'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['comprobante'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ '{:0,.2f}'.format(rmov['monto']) }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ '{:0,.2f}'.format(rmov['impuestos']) }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ '{:0,.2f}'.format(rmov['monto'] + rmov['impuestos']) }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{% if rmov['estado']==1: %}Activo{% else: %}Anulado{% endif %}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0"><b>
+										<a href=# onclick="enviar_boleta({{rmov['id_boleta']}})"
+											style="font-size: 1rem;"><b>{{ rmov['id_boleta'] }}</a>
+									</b>
+								</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['factura'] }}</p>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<script>
+					//SUBMIT BOLETA
+					function enviar_boleta(id_boleta) {
+						$('#id-boleta-i').val(id_boleta);
+						$('#tipo-display-i').val(1); // VISUALIZAR MOVIMIENTOS
+						document.getElementById("form-buscar-boleta-i").submit();
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% endblock %}

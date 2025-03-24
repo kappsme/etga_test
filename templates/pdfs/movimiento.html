@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+
+    <table>
+        <tbody>
+            <tr>
+                <td width=100 align="center">
+                    <font size=16>  ELECTRONICA TORRES</font><br>
+                    <font size=11>  GERARDO TORRES</font><br>
+                    <font size=11>  CED. 5-0293-0031</font><br>
+                    <font size=11> TEL. 2101-2389 / 6022-6611</font><br>
+                    <font size=10>_________________________________</font><br>
+                    <font size=14><b>RECIBO N° {{ mov.id }}</b></font><br>
+                    <font size=14><b>Por {{ '¢'+'{:10,.2f}'.format(mov.monto)}}</b></font><br>
+                    <font size=11>Fecha: {{ mov.fecha }}</font><br>
+                    <font size=10>_________________________________</font><br>
+                    <font size=10>Recibí de:</font><br>
+                    <font size=11>{{ mov.nombres }}</font><br>
+                    <font size=11>{{ mov.apellidos }}</font><br>
+                    <font size=10>La suma de {{ '{:8,.2f}'.format(mov.monto) }} colones.</font><br>
+                    <font size=10>En Concepto de:</font><br>
+                    <font size=10>{{ mov.concepto }}</font><br>
+                    <font size=10>Sobre la boleta N° {{ id_boleta }}</font><br>
+                    <font size=10>_________________________________</font><br>
+                    <font size=9>Este recibo será nulo si contiene raspaduras</font><br>
+                    <font size=9>o tachaduras que hagan dudar su validez.</font><br>
+                    <br><br>
+                    <font size=10>F. _______________</font><br>
+                    <font size=10>Firma Cliente</font><br>
+                    <br><br>
+                    <font size=10>F. _______________</font><br>
+                    <font size=10>Firma Autorizada</font><br>
+                    <br>
+                    <font size=12>ORIGINAL CLIENTE</font><br>
+                    <font size=9>Hecho por: {{ mov.username}}</font>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+</body>
+
+</html>

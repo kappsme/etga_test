@@ -1,0 +1,284 @@
+{% if display_venta_botones: %}
+<div class="alert alert-success" role="alert" id="alerta-ok-venta">
+    
+</div>
+<div class="row justify-content-center">
+    <button id="btn-comprobante-venta-correo" class="btn btn-primary m-1 p-0 py-1" style="height:5rem ;width:5rem" id_venta="{{ id_venta }}">
+        <img src="{{ url_for('static', filename='icons_svg/envelope1.svg') }}" alt="Enviar Correo"
+            width="50" height="50" title="Enviar Correo">
+    </button>
+    <a id="btn-comprobante-venta-descargar" type="button" class="btn btn-primary m-1 p-0 py-1"
+        style="width:5rem;height:5rem;"
+        href="{{ url_for('pdfs_online', id_boleta=id_venta, tipo_accion=6,extra=1) }}">
+        <img src="{{ url_for('static', filename='icons_svg/download.svg') }}" alt="Descargar"
+            class="img inline" width="50" height="50" title="Descargar">
+    </a>
+    <a id="link-wa-venta" ttype="button" class="btn btn-primary m-1 p-0 py-1"
+    style="width:5rem;height:5rem;" target="_blank" href="https://api.whatsapp.com/send?phone={{telefono}}&text=Estimado%20Cliente.%20Muchas%20gracias %20por%20su%20compra.%20Anexamos%20su%20comprobante.">
+        <img src="{{ url_for('static', filename='icons_svg/whatsApp-Logo.svg') }}"
+            alt="Enviar WhatsApp (A Teléfono 1)" class="img inline"
+            width="80" height="80" title="Enviar WhatsApp (A Teléfono 1)">
+    </a>
+</div>
+{% else: %}
+
+{% extends 'base_layout.html' %} {% block content %}
+<script type=text/javascript src="{{ url_for('static', filename='js/etga.js') }}"></script>
+
+<div class="container-fluid m-1 p-0">
+    <div class="row no-gutters justify-content-end">
+        <div class="col-12">
+            <div class="appslabel">TIENDA</div>
+        </div>
+    </div>
+    <div class="row no-gutters">
+        <!-- ESPACIO PARA EL CARRITO -->
+        <div class="col-12 col-md-4 order-md-last col-lg-3 offset-lg-1">
+            <div id="espacio_carrito">
+                {% include 'tienda_carrito.html' %}
+            </div>
+            <!--MODAL VACIAR CARRITO-->
+            <div class="modal fade" id="modal-limpiarCarrito" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-primary" style="font-size:1.4rem"
+                                id="modal-ajustar-lote-titulo">
+                                Vaciar Carrito de Compras
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label class="text-primary" for="ajuste_tipo"><b>¿Está seguro que desea vaciar el carrito de
+                                    compras?</b></label>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button id="btn-limpiarCarritoConfirmacion" class="btn btn-primary">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--MODAL ELIMINAR ELEMENTO DEL CARRITO-->
+            <div class="modal fade" id="modal-eliminarECarrito" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-primary" style="font-size:1.4rem"
+                                id="modal-eliminarECarrito-titulo">
+                                Eliminar producto del Carrito de Compras
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label class="text-primary" id="modal-eliminarECarrito-mensaje"></label>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="eliminar-producto-id">
+                            <input type="hidden" id="eliminar-producto-estado">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button id="btn-eliminarECarrito-Confirmacion" class="btn btn-primary">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ESPACIO PARA EL PRODUCTO -->
+        <div class="col-12 col-md-5 order-md-first col-lg-4">
+            {% include 'inv_buscar.html' %}
+            <!-- Desactiva los inputs del producto para que no se pueda modificar en esta seccion -->
+            <script>
+                var elementos = document.getElementById("form-producto").elements;
+                for (var i = 0; i <= elementos.length - 1; i++) {
+                    if ((elementos[i].type == 'text' || elementos[i].type == 'textarea' || elementos[i].type == 'number')) {
+                        elementos[i].disabled = true;
+                    }
+                }
+            </script>
+        </div>
+        <!-- ESPACIO DE CARGA DEL CARRITO -->
+        <div class="col-12 col-md-3 order-lg-2 offset-lg-1">
+            <br><br>
+            <div id="espacio_carrito_carga" hidden>
+                {% include 'tienda_carrito_carga.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+<script type=text/javascript src="{{ url_for('static', filename='js/inventario.js') }}"></script>
+
+<!--Modal Confirmar Cliente-->
+<div class="modal fade bd-example-modal" id="modal-confirmacion-venta-cliente" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" style="font-size:1.4rem" id="modal-ajustar-lote-titulo">
+                    Registra Venta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                {% include 'cliente.html' %}
+                <br><br>
+                <div id="lista_sugerencias_clientes"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button id="btn-confirmacion-venta-cliente" class="btn btn-primary" disabled>Confirmar Cliente</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal Confirmar Venta-->
+<div class="modal fade bd-example-modal" id="modal-generar-recibo" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" style="font-size:1.4rem">
+                    Generar Recibo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="espacio_carrito_recibo">
+
+                </div>
+                <div id="info_cliente_recibo_tienda"></div>
+                <br>
+                <div id="pagos_tienda">
+                    <!--Seccion de Saldo y Pagos-->
+                    <fieldset class="border p-1 my-0">
+                        <div class="row">
+                            <div class="col-5 mx-0 px-0">
+                                <div id="saldo_recibo_tienda" class="alert alert-danger" style="font-size:1.3rem;"
+                                    role="alert">Saldo ₡
+                                </div>
+                            </div>
+                            <div class="col-7" id="tabla_pagos_tienda">
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <!-- COLLAPSE PARA REALIZAR PAGO-->
+                <div class="collapse" id="collapsePago">
+                    <div class="row m-0 p-0 border">
+                        <div class="col-12 p-1 alert-info text-center">
+                            <label style="font-size:1rem">Pago</label>
+                        </div>
+                    </div>
+                    <div class="row m-0 p-0 border">
+                        <div class="col-10">
+                            <div class="row border">
+
+                                <div class="col-7 p-1">
+                                    <label class="text-primary my-0" style="font-size:0.8rem" for="monto-p">Monto
+                                        ₡</label>
+                                    <input class="form-control form-control-sm" type="number" name="monto-p"
+                                        id="monto-p" style="font-size:1.2rem" value=0 required min="0" max="500000">
+                                </div>
+                                <div class="col-5 p-1 border">
+                                    <input type="radio" id="pago-efectivo" name="tipo_pago" value="1" checked>
+                                    <label class="text-primary my-0" style="font-size:1rem"
+                                        for="pago-efectivo">Efectivo</label><br>
+                                    <input type="radio" id="pago-tarjeta" name="tipo_pago" value="2">
+                                    <label class="text-primary my-0" style="font-size:1rem"
+                                        for="pago-tarjeta">Tarjeta</label><br>
+                                    <input type="radio" id="pago-transferencia" name="tipo_pago" value="3">
+                                    <label class="text-primary my-0" style="font-size:1rem"
+                                        for="pago-transferencia">Transf.</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2 p-1">
+                            <button id="boton-pago-tienda" type="button" class="btn btn-primary p-0"
+                                style="width:3.2rem;height: 4rem;">
+                                OK</button>
+                        </div>
+                    </div>
+                </div>
+                </fieldset>
+                <br>
+                <!-- COLLAPSE PARA EL BOTON DE CONFIRMAR VENTA -->
+                <div class="collapse text-center" id="confirmar-venta-boton">
+                    <button id="btn-modal-confirmacion-venta" class="btn btn-success">Confirmar Venta</button>
+                </div>
+                <!-- COLLAPSE PARA OPCIONES DEL RECIBO -->
+                <div class="collapse" id="collapseOpcionesRecibo">
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA CONFIRMAR PAGOS-->
+<div class="modal fade" id="pagoTiendaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" style="font-size:0.9rem" id="exampleModalLabel">Registrar
+                    Pago
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <label id="modal-tienda-pago-confirmacion" class="text-primary my-0" style="font-size:1.2rem"></label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    id="cerrar-modal-pago">Cerrar</button>
+                <button id="boton-confirmar-tienda-pago" type="submit" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA CONFIRMAR ANULAR PAGOS-->
+<div class="modal fade" id="pagoTiendaModal-anular" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" style="font-size:0.9rem" id="exampleModalLabel">Anular
+                    Pago
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label id="modal-tienda-pago-confirmacion" class="text-primary my-0" style="font-size:1.2rem">¿Desea
+                    anular este pago?</label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    id="cerrar-modal-pago">Cerrar</button>
+                <input type="hidden" id="id-pago-anular" value=0>
+                <button id="boton-confirmar-tienda-pago-anular" type="submit" class="btn btn-primary">Anular</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% endif %}
+
+
+

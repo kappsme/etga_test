@@ -1,0 +1,485 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+<script type=text/javascript src="{{ url_for('static', filename='js/etga.js') }}"></script>
+
+<input id="id-boleta-interna" name="id-boleta-interna" type="hidden" value="{{id_boleta}}">
+
+
+<div class="container-fluid mx-1 px-1">
+  <div class="row">
+
+    <div class="col-12 col-md-1 p-0 m-0 border text-center">
+
+      <div class="card text-white my-2 mx-1 px-0 text-center">
+        <div class="card-header text-center bg-primary m-0 py-0" style="font-size:.8rem">Boleta {{id_boleta}}
+        </div>
+
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+
+            <div class="col-xs-3">
+              <button style="height:4rem ;width:4rem" type="button" class="btn btn-primary p-1 m-2 mx-0"
+                onclick="openPanelC()">
+                <img src="{{ url_for('static', filename='icons_svg/user2.svg') }}" alt="Cliente/Equipo" width="40"
+                  height="40" title="Cliente/Equipo">
+              </button>
+            </div>
+
+            <div class="col-xs-3">
+              <a type="button" class="btn btn-primary p-1 m-2" style="width:4rem;height:4rem;"
+                cliente="{{datos_cliente['id']}}" onclick="dropPrint()">
+                <img src="{{ url_for('static', filename='icons_svg/ticket2.svg') }}" alt="Imprimir Boleta"
+                  title="Imprimir Ticket" class="img inline" style="width:3.3rem;height:3.6rem;">
+              </a>
+            </div>
+            <div class="col-xs-3">
+              <!--CORREO-->
+              <a id="btn-boleta-enviar-correo" type="button" class="btn btn-primary p-1 m-2"
+                style="width:4rem;height:4rem;" cliente="{{datos_cliente['id']}}"
+                data-target="#modal-movimiento-correo-enviado" data-toggle="modal">
+                <img src="{{ url_for('static', filename='icons_svg/envelope1.svg') }}" alt="Correo" class="img inline"
+                  style="width:3.3rem;height:3.3rem;" title="Correo">
+              </a>
+            </div>
+            <div class="col-xs-3">
+              <!-- DESCARGAR/IMPRIMIR BOLETA-->
+              <a id="btn-boleta-descargar" type="button" class="btn btn-primary p-1 m-2" style="width:4rem;height:4rem;"
+                href="{{ url_for('pdfs_online', id_boleta=id_boleta, tipo_accion=2, extra=0) }}">
+                <img src="{{ url_for('static', filename='icons_svg/download.svg') }}" alt="Descargar" class="img inline"
+                  style="width:3.3rem;height:3.3rem;" title="Descargar">
+              </a>
+            </div>
+            <div class="col-xs-3">
+              <!-- ENVIAR POR WHATSAPP-->
+              <a id="link-whatsapp-boleta" type="button" class="btn btn-primary p-1 m-2" style="width:4rem;height:4rem;"
+                target="_blank"
+                href="https://api.whatsapp.com/send?phone=506{{datos_cliente['telefono']}}&text=Buen%20d%C3%ADa.%20Le%20saludamos%20de%20Electr%C3%B3nica%20Torres.%20Anexo%20Boleta%20solicitada.">
+                <img src="{{ url_for('static', filename='icons_svg/whatsApp-Logo.svg') }}"
+                  alt="Enviar WhatsApp (A Teléfono 1)" class="img inline" style="width:3.6rem;height:3.6rem;"
+                  title="Enviar WhatsApp (A Teléfono 1)">
+              </a>
+            </div>
+            <div class="col-xs-3">
+              <!-- VER HISTORICO Y GUARDAR COMENTARIOS-->
+              <a id="btn-historial" type="button" class="btn btn-primary p-1 m-2" style="width:4rem;height:4rem;">
+                <img src="{{ url_for('static', filename='icons_svg/historico.svg') }}" alt="Historial"
+                  class="img inline" style="width:3.3rem;height:3.3rem;" title="Historial">
+              </a>
+            </div>
+            <div class="col-xs-3">
+              {% if datos_estado['id_estado']<=3: %}
+              <!-- CERRAR ANTICIPADAMENTE BOLETA-->
+              <button id="btn-activa-modal-cerrar-boleta" style="height:4rem ;width:4rem" type="button"
+                class="btn btn-primary p-1 m-2 mx-0">
+                <img src="{{ url_for('static', filename='icons_svg/reprove.svg') }}" alt="Cerrar Boleta" width="40"
+                  height="40" title="Cerrar Boleta">
+              </button>
+              {% endif %}
+
+            </div>
+          </div>
+        </div>
+
+
+        <div id="myDropPrint" class="dropdown-content">
+          <div class="form-group row bg-primary border" style="width:8rem;">
+            <div class="col-8 m-0 p-2">
+              <input type="number" class="form-control m-0 p-1" id="copias-ticket" value=1
+                style="font-size:1.2rem ; height: 2rem;" min="1" max="9">
+            </div>
+            <div class="col-4 m-0 p-1">
+              <a href="javascript: window.open('{{ url_for('impresion_boleta', id_boleta=id_boleta, tipo=1) }}','ventana1','width=400,height=500')"
+                id='linka-imprimir-ticket'>
+                <img src="{{ url_for('static', filename='icons_svg/ticket.svg') }}" alt="Imprimir Ticket"
+                  title="Imprimir Boleta" class="btn btn-info p-0 m-0" style="height:2rem ;width:2rem">
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3 p-0 border">
+      {% include 'boleta_info.html' %}
+    </div>
+
+    {% if tipo_display==1: %}
+    <div class="col-12 col-md-8 p-1 my-0 py-0 border">
+      {% include 'boleta_movimientos.html' %}
+    </div>
+    {% endif %}
+
+    <div class="col-xs-12 col-md-8 p-1 border">
+      {% if tipo_display==3: %}
+      {% include 'boleta_diagnostico.html' %}
+      {% endif %}
+
+      {% if tipo_display==4: %}
+      {% include 'boleta_diagnostico.html' %}
+      {% include 'boleta_cotizacion.html' %}
+      {% endif %}
+
+      {% if tipo_display==5 and datos_estado['id_estado']>=3: %}
+      {% include 'boleta_diagnostico.html' %}
+      {% include 'boleta_cotizacion.html' %}
+      {% include 'boleta_repuestos.html' %}
+      {% endif %}
+
+
+      {% if tipo_display==6 or datos_estado['id_estado']>=10: %}
+      <div class="card text-white my-2 mx-2 px-0">
+        <div class="card-header text-center bg-primary my-0 mx-0 py-0" style="font-size:1.8rem">Boleta
+          {{ id_boleta }}
+        </div>
+        <div class="card-body px-1 py-1 my-0">
+
+          <div id="accordion">
+
+            <div class="card">
+              <div class="card-header m-0 p-1" id="headingFive" style="height: 2.3rem;">
+                <h5>
+                  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive"
+                    aria-expanded="false" aria-controls="collapseFive">
+                    Facturar
+                  </button>
+                </h5>
+              </div>
+              <div id="collapseFive" class="collapse show" aria-labelledby="headingFive" data-parent="#accordion">
+                <div class="card-body">
+                  {% include 'boleta_factura.html' %}
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header m-0 p-1" id="headingOne" style="height: 2.3rem;">
+                <h5>
+                  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne"
+                    aria-expanded="false" aria-controls="collapseOne">
+                    Movimientos
+                  </button>
+                </h5>
+              </div>
+              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                  {% include 'boleta_movimientos.html' %}
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header m-0 p-1" id="headingTwo" style="height: 2.3rem;">
+                <h5 class="mb-0">
+                  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="false" aria-controls="collapseTwo">
+                    Diagnóstico
+                  </button>
+                </h5>
+              </div>
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body">
+                  {% include 'boleta_diagnostico.html' %}
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header m-0 p-1" id="headingThree" style="height: 2.3rem;">
+                <h5 class="mb-0">
+                  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
+                    aria-expanded="false" aria-controls="collapseThree">
+                    Cotización
+                  </button>
+                </h5>
+              </div>
+              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body">
+                  {% include 'boleta_cotizacion.html' %}
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header m-0 p-1" id="headingFour" style="height: 2.3rem;">
+                <h5 class="mb-0">
+                  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse4"
+                    aria-expanded="false" aria-controls="collapse4">
+                    Reparación - Repuestos
+                  </button>
+                </h5>
+              </div>
+              <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#accordion">
+                <div class="card-body">
+                  {% include 'boleta_repuestos.html' %}
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+
+        {% endif %}
+      </div>
+
+
+    </div>
+  </div>
+
+
+  <div id="panel-cliente" class="sidenav2">
+    <div class="card text-white my-2 mx-2 px-0">
+      <!--ENCABEZADO-->
+      <div class="card-header text-center bg-primary m-0 p-0 border" style="font-size:2.1rem">
+        <div class="container">
+          <div class="row">
+            <div class="col-2 p-0 m-0">
+              <img src="{{ url_for('static', filename='icons_svg/customer.svg') }}" alt="Editar Cliente" width="18"
+                height="18" title="Editar Cliente" class="btn btn-info p-0 m-0" id='btn-editar-cliente2'
+                style="height:1.5rem ;width:1.5rem" data-target="#modal_editar_cliente" data-toggle="modal">
+            </div>
+            <div class="col-5 p-0 m-0 ">
+              <text class="p-0 m-0" style="font-size:0.85rem">Boleta </text>{{id_boleta}}
+            </div>
+            <div class="col-5 p-0 m-0">
+              <!-- IMPRIMIR TICKTES-->
+
+              <a href="javascript:void(0)" class="closebtn" style="font-size: 1.4 rem;color:darkred;"
+                onclick="closePanelC()"><b>&times;</b></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body px-1 py-1 my-0">
+
+        <!-- DATOS CLIENTE-->
+        <fieldset class="border p-1 my-0">
+          <legend class="w-auto text-primary my-0" style="font-size:1.2rem">Cliente</legend>
+
+          <div class="form-row my-0 py-0">
+            <div class="form-group col-5 my-0">
+              <label class="text-primary my-0 " style="font-size:0.75rem" for="tipo-documento">Documento</label>
+              <select class="form-control form-control-sm m-0 px-1 block" id="tipo-documento" style="font-size:1rem;"
+                disabled>
+                <option value=1>Cédula</option>
+                <option value=2>Residencia</option>
+                <option value=3>Pasaporte</option>
+                <option value=4>Cédula Jurídica</option>
+                <option value=5>Otro</option>
+              </select>
+            </div>
+            <script> $('#tipo-documento').val("{{datos_cliente['tipo_documento']}}")</script>
+            <div class="form-group col-5 mx-0 px-0">
+              <label class="text-primary m-0" style="font-size:0.75rem" for="documento">N°</label>
+              <input class="form-control form-control-sm m-0 px-1 block" type="text" name="documento" id="documento"
+                placeholder="Documento" style="font-size:1rem" disabled value="{{datos_cliente['n_documento']}}">
+            </div>
+          </div>
+
+          <div class="form-row my-0 py-0">
+            <div class="form-group col-6 my-0 py-0">
+              <label class="text-primary my-0 py-0" style="font-size:0.75rem" for="nombres"><b>Nombres</b></label>
+            </div>
+            <div class="form-group col-6 my-0 py-0">
+              <label class="text-primary my-0 py-0" style="font-size:0.75rem" for="apellidos">Apellidos</label>
+            </div>
+          </div>
+          <div class="form-row my-0 py-0">
+            <div class="form-group col-5 my-0 py-0">
+              <input class="form-control form-control-sm my-0 py-0" style="font-size:0.75rem" type="text" name="nombres"
+                id="nombres" placeholder="Nombres" disabled value="{{datos_cliente['nombres']}}">
+            </div>
+            <div class="form-group col-7 my-0 py-0">
+              <input class="form-control form-control-sm my-0 py-0" style="font-size:0.75rem" type="text"
+                name="apellidos" id="apellidos" placeholder="Apellidos" disabled value="{{datos_cliente['apellidos']}}">
+            </div>
+          </div>
+          <br>
+
+          <div class="form-row my-0 py-0">
+            <div class="form-group col-6 my-0">
+              <label class="text-primary my-0" style="font-size:0.75rem" for="correo">Tipo
+                Cliente</label>
+            </div>
+            <div class="form-group col-4 my-0 py-0">
+              <label class="text-primary my-0" style="font-size:0.75rem" for="correo">Teléfono 1</label>
+            </div>
+          </div>
+          <div class="form-row my-0">
+            <div class="form-group col-6 my-0">
+              <select class="form-control form-control-sm" id="tipo-cliente" style="font-size:0.85rem;" disabled>
+                <option value=1>Natural</option>
+                <option value=2>Jurídico</option>
+                <option value=3>Exhonerado</option>
+              </select>
+              <script> $('#tipo-cliente').val("{{datos_cliente['tipo_cliente']}}")</script>
+            </div>
+            <div class="form-group col-6 my-0">
+              <input class="form-control form-control-sm px-1 mx-0" style="font-size:0.85rem" type="text"
+                name="telefono" id="telefono" placeholder="Telefono" min="20000000" max="89999999" disabled
+                value="{{datos_cliente['telefono']}}">
+            </div>
+          </div>
+          <div class="form-row my-0">
+            <div class="form-group col-6 my-0">
+              <label class="text-primary my-0 py-0" style="font-size:0.75rem">Teléfono 2</label>
+              <input class="form-control form-control-sm px-1 mx-0" style="font-size:0.85rem" type="number"
+                name="telefono2" id="telefono2" placeholder="" min=20000000 max=89999999 disabled
+                value="{{datos_cliente['telefono2']}}">
+            </div>
+            <div class="form-group col-6 my-0">
+              <label class="text-primary my-0 py-0" style="font-size:0.75rem">Teléfono 3</label>
+              <input class="form-control form-control-sm px-1 mx-0" style="font-size:0.85rem" type="number"
+                name="telefono3" id="telefono3" placeholder="" min=20000000 max=89999999 disabled
+                value="{{datos_cliente['telefono3']}}">
+            </div>
+          </div>
+          <br>
+          <div class="form-row my-0">
+            <div class="form-group col-5 my-0">
+              <label class="text-primary my-0 py-0" style="font-size:0.8rem">Provincia</label>
+              <select class="form-control form-control-sm" id="provincia" style="font-size:1rem;" disabled>
+                <option value=1>Alajuela</option>
+                <option value=2>Heredia</option>
+                <option value=3>San José</option>
+                <option value=4>Puntarenas</option>
+                <option value=5>Cartago</option>
+                <option value=6>Guanacaste</option>
+                <option value=7>Limón</option>
+              </select>
+              <script> $('#provincia').val("{{datos_cliente['id_provincia']}}")</script>
+            </div>
+            <div class="form-group col-7 my-0">
+              <label class="text-primary my-0 py-0" style="font-size:1rem">Zona</label>
+              <script>var zonas = '';</script>
+              <input class="form-control form-control-sm px-1 mx-0" style="font-size:0.8rem" type="text" name="zona"
+                id="zona" placeholder="" maxlength="25" disabled value="{{datos_cliente['zona']}}">
+            </div>
+          </div>
+          <br>
+          <div class="form-row my-0">
+            <div class="form-group col-9 my-0 p-1">
+              <label class="text-primary my-0" style="font-size:0.75rem" for="codigo">Correo
+                Electrónico</label>
+              <input class="form-control form-control-sm" type="email" name="correo" id="correo"
+                style="font-size:0.75rem;height:2rem;" placeholder="Correo Electronico" disabled
+                value="{{datos_cliente['correo']}}">
+            </div>
+            <div class="form-group col-3 my-0 p-1">
+              <label class="text-primary my-0 py-0" style="font-size:0.75rem" for="codigo-cliente">Código</label>
+              <input class="form-control form-control-sm p-1 mx-0" style="font-size:1.2rem;height:2rem;" type="text"
+                name="codigo-cliente" id="codigo-cliente" placeholder="" disabled value="{{datos_cliente['id']}}">
+            </div>
+          </div>
+          <div id="guardar-alerta" class="alert alert-danger m-1 p-1" role="alert" style="font-size:0.85rem" hidden>
+          </div>
+
+        </fieldset>
+
+        <br>
+        <!-- DATOS DE EQUIPO-->
+        <fieldset class="border p-1 my-0">
+          <legend class="w-auto text-primary my-0" style="font-size:1.2rem">Equipo</legend>
+
+          <div class="form-row my-0">
+            <div class="form-group col-4 my-0">
+              <label class="text-primary my-0" style="font-size:0.8rem" for="marca">Marca</label>
+              <script>var marcas = '';</script>
+              <input class="form-control form-control-sm" type="text" name="marca" id="marca" style="font-size:0.8rem"
+                value="{{datos_boleta['marca']}}" disabled>
+              <label class="text-primary my-0" style="font-size:0.8rem" for="tipo-equipo">Tipo de Artículo</label>
+              <script>var tipos_equipo = '';</script>
+              <input class="form-control form-control-sm" type="text" name="tipo-equipo" id="tipo-equipo"
+                style="font-size:0.8rem" value="{{datos_boleta['tipo_equipo']}}" disabled>
+              <label class="text-primary my-0" style="font-size:0.8rem" for="modelo">Modelo</label>
+              <input class="form-control form-control-sm" type="text" name="modelo" id="modelo" readonly
+                style="font-size:0.7rem" value="{{datos_boleta['modelo']}}">
+              <label class="text-primary my-0" style="font-size:0.8rem" for="serie">Serie</label>
+              <input class="form-control form-control-sm" type="text" name="serie" id="serie" readonly
+                style="font-size:0.7rem" value="{{datos_boleta['serie']}}">
+              <label class="text-primary my-0" style="font-size:0.8rem" for="marca">Condición</label>
+              <input class="form-control form-control-sm" type="text" name="condicion" id="condicion" readonly
+                style="font-size:0.7rem" value="{{datos_boleta['condicion']}}">
+              <label class="text-primary my-0" style="font-size:0.8rem" for="marca">Días Háb. Cotización</label>
+              <input class="form-control form-control-sm" type="text" name="dhabiles" id="dhabiles" readonly
+                style="font-size:0.7rem" value="{{datos_boleta['dias_habiles']}}">
+            </div>
+            <div class="form-group col-8 my-0">
+              <label class="text-primary my-0" style="font-size:0.8rem" for="motivo">Motivo Revisión</label>
+              <textarea class="form-control form-control-sm" type="text" name=motivo id="motivo" rows="5"
+                style="font-size:0.75rem" readonly>{{datos_boleta['motivo_cliente']}}</textarea>
+              <label class="text-primary my-0" style="font-size:0.8rem" for="comentario">Comentario</label>
+              <textarea class="form-control form-control-sm" type="text" name=comentario id="comentario" rows="6"
+                style="font-size:0.75rem" readonly>{{datos_boleta['comentario']}}</textarea>
+            </div>
+          </div>
+        </fieldset>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!--Modal HISTORIAL -->
+  <div class="modal fade" id="modal-historial" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" id="modal-historial-titulo" style="font-size:1.1rem">
+            Historial </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table id='tbl-historial' class="table table-responsive border m-0 p-0" style="font-size:0.75rem;">
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--Modal INGRESO DE NUEVO ELEMENTO (MARCA/TIPOEQUIPO/ZONA/REPUESTO) -->
+  <div class="modal fade bd-example-modal" id="modal-cerrar-boleta" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" style="font-size:1.4rem">
+            Cerrar Boleta
+          </h5>
+        </div>
+        <div class="modal-body">
+          <div class="text-center"><img src="{{ url_for('static', filename='icons_svg/warning.svg') }}" alt=""
+              class="img inline" style="width:3.5rem;height:3.5rem;" title="">
+          </div><br>
+          <label id="label-modal-cerrar-boleta" class="text-primary my-0" style="font-size:1.3rem">
+          </label>
+          <br><br><br>
+          <label id="lbl-motivo-cierre" class="text-primary my-0" style="font-size:0.8rem" for="comentario"
+            hidden>Motivo</label>
+          <textarea id="motivo-cierre" class="form-control form-control-sm" type="text" name="comentario-cierre"
+            rows="4" style="font-size:1.1rem" maxlength="250" hidden></textarea>
+          <input id="modal-ingreso-elemento-valor" type="hidden">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button id="btn-modal-cerrar-boleta-confirmar" class="btn btn-primary">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input type="hidden" id="repuesto">
+
+  {% endblock %}

@@ -1,0 +1,129 @@
+<!-- VENTA -->
+<style>
+    /* ESTILO CARRITO DE COMPRAS */
+    .carritoLabel {
+        background-color: #00B13B;
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: bold;
+        display: block;
+        width: 100%;
+    }
+</style>
+<div class="carritoLabel">
+    <div class="row align-items-center">
+        <div class="col-4">
+            <img font-color="white" src="{{ url_for('static', filename='icons_svg/billing.svg') }}" width="90"
+                height="90">
+        </div>
+        <div class="col-8">
+            <h4 class="p-1 m-0 text-white"><b>Detalle de Venta {{ datos["datos_venta"]['id'] }}</b></h4>
+            <hr class="p-1 m-0">
+            <h5 class="p-0 m-0 text-white">
+                {{ datos['conteo'] }} Artículos</h5>
+        </div>
+    </div>
+</div>
+<br>
+<p style="font-size: 1.1rem; text-align: left;color:rgb(21, 38, 89) ;">
+    Fecha: {{ datos["datos_venta"]['fecha'] }} <br>
+    A nombre de: <b>{{ datos["datos_venta"]['cliente_nombre'] }}</b><br>
+    Documento: {{ datos["datos_venta"]['n_documento'] }} <br>
+    Vendido por: <b>{{ datos["datos_venta"]['username'] }}</b>
+    <hr>
+    <!-- Ciclo de Productos en Carrito -->
+<table width=100% style="font-size: 1rem;">
+    {% for rmov in datos["elementos"] %}
+    <tr>
+        <td class="p-1 m-0" style="vertical-align:top">
+            <p class="p-0 m-0">{{ rmov['unidades'] }}
+            </p>
+        </td>
+        <td class="p-1 m-0">
+            <p class="p-0 m-0" style="font-size: 0.9rem;">{{ rmov['nombre'] }} - {{ rmov['marca'] }}
+                <br>{{ rmov['codigo_producto'] }} {{ rmov['estado_producto'] }}
+                (₡{{ '{:0,.0f}'.format((rmov['monto_sin_impuestos']+rmov['impuestos'])/rmov['unidades']) }})
+            </p>
+            {% if rmov['unidades_devueltas']>0: %}
+            <p class="p-0 m-0 text-danger" style="font-size: 0.8rem;">Unidades Devueltas: {{ rmov['unidades_devueltas'] }} (₡{{ '{:0,.0f}'.format(rmov['monto_devoluciones']+rmov['monto_devoluciones_impuestos']) }})</p>
+            {% endif %}
+        </td>
+        <td class="p-1 m-0" style="vertical-align:top;text-align: right;">
+            <p class="p-0 m-0">₡{{ '{:0,.0f}'.format(rmov['monto_sin_impuestos']+rmov['impuestos']-(rmov['monto_devoluciones']+rmov['monto_devoluciones_impuestos'])) }}</p>
+        </td>
+        <td>
+        {% if rmov['en_garantia']==1 and rmov['unidades']>rmov['unidades_devueltas']: %}
+        <a id="id_devolucion_venta" type="button" class="btn btn-danger m-1 p-0 py-1"
+        descripcion
+        style="width:1.8rem;height:1.8rem;" nombre="{{ rmov['nombre'] }} - {{ rmov['marca'] }} - {{ rmov['estado_producto'] }}" id_venta="{{ datos["datos_venta"]['id'] }}" estado_id="{{ rmov['estado_id'] }}" codigo_producto="{{ rmov['codigo_producto'] }}" unidades="{{ rmov['unidades']-rmov['unidades_devueltas'] }}">
+        <img src="{{ url_for('static', filename='icons_svg/devolucion.svg') }}" alt="Devolución"
+            class="img inline m-0 p-1" width="25" height="25" title="Devolución">
+        </a>
+       {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<!-- Totales -->
+<hr>
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-7">
+                <div class="row">
+                    <div class="col-7">
+                        <p class="px-3 m-0" style="font-size: 0.9rem; color:rgb(19, 25, 43) ;">
+                            Total ₡
+                        </p>
+                    </div>
+                    <div class="col-5">
+                        <p class="px-3 m-0" style="font-size: 1rem; color:rgb(19, 25, 43); float: right;">
+                            {{ '{:0,.2f}'.format(datos["datos_venta"]['monto_sin_impuestos']-datos['monto_devoluciones']) }}
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-7">
+                        <p class="px-3 m-0" style="font-size: 0.9rem; color:rgb(19, 25, 43) ;">
+                            Impuestos ₡
+                        </p>
+                    </div>
+                    <div class="col-5">
+                        <p class="px-3 m-0" style="font-size: 1rem; color:rgb(19, 25, 43); float: right;">
+                            {{ '{:0,.2f}'.format(datos["datos_venta"]['impuestos']-datos['monto_devoluciones_impuestos']) }}
+                        </p>
+                    </div>
+                </div>
+
+                {% if datos['monto_devoluciones']>0: %}
+                <div class="row">
+                    <div class="col-7">
+                        <p class="px-3 m-0" style="font-size: 0.9rem; color:rgb(184, 0, 0) ;">
+                            <br>Devoluciones ₡
+                        </p>
+                    </div>
+                    <div class="col-5">
+                        <p class="px-3 m-0" style="font-size: 1rem; color:rgb(184,0,0); float: right;">
+                            <br>
+                            {{ '{:0,.2f}'.format(datos['monto_devoluciones']+datos['monto_devoluciones_impuestos']) }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+            <div class="col-5 ">
+                <p class="px-2 m-0 py-1 border" style="font-size: 1.3rem; text-align: right;color:rgb(19, 25, 43) ;">
+                    Total<b><br>₡ {{
+                        '{:0,.0f}'.format(datos["datos_venta"]['monto_sin_impuestos']+datos["datos_venta"]['impuestos']-datos['monto_devoluciones']-datos['monto_devoluciones_impuestos'])
+                        }}
+                    </b>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="opciones_recibo">
+    {% include 'tienda.html' %}
+</div>

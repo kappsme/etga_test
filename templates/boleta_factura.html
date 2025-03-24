@@ -1,0 +1,483 @@
+<div class="container-fluid mx-1 px-1" style="color: #2f2f57;">
+	<!-- SI LA BOLETA NO TIENE PAGOS  -->
+	{% if datos_boleta['sin_pagos']==1 or boleta_msg[10][2]==0: %}
+	<b>No hay pagos para esta Boleta. No hay monto a Facturar</b><br><br>
+	Si desea registrar algún pago para poder facturar, por favor presione el botón "Pago" en el apartado de "Saldo de Boleta" de la Boleta
+	<br><br>
+	{% if datos_estado['id_estado']<10: %}
+	<button id="btn-cerrar-boleta-sin-pagos" class="btn btn-danger mx-1 px-0 text-center" style="height: 1.9rem;">
+		<p style="font-size:0.9rem;">Cerrar Boleta</p>
+	</button>
+	{% endif %}
+	{% else: %}
+	<div class="row">
+		<div class="col-xs-12 col-md-5">
+			<div class="form-group">
+				<label for="nombref">Nombre</label>
+				<input type="text" class="form-control" id="nombref" readonly
+					value="{{datos_cliente['nombres']+ ' ' + datos_cliente['apellidos']}}">
+			</div>
+			<div class="form-group">
+				<label for="documentof">Documento
+					({% if datos_cliente[ 'tipo_documento'] ==1: %}Cédula)
+					{% elif datos_cliente['tipo_documento'] ==2: %}Residencia)
+					{% elif datos_cliente['tipo_documento'] ==3: %}Pasaporte)
+					{% elif datos_cliente['tipo_documento'] ==4: %}Cédula Jurídica)
+					{% elif datos_cliente['tipo_documento'] ==5: %}Otro){% endif %}
+				</label>
+				<input type="text" class="form-control" id="documentof" readonly
+					value="{{ datos_cliente['n_documento'] }}">
+			</div>
+			<div class="form-group">
+				<label for="correof">Correo</label>
+				<input type="text" class="form-control" id="correof" readonly value="{{ datos_cliente['correo'] }}">
+			</div>
+			<div class="form-group">
+				<label for="provinciaf">Provincia</label>
+				<input type="text" class="form-control" id="provinciaf" readonly
+					value={% if datos_cliente[ 'id_provincia'] ==1: %}"Alajuela"
+					{% elif datos_cliente['id_provincia'] ==2: %}"Heredia"
+					{% elif datos_cliente['id_provincia'] ==3: %}"San José"
+					{% elif datos_cliente['id_provincia'] ==4: %}"Puntarenas"
+					{% elif datos_cliente['id_provincia'] ==5: %}"Cartago"
+					{% elif datos_cliente['id_provincia'] ==6: %}"Guanacaste"
+					{% elif datos_cliente['id_provincia'] ==7: %}"Limón"{% endif %}>
+			</div>
+			<div class="form-group">
+				<label for="tipo_clientef">Tipo Cliente Actual
+					{% if datos_cliente['tipo_cliente'] != boleta_msg[8]['tipo_cliente'] and boleta_msg[8]!=0: %}
+					<font color=red>(Distinto al del Comprobante)</font>
+					{% endif %}
+				</label>
+				<input type="text" class="form-control" id="tipo_clientef" readonly
+					value={% if datos_cliente['tipo_cliente'] ==1: %}"Natural"
+					{% elif datos_cliente['tipo_cliente'] ==2: %}"Jurídico"
+					{% elif datos_cliente['tipo_cliente'] ==3: %}"Exhonerado" {% endif %}>
+			</div>
+		</div>
+		<div class="col-xs-12 col-md-7">
+			<div class="card text-white">
+				<div class="card-header text-center" style="font-size:1.4rem;background-color: teal;">
+					DATOS FACTURA
+					{% if boleta_msg[8]!=0: %}
+					<span class="badge w-auto badge-primary" style="font-size:0.8rem">Comprobante
+						{{boleta_msg[8]['id']}} [Tipo de Cliente:
+						{% if boleta_msg[8]['tipo_cliente']==1 %}Natural
+						{% elif boleta_msg[8]['tipo_cliente']==2 %}Jurídico
+						{% elif boleta_msg[8]['tipo_cliente']==3 %}Exhonerado
+						{% endif %}]</span>
+					{% endif %}
+				</div>
+				<div class="card-body">
+					<table class="table table-responsive border m-0" style="font-size: .85rem;">
+						<thead>
+							<tr>
+								<th class="th border p-1" style="color: white;font-size:1rem;background-color: teal;">
+									Concepto</th>
+								<th class="th border p-1" style="color: white;font-size:1rem;background-color: teal;">
+									Monto ₡<br>(Sin Imp.)</th>
+								<th class="th border p-1" style="color: white;font-size:1rem;background-color: teal;">
+									Descuento ₡</th>
+								<th class="th border p-1" style="color: white;font-size:1rem;background-color: teal;">
+									Impuesto ₡</th>
+								<th class="th border p-1" style="color: white;font-size:1rem;background-color: teal;">
+									Monto ₡<br>(i.v.i.)</th>
+							</tr>
+						</thead>
+						<tbody>
+
+							<!-- DATOS COMPROBANTE NO EXISTE-->
+							{% if boleta_msg[8]==0: %}
+								<tr>
+									<td class="th border p-1">Mano de Obra</td>
+									<td class="th border p-1 text-right">
+										{{ '{:0,.2f}'.format(datos_saldo['mano_de_obra']) }}</td>
+									<td class="th border p-1 text-right">
+											{{ '{:0,.2f}'.format(datos_saldo['mano_de_obra_descuento']) }}</td>
+											<td class="th border p-1 text-right">
+												{{ '{:0,.2f}'.format(datos_saldo['mano_de_obra_impuesto']) }}</td>
+									<td class="th border p-1 text-right">
+										{{ '{:0,.2f}'.format(datos_saldo['mano_de_obra'] - datos_saldo['mano_de_obra_descuento'] + datos_saldo['mano_de_obra_impuesto']) }}
+									</td>
+						
+									
+								</tr>
+								{% for items in datos_saldo["tabla_factura"]: %}
+									<tr>
+										<td class="td border p-1">{{ items['concepto'] }}</td>
+										<td class="td border p-1 text-right">{{ '{:0,.2f}'.format(items['monto']) }}</td>
+										<td class="td border p-1 text-right">{{ '{:0,.2f}'.format(items['descuento']) }}</td>
+										<td class="td border p-1 text-right">{{ '{:0,.2f}'.format(items['impuesto']) }}</td>
+										<td class="td border p-1 text-right">
+											{{ '{:0,.2f}'.format(items['monto'] + items['impuesto'] - items['descuento']) }}</td>
+
+									</tr>
+								{% endfor %}
+
+								<!-- SI EXISTE BODEGAJE -->
+								{% if datos_saldo["bodegaje_monto"] > 0: %}
+								<tr>
+									<td class="td border p-1">{{ datos_saldo["bodegaje_concepto"] }}</td>
+									<td class="td border p-1 text-right">
+										{{ '{:0,.2f}'.format(datos_saldo["bodegaje_monto"]) }}</td>
+									<td class="td border p-1 text-right">
+										{{ '{:0,.2f}'.format(datos_saldo["bodegaje_descuento"]) }}</td>
+									<td class="td border p-1 text-right">
+										{{ '{:0,.2f}'.format(datos_saldo["bodegaje_monto_impuesto"]) }}</td>
+									<td class="td border p-1 text-right">
+										{{ '{:0,.2f}'.format(datos_saldo["bodegaje_monto"] - datos_saldo["bodegaje_descuento"] + datos_saldo["bodegaje_monto_impuesto"]) }}
+										</td>
+								</tr>
+								
+								{% endif %}
+								<tr>
+									<td class="border" style="font-size: 1.1rem;color:white;background-color: teal;"><b>Totales</b></td>
+									<td class="border" style="font-size: 1.1rem;color:white;background-color: teal;">
+										<b>{{ '{:0,.2f}'.format(datos_saldo["total_monto_factura"]) }}</b>
+									</td>
+									<td class="border" style="font-size: 1.1rem;color:white;background-color: teal;">
+										<b>{{ '{:0,.2f}'.format(datos_saldo["total_descuentos"]) }}</b>
+									</td>
+									<td class="border" style="font-size: 1.1rem;color:white;background-color: teal;">
+										<b>{{ '{:0,.2f}'.format(datos_saldo["total_monto_factura_impuesto"]) }}</b>
+									</td>
+									<td class="border" style="font-size: 1.1rem;color:white;background-color: teal;">
+										<b>{{ '{:0,.2f}'.format(datos_saldo["total_factura"]) }}</b>
+									</td>
+								</tr>
+								
+						</tbody>
+						
+						{% else: %}
+						{% for items in boleta_msg[9] %}
+						<tr>
+							<td class="th border p-1">{{ items['concepto'] }}</td>
+							<td class="th border p-1 text-right">{{ '{:0,.2f}'.format(items['monto']) }}</td>
+							<td class="th border p-1 text-right">{{ '{:0,.2f}'.format(items['descuento']) }}</td>
+							<td class="th border p-1 text-right">{{ '{:0,.2f}'.format(items['impuestos']) }}</td>
+							<td class="th border p-1 text-right">
+								{{ '{:0,.2f}'.format(items['monto'] - items['descuento'] + items['impuestos']) }}</del></td>
+						</tr>
+						{% endfor %}
+
+						</tbody>
+						<tfoot>
+							<tr>
+								<td class="th border p-1 text-right" style="font-size: 1.1rem;"><b>Totales</b></td>
+								<td class="th border p-1 text-right" style="font-size: 1.1rem;">
+									<b>{{ '{:0,.2f}'.format(boleta_msg[8]['monto']) }}</b></td>
+								<td class="th border p-1 text-right" style="font-size: 1.1rem;">
+										<b>{{ '{:0,.2f}'.format(boleta_msg[8]['descuentos']) }}</b></td>
+								<td class="th border p-1 text-right" style="font-size: 1.1rem;">
+									<b>{{ '{:0,.2f}'.format(boleta_msg[8]['impuestos']) }}</b></td>
+								<td class="th border p-1 text-right" style="font-size: 1.1rem;">
+									<b>{{ '{:0,.2f}'.format(boleta_msg[8]['monto'] - boleta_msg[8]['descuentos'] + boleta_msg[8]['impuestos']) }}</b>
+								</td>
+							</tr>
+						</tfoot>
+						{% endif %}
+					</table>
+
+					<!-- BOTON PARA APLICAR DESCUENTOS - DATOS COMPROBANTE NO EXISTE-->
+					{% if boleta_msg[8]==0: %}
+					<br>
+					<button id="btn-descuento" class="btn btn-warning btn-sm" data-toggle="modal"
+						data-target="#modal-descuento">
+						Descuento
+					</button>
+					<button id="btn-modal-cambiar-dias-garantia" class="btn btn-warning btn-sm" data-toggle="modal"
+					data-target="#modal-cambio-dias-garantia">
+					Días Garantía ({{ datos_boleta['dias_garantia'] }})
+				</button>
+					{% endif %}
+					
+								<hr>
+					<div class="row">
+						<div class="form-group col-4 text-center border">
+							{% if saldo<0: %}
+							<p class="p text-primary m-0 y-0">
+								El cliente tiene Saldo Pendiente</p>
+							<div id="saldo" class="alert alert-danger px-1 m-0 p-1"
+								style="font-size:1.3rem;height: 2rem;" role="alert">₡
+								{{ '{:0,.0f}'.format(-saldo) }}
+							</div>
+							<img src="{{ url_for('static', filename='icons_svg/warning.svg') }}" class="img inline"
+								style="width:2.5rem;height:2.5rem;">
+							<p class="p text-primary m-0 y-0"><b>No es posible
+									registrar Comprobante ni Factura</b></p>
+							<button id="boton-collapse-pago2" class="btn btn-primary btn-block mx-1 px-0 text-center"
+								style="height: 1.9rem;">
+								<p style="font-size:0.9rem;">Pagar</p>
+							</button>
+							{% elif saldo>0: %}
+							<p class="p text-primary m-0 y-0">
+								El cliente tiene Saldo A Favor</p>
+							<div id="saldo" class="alert alert-success px-1 m-0 p-1"
+								style="font-size:1.3rem;height: 2rem;" role="alert">₡
+								{{ '{:0,.0f}'.format(saldo) }}
+							</div>
+							<img src="{{ url_for('static', filename='icons_svg/warning.svg') }}" class="img inline"
+								style="width:2.5rem;height:2.5rem;">
+							<p class="p text-primary m-0 y-0"><b>No es posible
+									registrar Comprobante ni Factura</b></p>
+							{% elif saldo==0 and datos_saldo["total_repuestos_con_impuesto"] <= datos_saldo["monto_cotizacion"]: %}
+							<p class="p text-primary m-0 y-0">Saldo</p>
+							<div id="saldo" class="alert alert-success px-1 m-0 p-1"
+								style="font-size:1.3rem;height: 2rem;" role="alert">₡
+								{{ '{:0,.0f}'.format(saldo) }}
+							</div>
+							<img src="{{ url_for('static', filename='icons_svg/approve.svg') }}" class="img inline"
+								style="width:2.5rem;height:2.5rem;">
+							<p class="p text-primary m-0 y-0"><b>Boleta Lista para Facturar y Cerrar</b></p>
+							{% endif %}
+						</div>
+						{% if saldo==0 and datos_saldo["total_repuestos_con_impuesto"] <= datos_saldo["monto_cotizacion"]: %}
+						<!-- PARA COMRROBANTE!-->
+						<div class="form-group col-5 text-center">
+
+							{% if boleta_msg[8] != 0: %}
+
+							<p class="p text-primary m-0 y-0 border">Comprobante <b>{{ boleta_msg[8]['id']}}</b>
+								<br>Creado por:<b>{{ boleta_msg[8]['usuario']}}</b>
+								<br>Fecha:<b>{{ boleta_msg[8]['fecha']}}</b>
+							</p>
+							<div class="container">
+								<div class="row p-1">
+									<!-- DESCARGA PDF-->
+									<div class="col-3 py-1">
+										<a type="button" class="btn btn-primary p-0 m-0"
+											style="width:1.8rem;height:1.8rem;"
+											href="{{ url_for('pdfs_online', id_boleta=id_boleta, tipo_accion=5,extra=1) }}">
+											<img src="{{ url_for('static', filename='icons_svg/download.svg') }}"
+												alt="Descargar" class="img inline" style="width:1.7rem;height:1.3rem;"
+												title="Descargar">
+										</a>
+									</div>
+
+									<!-- ENVIO POR WHASAPP-->
+									<div class="col-3 py-1">
+										<a type="button" class="btn btn-primary p-0 m-0"
+											style="width:1.8rem;height:1.8rem;" target="_blank"
+											href="https://api.whatsapp.com/send?phone=506{{datos_cliente['telefono']}}&text=Buen%20d%C3%ADa.%20Le%20saludamos%20de%20Electr%C3%B3nica%20Torres.%20Anexo%20Comprobante%20de retiro de su equipo.">
+											<img src="{{ url_for('static', filename='icons_svg/whatsApp-Logo.svg') }}"
+												alt="Enviar WhatsApp (A Teléfono 1)" class="img inline"
+												style="width:1.7rem;height:1.7rem;"
+												title="Enviar WhatsApp (A Teléfono 1)">
+										</a>
+									</div>
+
+									<!--CORREO-->
+									<div class="col-3 py-1">
+										<a id="btn-comprobante-correo-enviar" type="button"
+											class="btn btn-primary p-0 m-0" style="width:1.8rem;height:1.8rem;"
+											data-target="#modal-comprobante-correo-enviar" data-toggle="modal">
+											<img src="{{ url_for('static', filename='icons_svg/envelope1.svg') }}"
+												alt="Correo" class="img inline" style="width:1.7rem;height:1.3rem;"
+												title="Correo">
+										</a>
+									</div>
+									<!-- ANULAR COMPROBANTE -->
+									<div class="col-3 py-1">
+										{% if datos_boleta['equipo_retirado'] == 0: %}
+										<button id="anular-comprobante-modal" class="btn btn-primary p-0 m-0"
+											style="width:1.8rem;height:1.8rem;">
+											<img src="{{ url_for('static', filename='icons_svg/delete.svg') }}"
+												alt="Anular" class="img inline p-0 m-0"
+												style="width:1.7rem;height:1.3rem;" title="Anular">
+										</button>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+							{% if datos_boleta['equipo_retirado'] == 0: %}
+							<button id="boton-amodal-entrega" class="btn btn-primary btn-block mx-1 px-0"
+								style="height: 7.5rem;">
+								<img src="{{ url_for('static', filename='icons_svg/delivery.svg') }}"
+									class="img inline " style="width:5rem;height:4rem;">
+								<p style="font-size:1rem;">Entrega</p>
+							</button>
+							{% else: %}
+							<p class="p text-primary mx-1 px-0 border">
+								Equipo entregado a cliente por <b>{{ datos_boleta['usuario_entrega'] }}</b> en fecha
+								<b>{{ datos_boleta['equipo_retirado_fecha'] }} </b></p>
+							{% endif %}
+							{% else %}
+							<button id="boton-amodal-crear-comprobante" class="btn btn-primary btn-block mx-1 px-0"
+								style="height: 3rem;">
+								<p style="font-size:0.85rem;">Crear Comprobante</p>
+							</button><br>
+							<p class="p text-warning mx-1 px-0 border">Sin Comprobante generado.<br>Debe generar un
+								comprobante para entregar el equipo al cliente.
+							</p>
+							{% endif %}
+
+
+
+						</div>
+						<div class="form-group col-3 text-center">
+							{% if datos_boleta['facturada'] == 0: %}
+							<button id="boton-amodal-factura" class="btn btn-primary btn-block mx-1 px-0"
+								style="height: 10rem;">
+								<img src="{{ url_for('static', filename='icons_svg/billing.svg') }}" class="img inline"
+									style="width:5rem;height:4rem;">
+								<p style="font-size:1rem;">Registrar Factura</p>
+							</button>
+							{% else: %}
+							<p class="p text-primary mx-1 px-0 border">
+								Registro de Factura por <b>{{ datos_boleta['factura_usuario'] }}</b> en fecha
+								<b>{{ datos_boleta['factura_fecha'] }} </b></p>
+							{% endif %}
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+</div>
+
+<!-- MODAL PARA DESCUENTO-->
+<div class="modal" id="modal-descuento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-comprobante-correo-header">
+					Aplicar Descuento
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label class="text-primary my-0 " style="font-size:0.75rem" for="tipo-descuento">Descuento a:</label>
+				<select class="form-control form-control-sm m-0 px-1 inline" id="tipo-descuento"
+					style="font-size:1rem;">
+					<option value=1>Mano de Obra</option>
+					<option value=2>Repuestos Nuevos</option>
+					<option value=3>Repuestos Usados</option>
+					<option value=4>Bodegaje</option>
+				</select>
+				<br>
+				<label class="text-primary my-0 " style="font-size:0.75rem" for="monto-descuento">Monto:</label>
+				<input type=number class="form-control form-control-sm m-0 px-1 inline" id="monto-descuento" value=0
+					style="font-size:1rem;" />
+				<br>
+				<label class="text-primary my-0 " style="font-size:0.75rem" for="motivo-descuento">Motivo:</label>
+				<textarea name="motivo-descuento" id="motivo-descuento" class="form-control" style="font-size:1.1rem"
+					rows="4" placeholder="Motivo del Descuento" maxlength="150"></textarea>
+				<br>
+				<div id="modal-descuento-alerta" class="alert alert-danger" role="alert"
+					style="font-size:0.85rem;visibility: hidden;">Descuento<br>descuento<br>descuento
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+				<button id="modal-descuento-btn-confirmar" class="btn btn-primary">Aplicar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- MODAL PARA CAMBIO DE DIAS DE GARANTIA-->
+<div class="modal" id="modal-cambio-dias-garantia" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-comprobante-correo-header">
+					Cambio de días de garantía
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label class="text-primary my-0 " style="font-size:0.75rem" for="monto-descuento">Días:</label>
+				<input type=number class="form-control form-control-sm m-0 px-1 inline" id="nuevo-dias-garantia" value={{datos_boleta['dias_garantia']}}
+					style="font-size:1rem;" />
+			</div>
+			<div class="modal-footer">
+				<button id="modal-dias-garantia-btn-confirmar" class="btn btn-primary">Aplicar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL PARA CONFIRMACION DE ENVIO DE CORREO-->
+<div class="modal fade" id="modal-comprobante-correo-enviar" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-comprobante-correo-header">
+					Enviar Comprobante por Correo
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label id="modal-comprobante-correo-body" class="text-primary my-0" style="font-size:1.2rem">
+				</label>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					id="cerrar-modal-pago">Cerrar</button>
+				<button id="modal-comprobante-correo-confirmar" class="btn btn-primary"
+					data-dismiss="modal">Enviar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL PARA ENTREGA /  FACTURA-->
+<div class="modal fade" id="modal-entrega-factura" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-primary" style="font-size:1.3rem" id="modal-entrega-factura-titulo">
+					Entrega de Equipo al Cliente
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label id="modal-entrega-factura-body" class="text-primary my-0" style="font-size:1.2rem"></label>
+			</div>
+			<div class="form-group px-3 mx-3" id="facturacion-info" hidden>
+				<label for="factura">Factura</label>
+				<input type="number" class="form-control" id="factura" maxlength=45
+					placeholder="Digite el Correlativo de la factura">
+			</div>
+			<div id="factura-alerta" class="alert alert-danger mx-3 px-3" role="alert" style="font-size:0.85rem" hidden>
+			</div>
+			<input id="verif-comprobante" type="hidden" value="{{datos_boleta['equipo_retirado']}}">
+			<input id="tipo-modal-entrega-factura" type="hidden" value=0>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					id="cerrar-modal-pago">Cerrar</button>
+				<button id="btn-entrega-factura-confirmar" class="btn btn-primary">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if datos_saldo["total_repuestos_con_impuesto"] > datos_saldo["monto_cotizacion"]: %}
+<script>
+   // AL CERRAR EL MODAL DE NOTIFICACION GENERICO
+   $(document).ready(function () {
+
+        $("#modalNotificacion-mensaje").html("El Monto en repuestos (₡{{ '{:0,.0f}'.format(datos_saldo['total_repuestos_con_impuesto']) }}) excede al monto de cotización (₡{{ '{:0,.0f}'.format(datos_saldo['monto_cotizacion']) }})<br><br>Para poder continuar, debe aplicarse un descuento al monto de los 'Repuestos'");
+         document.getElementById("modalNotificacion-imagen3").hidden = false;
+		$('#modalNotificacion').modal("show");
+		var el = document.getElementById("modalNotificacion-btnOk");
+		el.addEventListener("click", $('#btn-descuento').click(), false);
+		
+   });
+</script>
+{% endif %}

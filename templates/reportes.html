@@ -1,0 +1,1189 @@
+{% extends 'base_layout.html' %} {% block content %}
+
+<!-- PAGOS Y ANULACIONES -->
+{% if tipo_reporte == 1: %}
+<div class="col-12 p-1 m-0 no-gutters">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3">
+				<br>
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Reporte de Pagos y Anulaciones</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12 col-md-6 p-0 m-0 no-gutters">
+				<div class="container-fluid">
+					<div class="row border">
+						<div class="col-4 col-md-3 p-0 m-0 block">
+							<!-- FECHAS-->
+							<label class="text-primary m-0 p-0" style="font-size:0.75rem"
+								for="fecha-inicio">Inicio</label>
+							<input class="form-control form-control-sm m-0 p-0 block" type="date" id="fecha-inicio2"
+								name="fecha-inicio2" value="{{ fecha_inicio }}">
+							<label class="text-primary m-0 p-0" style="font-size:0.75rem" for="fecha-fin">Fin</label>
+							<input class="form-control form-control-sm m-0 p-0 block" type="date" id="fecha-fin2"
+								name="fecha-fin2" value="{{ fecha_fin }}">
+						</div>
+						<div class="col-4 col-md-3 block p-3">
+							<input type="checkbox" id="rep-pagos-taller" {% if filtro=='1' or filtro=='1,10' %}checked
+								{% endif %}>
+							<label class="text-primary my-0" for="rep-pagos-taller">Taller </label><br>
+							<input type="checkbox" id="rep-pagos-tienda" {% if filtro=='10' or filtro=='1,10' %}checked
+								{% endif %}>
+							<label class="text-primary my-0" for="rep-pagos-tienda">Tienda</label><br>
+
+						</div>
+						<div class="col-2  col-md-1">
+							<img id="btn-reporte-pagos" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/database1.svg') }}" alt="Generar"
+								style="height: 6rem; width: 3rem;" title="Generar">
+						</div>
+						{% if nivel==1: %}
+						<div class="col-2 col-md-1">
+							<img id="reporte-descarga-excel" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 3rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+
+			{% if nivel!=1: %}
+			<script>
+				document.getElementById('fecha-inicio2').disabled = true;
+				document.getElementById('fecha-fin2').disabled = true;
+			</script>
+			{% endif %}
+		</div>
+		<br> Reporte para el Período {{ fecha_inicio}} a {{ fecha_fin }}
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1">
+				<hr class="my-0 py-0">
+				<div class="text-center mx-0 px-0" style="font-size: 1.3rem;color: midnightblue;">
+					<small>Pagos: </small><b>₡{{
+						'{:0,.0f}'.format(datos[0][0]+datos[0][2]+datos[0][4]+datos[1][0]+datos[1][2]+datos[1][4]) }}
+					</b>
+					<br>
+					<small>Anulaciones / Devoluciones: </small><b>₡{{
+						'{:0,.0f}'.format(datos[0][6]+datos[1][6]) }}
+					</b>
+
+				</div>
+				<hr>
+			</div>
+		</div>
+		<div class="row">
+			{% if filtro=='1' or filtro=='1,10' %}
+			<div class="col-xs-12 col-md-6 p-1">
+				<!-- TALLER -->
+				<table class="table table-bordered">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=8 class="px-1 mx-1 bg-dark">
+								<p style="font-size:1.2rem" class="p-0 m-0">TALLER ₡{{ '{:0,.0f}'.format(datos[0][0] +
+									datos[0][2] + datos[0][4]) }}</p>
+							</th>
+						</tr>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-success">
+								<p style="font-size:.85rem" class="p-0 m-0">EFECTIVO</p>
+							</th>
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-primary">
+								<p style="font-size:.85rem" class="p-0 m-0">TARJETAS</p>
+							</th>
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-warning">
+								<p style="font-size:.85rem" class="p-0 m-0">TRANSFERS</p>
+							</th>
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-danger">
+								<p style="font-size:.85rem" class="p-0 m-0">ANULADOS</p>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr style="text-align: center;">
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[0][1]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[0][0]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[0][3]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[0][2]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[0][5]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[0][4]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[0][7]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[0][6]) }}
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<br>
+			{% endif %}
+			{% if filtro=='10' or filtro=='1,10' %}
+			<div class="col-xs-12 col-md-6 p-1">
+				<!-- TIENDA  -->
+				<table class="table table-bordered">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=8 class="px-1 mx-1 bg-dark">
+								<p style="font-size:1.2rem" class="p-0 m-0">TIENDA ₡{{ '{:0,.0f}'.format(datos[1][0] +
+									datos[1][2] + datos[1][4]) }}</p>
+							</th>
+						</tr>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-success">
+								<p style="font-size:.85rem" class="p-0 m-0">EFECTIVO</p>
+							</th>
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-primary">
+								<p style="font-size:.85rem" class="p-0 m-0">TARJETAS</p>
+							</th>
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-warning">
+								<p style="font-size:.85rem" class="p-0 m-0">TRANSFERS</p>
+							</th>
+							<th scope="col" colspan=2 class="px-1 mx-1 alert-danger">
+								<p style="font-size:.85rem" class="p-0 m-0">ANULADOS<br>/DEVOLUCIONES</p>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr style="text-align: center;">
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[1][1]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[1][0]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[1][3]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[1][2]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[1][5]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[1][4]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[1][7]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡{{ '{:0,.0f}'.format(datos[1][6]) }}
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<br>
+			{% endif %}
+			<div class="col-12">
+				<table class="table table-striped border m-0" style="font-size: .9rem;">
+					<thead class="bg-primary">
+						<thead>
+							<tr>
+								<th class="th border p-1">N°</th>
+								<th class="th border p-1">Origen</th>
+								<th class="th border p-1">Fecha</th>
+								<th class="th border p-1">Doc.</th>
+								<th class="th border p-1">Medio</th>
+								<th class="th border p-1">Monto</th>
+								<th class="th border p-1">{% if filtro=='1' %}Boleta{% endif %}{% if filtro=='10'
+									%}Venta{% endif %}{% if filtro=='1,10' %}Boleta/Venta{% endif %}</th>
+								<th class="th border p-1">Usuario Crea</th>
+								<th class="th border p-1">Estado</th>
+								<th class="th border p-1">Usuario Anula</th>
+								<th class="th border p-1">Fecha Anula</th>
+							</tr>
+						</thead>
+					<tbody>
+						<!--Ciclo de Movimientos -->
+						{% for rmov in datos[2] %}
+
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:{% if rmov['medio']=='Devolución' %}red{%else%}midnightblue{%endif%};">
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ loop.index }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ rmov['origen'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ rmov['fecha'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['id'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['medio'] }}</p>
+							</td>
+
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{% if rmov['estado']==0: %}<del>{% endif %}
+										{{ '{:0,.2f}'.format(rmov['monto']) }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0"><b>
+										{% if rmov['origen']=="Taller": %}
+										<a href=# onclick="enviar_boleta({{rmov['id_boleta']}})"
+											style="font-size: 1rem;"><b>{{ rmov['id_boleta'] }}</a>
+										{% else %}
+												<a href=# onclick="ver_venta({{rmov['id_boleta']}})"><b> {{ rmov['id_boleta'] }}
+													</b></a>
+										{% endif %}
+									</b>
+								</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['username'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{% if rmov['estado']==1: %}Activo{% else: %}Anulado{% endif %}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['usuario_anula'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['fecha_anula'] }}</p>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<script>
+					//SUBMIT BOLETA
+					function enviar_boleta(id_boleta) {
+						$('#id-boleta-i').val(id_boleta);
+						$('#tipo-display-i').val(1); // VISUALIZAR MOVIMIENTOS
+						document.getElementById("form-buscar-boleta-i").submit();
+					}
+
+					// Consulta Venta
+					function ver_venta(id_venta) {
+						$.post($SCRIPT_ROOT + '/tnd', {
+							"tienda-accion": 12, // CONSULTA Venta
+							"id_venta": id_venta
+						}, function (datos) {
+							$('#modal-venta-body').html(datos);
+						});
+						$("#modal-venta").modal("show");
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+
+
+<!-- FACTURACION -->
+{% if tipo_reporte == 3: %}
+<div class="col-12">
+	<div class="container-fluid mx-1 px-1">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Reporte de Facturación</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1 border">
+
+				<div class="container-fluid">
+					<div class="row my-0 py-0">
+
+						<div class="col-5 my-0 block border">
+							<!-- FECHAS-->
+							<label class="text-primary my-0 " style="font-size:0.75rem"
+								for="fecha-inicio">Inicio</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-inicio2"
+								name="fecha-inicio2" value="{{ fecha_inicio }}">
+							<label class="text-primary my-0 " style="font-size:0.75rem" for="fecha-fin">Fin</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-fin2"
+								name="fecha-fin2" value="{{ fecha_fin }}">
+						</div>
+						<div class="col-3">
+							<button id="btn-reporte-facturas" class="btn btn-primary" style="height: 6rem;width: 5rem;">
+								Generar</button>
+						</div>
+						{% if nivel==1: %}
+						<div class="col-3">
+							<img id="reporte-descarga-excel-facturas" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 5rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+
+			{% if nivel!=1: %}
+			<script>
+				document.getElementById('fecha-inicio2').disabled = true;
+				document.getElementById('fecha-fin2').disabled = true;	
+			</script>
+			{% endif %}
+		</div>
+		<br>
+		Reporte para el Período {{ fecha_inicio}} a {{ fecha_fin }}
+
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<table class="table table-bordered" style="max-width: 250px;">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" class="px-1 mx-1 alert-success">
+								<p style="font-size:1rem" class="p-0 m-0">Gravado</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">Impuestos</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-warning">
+								<p style="font-size:1rem" class="p-0 m-0">Facturación</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-danger">
+								<p style="font-size:1rem" class="p-0 m-0">Facturas</p>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr style="text-align: center;">
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[0][0]) }}
+							</td>
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[0][1]) }}
+							</td>
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[0][0]+datos[0][1]) }}
+							</td>
+							<td class="p-1" style="font-size:1.2rem;">
+								{{ '{:0,.0f}'.format(datos[0][2]) }}
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<br>
+			<div class="col-12">
+				<table class="table table-striped border m-0" style="font-size: .9rem;">
+					<thead class="bg-primary">
+						<thead>
+							<tr>
+								<th class="th border p-1">N°</th>
+								<th class="th border p-1">Fecha Ingreso</th>
+								<th class="th border p-1">Comprobante</th>
+								<th class="th border p-1">Monto</th>
+								<th class="th border p-1">Impuestos</th>
+								<th class="th border p-1">Total Factura</th>
+								<th class="th border p-1">Estado</th>
+								<th class="th border p-1">Boleta</th>
+								<th class="th border p-1">Factura</th>
+							</tr>
+						</thead>
+					<tbody>
+						<!--Ciclo de Movimientos-->
+						{% for rmov in datos[1] %}
+
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ loop.index }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ rmov['fecha_ingreso'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['comprobante'] }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ '{:0,.2f}'.format(rmov['monto']) }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ '{:0,.2f}'.format(rmov['impuestos']) }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ '{:0,.2f}'.format(rmov['monto'] + rmov['impuestos']) }}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{% if rmov['estado']==1: %}Activo{% else: %}Anulado{% endif %}</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0"><b>
+										<a href=# onclick="enviar_boleta({{rmov['id_boleta']}})"
+											style="font-size: 1rem;"><b>{{ rmov['id_boleta'] }}</a>
+									</b>
+								</p>
+							</td>
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">
+									{{ rmov['factura'] }}</p>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<script>
+					//SUBMIT BOLETA
+					function enviar_boleta(id_boleta) {
+						$('#id-boleta-i').val(id_boleta);
+						$('#tipo-display-i').val(1); // VISUALIZAR MOVIMIENTOS
+						document.getElementById("form-buscar-boleta-i").submit();
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<!-- BOLETAS -->
+{% if tipo_reporte == 4: %}
+<div class="col-12">
+	<div class="container-fluid mx-1 px-1">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Reporte de Boletas</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1 border">
+
+				<div class="container-fluid">
+					<div class="row my-0 py-0">
+
+						<div class="col-5 my-0 block border">
+							<!-- FECHAS-->
+							<label class="text-primary my-0 " style="font-size:0.75rem"
+								for="fecha-inicio">Inicio</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-inicio2"
+								name="fecha-inicio2" value="{{ fecha_inicio }}">
+							<label class="text-primary my-0 " style="font-size:0.75rem" for="fecha-fin">Fin</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-fin2"
+								name="fecha-fin2" value="{{ fecha_fin }}">
+						</div>
+						<div class="col-3">
+							<button id="btn-reporte-boletas" class="btn btn-primary" style="height: 6rem;width: 5rem;">
+								Generar</button>
+						</div>
+						{% if nivel==1: %}
+						<div class="col-3">
+							<img id="reporte-descarga-excel-boletas" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 5rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<br>
+		Reporte para el Período {{ fecha_inicio}} a {{ fecha_fin }}
+		<div class="col-12">
+			<table class="table table-striped border m-0" style="font-size: .9rem;">
+				<thead class="bg-primary">
+					<thead>
+						<tr>
+							<th class="th border p-1">N°</th>
+							<th class="th border p-1">Fecha Ingreso</th>
+							<th class="th border p-1">Boleta</th>
+							<th class="th border p-1">Tipo</th>
+							<th class="th border p-1">Boleta Original</th>
+							<th class="th border p-1">Tipo Equipo</th>
+							<th class="th border p-1">Marca</th>
+							<th class="th border p-1">Estado</th>
+						</tr>
+					</thead>
+				<tbody>
+					<!--Ciclo de Movimientos-->
+
+					{% for rmov in datos[1] %}
+
+					<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">{{ loop.index }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">{{ rmov['fecha_ingreso'] }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								<a href=# onclick="enviar_boleta({{rmov['boleta']}})" style="font-size: 1rem;"><b>{{
+										rmov['boleta'] }}</a>
+							</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{{ rmov['tipo_boleta'] }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								<a href=# onclick="enviar_boleta({{rmov['boleta_original']}})"
+									style="font-size: 1rem;"><b>{{ rmov['boleta_original'] }}</a>
+							</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{{ rmov['tipo_equipo'] }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{{ rmov['marca'] }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{{ rmov['estado'] }}</p>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<script>
+				//SUBMIT BOLETA
+				function enviar_boleta(id_boleta) {
+					$('#id-boleta-i').val(id_boleta);
+					$('#tipo-display-i').val(1); // VISUALIZAR MOVIMIENTOS
+					document.getElementById("form-buscar-boleta-i").submit();
+				}
+			</script>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<!-- TIEMPOS -->
+{% if tipo_reporte == 5: %}
+<div class="col-12">
+	<div class="container-fluid mx-1 px-1">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Reporte de Tiempos</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1 border">
+
+				<div class="container-fluid">
+					<div class="row my-0 py-0">
+
+						<div class="col-5 my-0 block border">
+							<!-- FECHAS-->
+							<label class="text-primary my-0 " style="font-size:0.75rem"
+								for="fecha-inicio">Inicio</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-inicio2"
+								name="fecha-inicio2" value="{{ fecha_inicio }}">
+							<label class="text-primary my-0 " style="font-size:0.75rem" for="fecha-fin">Fin</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-fin2"
+								name="fecha-fin2" value="{{ fecha_fin }}">
+						</div>
+						<div class="col-3">
+							<button id="btn-reporte-tiempos" class="btn btn-primary" style="height: 6rem;width: 5rem;">
+								Generar</button>
+						</div>
+						{% if nivel==1: %}
+						<div class="col-3">
+							<img id="reporte-descarga-excel-tiempos" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 5rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<br>
+		Reporte para el Período {{ fecha_inicio}} a {{ fecha_fin }}
+		<div class="col-12">
+			<table class="table table-striped border m-0" style="font-size: .9rem;">
+				<thead class="bg-primary">
+					<thead>
+						<tr>
+							<th class="th border p-1">N°</th>
+							<th class="th border p-1">Fecha</th>
+							<th class="th border p-1">Tipo</th>
+							<th class="th border p-1">Usuario</th>
+							<th class="th border p-1">Tiempo</th>
+							<th class="th border p-1">Boleta</th>
+						</tr>
+					</thead>
+				<tbody>
+					<!--Ciclo de Movimientos-->
+
+					{% for rmov in datos[1] %}
+
+					<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">{{ loop.index }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">{{ rmov['fecha'] }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{{ rmov['tipo'] }}</p>
+						</td>
+
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{{ rmov['username'] }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0">
+								{{ rmov['tiempo'] }}</p>
+						</td>
+						<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+							<p class="p-0 m-0"><b>
+									<a href=# onclick="enviar_boleta({{rmov['id_boleta']}})"
+										style="font-size: 1rem;"><b>{{ rmov['id_boleta'] }}</a>
+								</b>
+							</p>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<script>
+				//SUBMIT BOLETA
+				function enviar_boleta(id_boleta) {
+					$('#id-boleta-i').val(id_boleta);
+					$('#tipo-display-i').val(1); // VISUALIZAR MOVIMIENTOS
+					document.getElementById("form-buscar-boleta-i").submit();
+				}
+			</script>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<!-- VENTAS -->
+{% if tipo_reporte == 6: %}
+<div class="col-12 p-1 m-0 no-gutters">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3">
+				<br>
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Reporte de Ventas</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12 col-md-6 p-0 m-0 no-gutters">
+				<div class="container-fluid">
+					<div class="row border">
+						<div class="col-4 col-md-3 p-0 m-0 block">
+							<!-- FECHAS-->
+							<label class="text-primary m-0 p-0" style="font-size:0.75rem"
+								for="fecha-inicio">Inicio</label>
+							<input class="form-control form-control-sm m-0 p-0 block" type="date" id="fecha-inicio2"
+								name="fecha-inicio2" value="{{ fecha_inicio }}">
+							<label class="text-primary m-0 p-0" style="font-size:0.75rem" for="fecha-fin">Fin</label>
+							<input class="form-control form-control-sm m-0 p-0 block" type="date" id="fecha-fin2"
+								name="fecha-fin2" value="{{ fecha_fin }}">
+						</div>
+						<div class="col-4 col-md-3 block p-3">
+							<input type="checkbox" id="rep-ventas-taller" {% if filtro=='"TALLER"' or
+								filtro=='"TIENDA","TALLER"' %}checked {% endif %}>
+							<label class="text-primary my-0" for="rep-ventas-taller">Taller </label><br>
+							<input type="checkbox" id="rep-ventas-tienda" {% if filtro=='"TIENDA"' or
+								filtro=='"TIENDA","TALLER"' %}checked {% endif %}>
+							<label class="text-primary my-0" for="rep-ventas-tienda">Tienda</label><br>
+
+						</div>
+						<div class="col-2  col-md-1">
+							<img id="btn-reporte-ventas" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/database1.svg') }}" alt="Generar"
+								style="height: 6rem; width: 3rem;" title="Generar">
+						</div>
+						{% if nivel==1: %}
+						<div class="col-2 col-md-1">
+							<img id="reporte-descarga-excel-ventas" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 3rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+
+			{% if nivel!=1: %}
+			<script>
+				document.getElementById('fecha-inicio2').disabled = true;
+				document.getElementById('fecha-fin2').disabled = true;
+			</script>
+			{% endif %}
+		</div>
+		<br> Reporte para el Período {{ fecha_inicio}} a {{ fecha_fin }}
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1">
+				<hr class="my-0 py-0">
+				<div class="text-center mx-0 px-0" style="font-size: 1.3rem;color: midnightblue;">
+					<small>Ventas</small><b> ₡{{
+						'{:0,.0f}'.format(datos[0][0]+datos[1][0]+datos[0][1]+datos[1][1]) }}
+					</b>
+					<br>
+					<small>Costo: </small><b>₡{{
+						'{:0,.0f}'.format(datos[0][2]+datos[1][2]) }}
+					</b>
+					<br>
+					<small>Productos Vendidos: </small><b>{{
+						'{:0,.0f}'.format(datos[0][3]+datos[1][3]) }}
+					</b>
+					<br>
+					<small>Anulaciones/Devoluciones: </small><b>{{
+						'{:0,.0f}'.format(datos[0][4]+datos[1][4]) }}
+					</b>
+				</div>
+				<hr>
+			</div>
+		</div>
+		<div class="row">
+			{% if filtro=='"TALLER"' or filtro=='"TIENDA","TALLER"' %}
+			<div class="col-xs-12 col-md-6 p-1">
+				<!-- TALLER -->
+				<table class="table table-bordered">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=8 class="px-1 mx-1 bg-dark">
+								<p style="font-size:1.2rem" class="p-0 m-0">TALLER ₡{{ '{:0,.0f}'.format(datos[0][0] +
+									datos[0][1]) }}</p>
+							</th>
+						</tr>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-success">
+								<p class="p-0 m-0">PRODUCTOS</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-warning">
+								<p class="p-0 m-0">ANULACIONES</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p class="p-0 m-0">VENTAS</p>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr style="text-align: center;">
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[0][3]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[0][4]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡ {{ '{:0,.0f}'.format(datos[0][0] + datos[0][1]) }}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<br>
+			{% endif %}
+			{% if filtro=='"TIENDA"' or filtro=='"TIENDA","TALLER"' %}
+			<div class="col-xs-12 col-md-6 p-1">
+				<!-- TALLER -->
+				<table class="table table-bordered">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=8 class="px-1 mx-1 bg-dark">
+								<p style="font-size:1.2rem" class="p-0 m-0">TIENDA ₡{{ '{:0,.0f}'.format(datos[1][0] +
+									datos[1][1]) }}</p>
+							</th>
+						</tr>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-success">
+								<p class="p-0 m-0">PRODUCTOS</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-warning">
+								<p class="p-0 m-0">ANULACIONES</p>
+							</th>
+							<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+								<p class="p-0 m-0">VENTAS</p>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr style="text-align: center;">
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[1][3]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								{{ '{:0,.0f}'.format(datos[1][4]) }}
+							</td>
+							<td class="p-1" style="font-size:.85rem;">
+								₡ {{ '{:0,.0f}'.format(datos[1][0] + datos[1][1]) }}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<br>
+			{% endif %}
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<table class="table table-striped border m-0" style="font-size: .9rem;">
+					<thead class="bg-primary">
+						<thead>
+							<tr>
+								<th class="th border p-1">N°</th>
+								<!--Ciclo de campos -->
+								{% for rhead in campos: %}
+								<th class="th border p-1">{% if rhead=="parametro": %}Boleta/Venta{% else: %}{{ rhead
+									}}{% endif %}</th>
+								{% endfor %}
+							</tr>
+						</thead>
+					<tbody>
+						<!--Ciclo de Movimientos -->
+						{% for rmov in datos[2]: %}
+
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:{% if rmov['tipo']=='DEVOLUCION' %}rgb(220, 1, 1){% else %}midnightblue{% endif %};">
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p class="p-0 m-0">{{ loop.index }}</p>
+							</td>
+
+							{% for rhead in campos: %}
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p
+									class="p-0 m-0 {% if rmov['tipo']=='ANULACION DE REPUESTO EN BOLETA': %}text-danger{% endif %}">
+									{% if rhead=='parametro' and rmov['origen']=='TALLER' %}
+									<a href=# onclick="enviar_boleta({{rmov['parametro']}})"><b> {{ rmov[rhead] }}
+										</b></a>
+									{% elif rhead=='parametro' and rmov['origen']=='TIENDA' %}
+									<a href=# onclick="ver_venta({{rmov['parametro']}})"><b> {{ rmov[rhead] }}
+										</b></a>
+									{% elif rhead=='monto_sin_impuestos' or rhead=='impuestos' or rhead=='costo': %}
+									₡ {{ '{:0,.0f}'.format(rmov[rhead]) }}
+									{% else: %}
+									{{ rmov[rhead] }}
+									{% endif %}
+								</p>
+							</td>
+							{% endfor %}
+
+
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<script>
+					//SUBMIT BOLETA
+					function enviar_boleta(id_boleta) {
+						$('#id-boleta-i').val(id_boleta);
+						$('#tipo-display-i').val(1); // VISUALIZAR MOVIMIENTOS
+						document.getElementById("form-buscar-boleta-i").submit();
+					}
+
+					// Consulta Venta
+					function ver_venta(id_venta) {
+						$.post($SCRIPT_ROOT + '/tnd', {
+							"tienda-accion": 12, // CONSULTA Venta
+							"id_venta": id_venta
+						}, function (datos) {
+							$('#modal-venta-body').html(datos);
+						});
+						$("#modal-venta").modal("show");
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<!-- INVENTARIO - EXISTENCIAS -->
+{% if tipo_reporte == 7: %}
+<div class="col-12">
+	<div class="container-fluid mx-1 px-1">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Existencias en Inventario</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1 border">
+
+				<div class="container-fluid">
+					<div class="row my-0 py-0">
+
+						<div class="col-5">
+							<button id="btn-rep-inv-existencias" class="btn btn-primary" style="height: 6rem;width: 5rem;">
+								Generar </button>
+						</div>
+						{% if nivel==1: %}
+						<div class="col-5">
+							<img id="reporte-descarga-excel-inv-existencias" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 5rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-12 col-md-6 p-1">
+			<!-- TALLER -->
+			<table class="table table-bordered">
+				<thead>
+					<tr style="text-align: center;color: rgb(255, 255, 255);">
+						<th scope="col" colspan=1 class="px-1 mx-1 alert-success">
+							<p class="p-0 m-0">LOTES</p>
+						</th>
+						<th scope="col" colspan=1 class="px-1 mx-1 alert-warning">
+							<p class="p-0 m-0">PRODUCTOS</p>
+						</th>
+						<th scope="col" colspan=1 class="px-1 mx-1 alert-primary">
+							<p class="p-0 m-0">UNIDADES</p>
+						</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr style="text-align: center;">
+						<td class="p-1" style="font-size:.85rem;">
+							{{ datos[1].lotes }}
+						</td>
+						<td class="p-1" style="font-size:.85rem;">
+							{{ datos[1].productos }}
+						</td>
+						<td class="p-1" style="font-size:.85rem;">
+							{{ datos[1].unidades }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-12">
+				<table class="table table-striped border m-0" style="font-size: .9rem;">
+					<thead class="bg-primary">
+						<thead>
+							<tr>
+								<!--Ciclo de campos -->
+								{% for rhead in campos: %}
+								<th class="th border p-1">{% if rhead=="parametro": %}Boleta/Venta{% else: %}{{ rhead
+									}}{% endif %}</th>
+								{% endfor %}
+							</tr>
+						</thead>
+					<tbody>
+						<!--Ciclo de Movimientos -->
+						{% for rmov in datos[0]: %}
+
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+							{% for rhead in campos: %}
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p
+									class="p-0 m-0 {% if rmov['tipo']=='ANULACION DE REPUESTO EN BOLETA': %}text-danger{% endif %}">
+									{% if rhead=='parametro' and rmov['origen']=='TALLER' %}
+									<a href=# onclick="ver_venta({{rmov['parametro']}})"><b> {{ rmov[rhead] }}
+										</b></a>
+									{% else: %}
+									{{ rmov[rhead] }}
+									{% endif %}
+								</p>
+							</td>
+							{% endfor %}
+
+
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<script>
+					// Consulta Venta
+					function ver_venta(id_venta) {
+						$.post($SCRIPT_ROOT + '/tnd', {
+							"tienda-accion": 12, // CONSULTA Venta
+							"id_venta": id_venta
+						}, function (datos) {
+							$('#modal-venta-body').html(datos);
+						});
+						$("#modal-venta").modal("show");
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+
+<!-- LIQUIDACIONES -->
+{% if tipo_reporte == 9: %}
+<div class="col-12">
+	<div class="container-fluid mx-1 px-1">
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<div class="w-auto text-primary my-0" style="font-size:1.2rem">Reporte de Liquidaciones</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-4 p-1 border">
+
+				<div class="container-fluid">
+					<div class="row my-0 py-0">
+
+						<div class="col-5 my-0 block border">
+							<!-- FECHAS-->
+							<label class="text-primary my-0 " style="font-size:0.75rem"
+								for="fecha-inicio">Inicio</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-inicio2"
+								name="fecha-inicio2" value="{{ fecha_inicio }}">
+							<label class="text-primary my-0 " style="font-size:0.75rem" for="fecha-fin">Fin</label>
+							<input class="form-control form-control-sm m-0 px-1 block" type="date" id="fecha-fin2"
+								name="fecha-fin2" value="{{ fecha_fin }}">
+						</div>
+						<div class="col-3">
+							<button id="btn-reporte-liquidaciones" class="btn btn-primary" style="height: 6rem;width: 5rem;">
+								Generar</button>
+						</div>
+						{% if nivel==1: %}
+						<div class="col-3">
+							<img id="reporte-descarga-excel-liquidaciones" class="btn btn-primary m-0 p-0"
+								src="{{ url_for('static', filename='icons_svg/ms-excel.svg') }}" alt="Descarga Excel"
+								style="height: 6rem; width: 5rem;" title="Descarga Excel">
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+
+			{% if nivel!=1: %}
+			<script>
+				document.getElementById('fecha-inicio2').disabled = true;
+				document.getElementById('fecha-fin2').disabled = true;	
+			</script>
+			{% endif %}
+		</div>
+		<br>
+		Reporte para el Período {{ fecha_inicio}} a {{ fecha_fin }}
+
+		<div class="row">
+			<div class="col-xs-12 col-sm-3 p-1">
+				<table class="table table-bordered" style="max-width: 250px;">
+					<thead>
+						<tr style="text-align: center;color: rgb(255, 255, 255);">
+							<th scope="col" class="px-1 mx-1 alert-success">
+								<p style="font-size:1rem" class="p-0 m-0">Costo A Taller</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-primary">
+								<p style="font-size:1rem" class="p-0 m-0">Costo A Tienda</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-warning">
+								<p style="font-size:1rem" class="p-0 m-0">Facturación</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-danger">
+								<p style="font-size:1rem" class="p-0 m-0">Repuestos</p>
+							</th>
+							<th scope="col" class="px-1 mx-1 alert-dark">
+								<p style="font-size:1rem" class="p-0 m-0">Liquidaciones</p>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr style="text-align: center;">
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[1]["costo taller"]) }}
+							</td>
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[1]["costo tienda"]) }}
+							</td>
+							<td class="p-1" style="font-size: 1.2rem;">
+								₡{{ '{:0,.2f}'.format(datos[1]["precio factura"]) }}
+							</td>
+							<td class="p-1" style="font-size:1.2rem;">
+								{{ '{:0,.0f}'.format(datos[1]["repuestos"]) }}
+							</td>
+							<td class="p-1" style="font-size:1.2rem;">
+								{{ '{:0,.0f}'.format(datos[1]["liquidaciones"]) }}
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<br>
+			<div class="col-12">
+				<table class="table table-striped border m-0" style="font-size: .9rem;">
+					<thead class="bg-primary">
+							<tr>
+									<!--Ciclo de campos -->
+									{% for rhead in campos: %}
+									<th class="th border p-1"><p style="color:aliceblue;">{{ rhead.upper() }}</p></th>
+									{% endfor %}
+							</tr>
+						</thead>
+					<tbody>
+						<!--Ciclo de Movimientos -->
+						{% for rmov in datos[0]: %}
+
+						<tr class="p-0 m-0" style="font-size:0.9rem;color:midnightblue;">
+							{% for rhead in campos: %}
+							<td class="p-1 m-0" style="border: none;" style="border-color: white;">
+								<p>
+									{% if rhead=='boleta'%}
+									<a href=# onclick="enviar_boleta({{ rmov[rhead] }})"><b> {{ rmov[rhead] }}
+										</b></a>
+									{% else: %}
+									{{ rmov[rhead] }}
+									{% endif %}
+																		
+								</p>
+							</td>
+							{% endfor %}
+
+
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<script>
+					//SUBMIT BOLETA
+					function enviar_boleta(id_boleta) {
+						$('#id-boleta-i').val(id_boleta);
+						$('#tipo-display-i').val(1);
+						document.getElementById("form-buscar-boleta-i").submit();
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% endblock %}

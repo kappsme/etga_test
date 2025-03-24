@@ -1,0 +1,376 @@
+<!-- DATOS DEL PRODUCTO-->
+{% if mensaje!="" and inv_accion==3: %} {% if mensaje[0:6]=="El pro": %}
+<div class="alert alert-success" role="alert">{{ mensaje | safe }}</div>
+{% else: %}
+<div class="alert alert-warning" role="alert">{{ mensaje | safe }}</div>
+{% endif %} {% endif %} {% if inv_accion==3: %}Nuevo producto{% endif %}
+<form action="{{ url_for('inv') }}" method="POST" enctype="multipart/form-data" id="form-producto">
+    <input type="hidden" name="inv-accion" id="inv-accion" value=3>
+    <input type="hidden" name="inv-accion2" id="inv-accion2" value=1>
+
+    <fieldset style="border: 1px solid #a2b2fc;border-radius: 8px;" class="p-2">
+        <div class="container-fluid inv-form">
+            {% if inv_accion==1 or tienda_accion or id_boleta: %}
+            <!-- CODIGO DEL PRODUCTO -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-md-5 col-lg-3">
+                    <label class="text-primary" for="codigo"><b>Código</b></label>
+                </div>
+                <div class="col-9 col-sm-7 col-lg-9">
+                    <input class="form-control" type="text" name="codigo" id="codigo" placeholder="Código"
+                        maxlength="10">
+                </div>
+            </div>
+            {% else: %}
+            <input type="hidden" id="codigo" name="codigo" value='{{nuevo_codigo}}'>
+            {% endif %}
+
+            <!-- NOMBRE DEL PRODUCTO -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-md-5 col-lg-3">
+                    <label class="text-primary" for="nombre"><b>Producto</b></label>
+                </div>
+                <div class="col-9 col-sm-7 col-lg-9">
+                    <input class="form-control" type="text" name="nombre" id="nombre" placeholder="Nombre del Producto"
+                        maxlength=30 value='{{ formulario["nombre"] }}'>
+                </div>
+            </div>
+
+            <!-- MARCA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-md-5 col-lg-3">
+                    <label class="text-primary" for="marca"><b>Marca</b></label>
+                </div>
+                <div class="col-9 col-sm-7 col-lg-9">
+                    <div class="autocomplete">
+                        <input class="form-control" type="text" name="marca" id="marca" placeholder="Marca"
+                            maxlength="23" value='{{ formulario["marca"] }}'>
+                    </div>
+                    <script>
+                        var marcas = [{% for m in marcas %}
+                        "{{m.nombre}}", {% endfor %}
+                        ""
+                        ];
+                    </script>
+                </div>
+            </div>
+
+
+            <!-- MODELO -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-md-5 col-lg-3">
+                    <label class="text-primary" for="modelo"><b>Modelo</b></label>
+                </div>
+                <div class="col-9 col-sm-7 col-lg-9">
+                    <input class="form-control" type="text" name="modelo" id="modelo" placeholder="Modelo"
+                        maxlength="30" value='{{ formulario["modelo"] }}'>
+                </div>
+            </div>
+            {% if inv_accion==2: %}
+            <script>
+                document.getElementById('codigo').disabled = true;
+                document.getElementById('nombre').disabled = true;
+                document.getElementById('marca').disabled = true;
+                document.getElementById('modelo').disabled = true;
+            </script>
+            {% endif %}
+
+
+            <!-- COLLAPSE mas detalles del producto-->
+            <div {% if inv_accion!=3: %} class="collapse" {% endif %} id="collapseProdDetalle">
+
+
+                <!-- CATEGORIA -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-md-5 col-lg-3">
+                        <label class="text-primary" for="categoria"><b>Categoría</b></label>
+                    </div>
+                    <div class="col-9 col-sm-7 col-lg-9">
+                        <select class="form-control" id="categoria" name="categoria">
+                            <option value=1>Accesorio</option>
+                            <option value=2>Repuesto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- DESCRIPCION -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-md-5 col-lg-3">
+                        <label class="text-primary" for="descripcion"><b>Descripción</b></label>
+                    </div>
+                    <div class="col-9 col-sm-7 col-lg-9">
+                        <textarea class="form-control" rows=4 name="descripcion" id="descripcion" maxlength="149"
+                            placeholder="Descripción">{{ formulario["descripcion"] }}</textarea>
+                    </div>
+                </div>
+                <!-- GARANTIA -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-md-5 col-lg-3">
+                        <label class="text-primary" for="garantia"><b>Garantía</b></label>
+                    </div>
+                    <div class="col-9 col-sm-7 col-lg-9">
+                        <input class="form-control" type="number" name="garantia" id="garantia" value=30 max=150
+                            placeholder="Días de Garantía" value='{{ formulario["garantia"] }}'>
+                    </div>
+                </div>
+                {% if not tienda_accion and inv_accion: %}
+                <!-- DIAS DISPONIBILIDAD -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-md-5 col-lg-3">
+                        <label class="text-primary p-0 m-0" for="disponibilidad"><b>Días disp.</b>
+                        </label>
+                        <img src="{{ url_for('static', filename='icons_svg/info1.svg') }}" alt="Info"
+                            class="img inline p-0 m-0" style="width:1.3rem;height:1.2rem;" title="Info" tabindex="0"
+                            data-toggle="popover" data-trigger="focus" title="Información" data-placement="left"
+                            data-content="Días estimados para disponibilidad para venta desde que se hace el pedido">
+                    </div>
+                    <div class="col-9 col-sm-7 col-lg-9">
+                        <input class="form-control" type="number" name="disponibilidad" id="disponibilidad" value=0
+                            max=120 placeholder="Días disponibilidad" value='{{ formulario["disponibilidad"] }}'>
+                    </div>
+                </div>
+                <!-- CABYS -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-md-5 col-lg-3">
+                        <label class="text-primary" for="cabys"><b>CABYS</b></label>
+                    </div>
+                    <div class="col-9 col-sm-7 col-lg-9">
+                        <input class="form-control" type="number" name="cabys" id="cabys" maxlength="15"
+                            placeholder="CABYS" value='{{ formulario["cabys"] }}'>
+                    </div>
+                </div>
+                {% endif %}
+                <hr class="hr">
+                <!-- SUBIR IMAGENES -->
+                <div class="row align-items-center p-1" style="height: 138px;">
+                    <div class="col-4 col-md-2" style="text-align: center;">
+                        <input type="file" name="inv_file1" id="inv_file1" placeholder="imagenes" datos-imagenes=""
+                            style="display: none;" accept="image/png, image/jpeg">
+                        <img id="inv_img_file1" src="{{ url_for('static', filename='icons_svg/imagen_agregar.svg') }}"
+                            alt="Info" class="btn btn-primary p-0 m-0" style="width:2rem;height:2rem;display:none;"
+                            onclick="document.getElementById('inv_file1').click()">
+                        <div id="inv_img_thumb1"></div>
+                        <img id="inv_img_clear_file1" src="{{ url_for('static', filename='icons_svg/reprove.svg') }}"
+                            alt="Quitar Imagen" style="width:1.5rem;height:1.5rem;display: none;">
+                    </div>
+                    <div class="col-4 col-md-2" style="text-align: center;">
+                        <input type="file" name="inv_file2" id="inv_file2" placeholder="imagenes" datos-imagenes=""
+                            style="display: none;" accept="image/png, image/jpeg">
+                        <img id="inv_img_file2" src="{{ url_for('static', filename='icons_svg/imagen_agregar.svg') }}"
+                            alt="Info" class="btn btn-primary p-0 m-0" style="width:2rem;height:2rem;display:none;"
+                            onclick="document.getElementById('inv_file2').click()">
+                        <div id="inv_img_thumb2"></div>
+                        <img id="inv_img_clear_file2" src="{{ url_for('static', filename='icons_svg/reprove.svg') }}"
+                            alt="Quitar Imagen" style="width:1.5rem;height:1.5rem;display: none;">
+                    </div>
+                    <div class="col-4 col-md-2" style="text-align: center;">
+                        <input type="file" name="inv_file3" id="inv_file3" placeholder="imagenes" datos-imagenes=""
+                            style="display: none;" accept="image/png, image/jpeg">
+                        <img id="inv_img_file3" src="{{ url_for('static', filename='icons_svg/imagen_agregar.svg') }}"
+                            alt="Info" class="btn btn-primary p-0 m-0" style="width:2rem;height:2rem;display:none;"
+                            onclick="document.getElementById('inv_file3').click()">
+                        <div id="inv_img_thumb3"></div>
+                        <img id="inv_img_clear_file3" src="{{ url_for('static', filename='icons_svg/reprove.svg') }}"
+                            alt="Quitar Imagen" style="width:1.5rem;height:1.5rem;display: none;">
+                    </div>
+
+                </div>
+                <hr class="hr">
+                {% if inv_accion==1 or (inv_accion==3 and inv_accion2==1 and nuevo_codigo!=""): %}
+                <div class="row">
+                    <div class="col-12">
+                        <label id="alerta-producto" class="text-danger p-3"
+                            style="font-size:0.9rem;display: none;">X</label>
+                        <label id="guardar-boleta-alerta" style="font-size:0.9rem;" hidden></label>
+                        <button id="boton-activar-editar-producto" type="button" class="btn btn-info btn-sm"
+                            style="float:right">Editar</button>
+                    </div>
+                </div>
+                {% endif %}
+                {% if inv_accion==3 and nuevo_codigo=="": %}
+                <!-- SUBMIT Y VALIDACION -->
+                <div class="row align-items-center p-1">
+                    <div class="col-5 col-sm-2">
+                        <button type="button" class="btn btn-primary" id="crear-producto" name="crear-producto">
+                            Crear
+                            Producto
+                        </button>
+                    </div>
+                    <div class="col-7 col-sm-5">
+                        <label id="alerta-producto" class="text-danger p-3"
+                            style="font-size:0.9rem;display: none;">X</label>
+                        <label id="guardar-boleta-alerta" style="font-size:0.9rem;" hidden></label>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if inv_accion!=3: %}
+            <a data-bs-toggle="collapse" href="#collapseProdDetalle" role="button" aria-expanded="false"
+                id="btn-collapse-detalle-producto" aria-controls="collapseProdDetalle" data-toggle="collapse"
+                style="font-weight: bold;font-size: 1.3rem;"></a>
+            <script>
+                $('#btn-collapse-detalle-producto').text("(+)");
+                // Buscar por Cliente por campo DOCUMENTO
+                $(document).on('click', "#btn-collapse-detalle-producto", function (e) {
+                    if ($('#btn-collapse-detalle-producto').text() == "(+)") {
+                        $('#btn-collapse-detalle-producto').text("(-)");
+                    } else {
+                        $('#btn-collapse-detalle-producto').text("(+)");
+                    }
+                });
+            </script>
+
+            {% endif %}
+
+        </div>
+    </fieldset>
+</form>
+
+{% if (((not tienda_accion and not id_boleta) and (inv_accion==3 and inv_accion2==1 and nuevo_codigo!="")) or
+inv_accion==1): %}
+<br>Lotes<br>
+<div id="tabla_lotes" class="inv_table"></div>
+{% endif %} {% if inv_accion==1 or (inv_accion==3 and inv_accion2==1 and nuevo_codigo!=""): %}
+<!-- Desactiva los inputs del producto para que no se pueda modificar en esta seccion -->
+<script>
+    var elementos = document.getElementById("form-producto").elements;
+    for (var i = 0; i <= elementos.length - 1; i++) {
+        if ((elementos[i].type == 'text' || elementos[i].type == 'textarea' || elementos[i].type == 'number' || elementos[i].type == 'select-one')) {
+            elementos[i].disabled = true;
+        }
+    }
+</script>
+{% endif %}
+
+{% if inv_accion==3 and inv_accion2==1 and nuevo_codigo!="": %}
+<br>
+<button type="button" id="lote_registrar" class="btn btn-primary">
+    + Lote
+</button>
+<!-- COLLAPSE para registra LOTE-->
+<div class="collapse" id="collapseRegLote" aria-expanded="False">
+    {% include 'inv_registrar.html' %}
+</div>
+<script>
+    $('#categoria').val("{{formulario['categoria']}}");
+</script>
+{% endif %}
+
+
+<!--Modal CONFIRMACION DE CREACION-->
+<div class="modal fade bd-example-modal" id="modal-confirmacion-producto" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" style="font-size:1.4rem" id="titulo_modal2">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3 class="modal-title text-primary" style="font-size:1rem" id="modal-mensaje-producto"></h3>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" value=0 id="current_inv_accion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button id="btn-modal-producto-confirmacion" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Modal MUESTRA IMAGEN DE INVENTARIO-->
+<div class="modal fade bd-example-modal" id="modal-inv-imagen" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" id="modal-dialog-inv-imagen" role="document">
+        <div class="modal-content">
+            <div class="modal-body" id="modal-body-inv-imagen">
+                <div class="inv_imagen_zoomer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #modal-dialog-inv-imagen {
+        overflow-y: initial !important
+    }
+
+    #modal-body-inv-imagen {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .thumb {
+        height: 100px;
+        border: 1px solid #000;
+        margin: 5px 5px 0 0;
+    }
+</style>
+
+<script type="text/javascript">
+
+
+    {% if inv_accion == 3 and nuevo_codigo != "": %}
+    $("#inv_img_file1").css("display", "");
+    $("#inv_img_file2").css("display", "");
+    $("#inv_img_file3").css("display", "");
+    {% endif %}
+
+</script>
+
+<!--Modal AJUSTA LOTE-->
+<div class="modal fade bd-example-modal" id="modal-ajustar-lote" tabindex="-1" role="dialog"
+    aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" style="font-size:1.4rem" id="modal-ajustar-lote-titulo">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row align-items-center p-1">
+                    <div class="col-3">
+                        <label class="text-primary" for="ajustar_unidades"><b>Unidades</b></label>
+                    </div>
+                    <div class="col-9">
+                        <input class="form-control" type="number" name="ajustar_unidades" id="ajustar_unidades" value=1>
+                    </div>
+                </div>
+                <div class="row align-items-center p-1">
+                    <div class="col-3">
+                        <label class="text-primary" for="ajuste_tipo"><b>Tipo de Ajuste</b></label>
+                    </div>
+                    <div class="col-9">
+                        <select class="form-control" id="ajuste_tipo" name="ajuste_tipo">
+                            <option value=1>Egreso</option>
+                            <option value=2>Ingreso</option>
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <div class="row align-items-center p-1">
+                    <div class="col-12 col-sm-3">
+                        <label class="text-primary" for="ajuste-justificacion"><b>Justificación</b></label>
+                    </div>
+                    <div class="col-12 col-sm-9">
+                        <textarea class="form-control" rows=5 name="ajuste-justificacion" id="ajuste-justificacion"
+                            maxlength="150"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <label id="alerta-ajuste-lote" class="text-danger p-3" style="font-size:0.9rem;display: none;">X</label>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button id="modal-ajustar-lote-confirmacion" class="btn btn-primary">Confirmar</button>
+                <input type="hidden" id="modal_id_lote_ajustar" value=0>
+            </div>
+        </div>
+    </div>
+</div>

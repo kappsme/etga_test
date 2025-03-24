@@ -1,0 +1,319 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+
+<!-- BUSQUEDA CLIENTE -->
+<script type=text/javascript src="{{ url_for('static', filename='js/etga2.js') }}"></script>
+
+<div class="d-none d-xl-block col-xl-2 px-0 mx-0 justify-content-end"></div>
+
+<div class="col-xs-12 col-md-6 col-lg-5 px-0 mx-0 justify-content-end">
+    <div class="card text-white my-2 mx-2 px-0">
+        <div class="card-header text-center bg-success  my-0 mx-0 py-0" style="font-size:1.5rem">Buscar Cliente
+        </div>
+        <div class="card-body px-1 py-1 my-0">
+
+            <!-- DATOS DEL CLIENTE-->
+            <fieldset class="border p-1 my-0">
+                <legend class="w-auto text-primary my-0" style="font-size:1.4rem">Cliente</legend>
+
+
+                <div class="form-row my-0 py-0">
+                    <div class="form-group col-5 my-0">
+                        <label class="text-primary my-0 " style="font-size:1rem" for="documento">Tipo</label>
+                        <select class="form-control form-control-sm px-0" id="tipo-documento"
+                            style="font-size:1rem;height:2.2rem;">
+                            <option value=1>Cédula</option>
+                            <option value=2>Residencia</option>
+                            <option value=3>Pasaporte</option>
+                            <option value=4>Cédula Jurídica</option>
+                            <option value=5>Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-5 mx-0 px-0">
+                        <label class="text-primary m-0" style="font-size:1rem" for="documento">N°</label>
+                        <input class="form-control form-control-sm m-0 px-1 block" type="text" name="documento"
+                            id="documento" placeholder="Documento" style="font-size:1rem">
+                    </div>
+                    <div class="form-group col-2 m-0 px-1">
+                        <br>
+                        <button type="button" id="boton-buscar-padron" name="boton-buscar-padron"
+                            class="btn btn-primary btn-sm-2 p-0" style="width:2.3rem;height:2.15rem;">
+                            <img font-color="white" src="{{ url_for('static', filename='icons_svg/search.svg') }}"
+                                alt="Buscar" width="15" height="15" title="Buscar">
+                        </button>
+                    </div>
+                </div>
+
+                <div id="nuevo-alerta" class="alert alert-danger mx-0 px-0" role="alert" style="font-size:0.80rem"
+                    hidden>
+                </div>
+                <br>
+
+                <!--NOMBRES Y APELLIDOS-->
+                <hr class="hr pb-0 mb-0">
+
+                <div class="form-row my-0 py-0">
+                    <div class="form-group col-5 my-0 py-0">
+                        <label class="text-primary my-0 py-0" style="font-size:1rem"
+                            for="nombres"><b>Nombres</b></label>
+                    </div>
+                    <div class="form-group col-5 my-0 py-0">
+                        <label class="text-primary my-0 py-0" style="font-size:1rem" for="apellidos">Apellidos</label>
+                    </div>
+                    <div class="form-group col-2 my-0 py-0">
+                        <img id="check-ok-padron" class="img py-0 my-0"
+                            src="{{ url_for('static', filename='icons_svg/approve.svg') }}"
+                            style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                        <img id="check-nok-padron" class="img py-0 my-0"
+                            src="{{ url_for('static', filename='icons_svg/reprove.svg') }}"
+                            style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                    </div>
+                </div>
+                <div class="form-row my-0 py-0">
+                    <div class="form-group col-5 my-0 py-0">
+                        <input class="form-control form-control-sm border-success my-0 py-0" style="font-size:1rem"
+                            type="text" name="nombres" id="nombres" placeholder="Nombres">
+                    </div>
+                    <div class="form-group col-7 my-0 py-0">
+                        <input class="form-control form-control-sm my-0 py-0" style="font-size:1rem" type="text"
+                            name="apellidos" id="apellidos" placeholder="Apellidos" disabled>
+                    </div>
+                </div>
+                <br>
+
+                <!-- DATOS EN PLATAFORMA-->
+                <hr class="hr pb-0 mb-0">
+                <div class="form-row my-0 py-0">
+                    <div class="form-group col-2 my-0">
+                        <label class="text-primary my-0" style="font-size:1rem">Código</label>
+                    </div>
+                    <div class="form-group col-3 my-0 py-0">
+                        <label class="text-primary my-0" style="font-size:1rem">Tipo Cliente</label>
+                    </div>
+                    <div class="form-group col-5 my-0 py-0">
+                        <label class="text-primary my-0" style="font-size:1rem">Correo Electrónico</label>
+                    </div>
+                    <div class="form-group col-2 my-0 py-0">
+                        <img id="check-ok-etga" class="img py-0 my-0"
+                            src="{{ url_for('static', filename='icons_svg/approve.svg') }}"
+                            style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                        <img id="check-nok-etga" class="img py-0 my-0"
+                            src="{{ url_for('static', filename='icons_svg/reprove.svg') }}"
+                            style="float:right;width:1.3rem;height:1.3rem;" hidden>
+                    </div>
+                </div>
+                <div class="form-row my-0">
+                    <div class="form-group col-2 my-0">
+                        <input class="form-control form-control-sm" type="number" name="codigo-cliente"
+                            id="codigo-cliente" style="font-size:1rem;height:2rem;" disabled>
+                    </div>
+                    <div class="form-group col-3 my-0">
+                        <select class="form-control form-control-sm" id="tipo-cliente"
+                            style="font-size:1rem;height:2rem;" disabled>
+                            <option value=1>Natural</option>
+                            <option value=2>Jurídico</option>
+                            <option value=3>Exhonerado</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-7 my-0">
+                        <input class="form-control form-control-sm" type="email" name="correo" id="correo"
+                            style="font-size:1rem;height:2rem;" placeholder="Correo Electronico" disabled>
+                    </div>
+
+                </div>
+                <div class="form-row my-0">
+                    <div class="form-group col-4 my-0">
+                        <label class="text-primary my-0 py-0" style="font-size:1rem">Teléfono 1</label>
+                        <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem" type="number"
+                            name="telefono" id="telefono" placeholder="" min=20000000 max=89999999 disabled>
+                    </div>
+                    <div class="form-group col-4 my-0">
+                        <label class="text-primary my-0 py-0" style="font-size:1rem">Teléfono 2</label>
+                        <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem" type="number"
+                            name="telefono2" id="telefono2" placeholder="" min=20000000 max=89999999 disabled>
+                    </div>
+                    <div class="form-group col-4 my-0">
+                        <label class="text-primary my-0 py-0" style="font-size:1rem">Teléfono 3</label>
+                        <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem" type="number"
+                            name="telefono2" id="telefono3" placeholder="" min=20000000 max=89999999 disabled>
+                    </div>
+                </div>
+                <div class="form-row my-0">
+                    <div class="form-group col-5 my-0">
+                        <label class="text-primary my-0 py-0" style="font-size:1rem">Provincia</label>
+                        <select class="form-control form-control-sm" id="provincia" style="font-size:1rem;" disabled>
+                            <option value=1>Alajuela</option>
+                            <option value=2>Heredia</option>
+                            <option value=3>San José</option>
+                            <option value=4>Puntarenas</option>
+                            <option value=5>Cartago</option>
+                            <option value=6>Guanacaste</option>
+                            <option value=7>Limón</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-7 my-0">
+                        <label class="text-primary my-0 py-0" style="font-size:1rem">Zona</label><br>
+                        <div class="autocomplete">
+                            <input class="form-control form-control-sm px-1 mx-0" style="font-size:1rem" type="text"
+                                name="zona" id="zona" placeholder="Zona" maxlength="25" value="Alajuela" disabled>
+                        </div>
+                        <script>
+                            var zonas = [
+                                {% for z in zonas %}
+                            "{{z.nombre}}",
+                                {% endfor %}
+                            ""];
+                        </script>
+
+                    </div>
+                </div>
+                <div id="guardar-alerta" class="alert alert-danger m-1 p-1" role="alert" style="font-size:0.85rem"
+                    hidden>
+                </div>
+
+            </fieldset>
+
+            <!--Botones para edicion de Cliente-->
+            <div id=botones class="mt-2">
+                <button id="boton-editar-cliente" type="button" data-target="#modal_editar_cliente"
+                    class="btn btn-info btn-sm" style="font-size:0.7rem;float:left" disabled=true
+                    data-toggle="modal">Editar</button>
+                <button id="boton-guardar-cliente" name="boton-guardar-cliente" type="button"
+                    class="btn btn-info btn-sm" style="font-size:0.7rem;float:right" disabled>Guardar</button>
+
+                <!-- <button id="boton_cliente_anonimo" type="button" class="btn btn-info btn-sm"
+                                style="font-size:0.7rem;float:right">Anónimo</button>-->
+            </div>
+
+            <!--Modal MOTIVO de la Boleta-->
+            <div class="modal fade bd-example-modal" id="modal-motivo" tabindex="-1" role="dialog"
+                aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-primary" style="font-size:1.4rem" id="titulo_modal2">
+                                Ingrese el Motivo que describe el Cliente</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="width: 30rem;">
+                            <textarea name="motivo2" id="motivo2" class="form-control form-control-sm"
+                                style="font-size:1.4rem" rows="7"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Modal COMENTARIO de la Boleta-->
+            <div class="modal fade bd-example-modal" id="modal-comentario" tabindex="-1" role="dialog"
+                aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-primary" style="font-size:1.4rem" id="titulo_modal2">
+                                Comentario
+                                <p style="font-size:1rem">Incluya si se recibió accesorios con el
+                                    equipo</p>
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea name="comenario2" id="comentario2" class="form-control" style="font-size:1.4rem"
+                                rows="7"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="form-row my-0">
+                                <div class="form-group-inline col-10 my-0">
+                                    <p class="p text-primary">¿En este comentario se
+                                        detallan todos los
+                                        accesorios recibidos?</p>
+                                    <input id="verificacion-accesorios" name="verificacion-accesorios" type="checkbox"
+                                        value="1">
+                                    <label class="label text-primary" for="verificacion">SI</label>
+
+                                </div>
+                                <div class="form-group col-2 my-0">
+                                    <input type="button" class="btn btn-primary btn-sm px-1" id="boton-comentario"
+                                        name="boton-comentario" value="Guardar" style="height:4rem" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<div class="col-xs-12 col-md-6 col-lg-5 my-2 mx-0 px-0 justify-content-start">
+
+    <!-- Codigo para el autocomplete-->
+    <div id="lista_sugerencias"></div>
+
+    <div class="collapse1" id="collapseBoletas" hidden>
+        <!-- BOLETAS -->
+        <fieldset class="border p-1 my-0">
+            <legend class="w-auto text-primary my-0" style="font-size:1.4rem">Boletas</legend>
+            <table id='tbl-boletas' class="table table-responsive border m-0" style="font-size: .75rem;">
+                <thead>
+                    <tr class="bg-primary" style="color: white;">
+                        <th class="th border p-1">Boleta</th>
+                        <th class="th border p-1">Fecha Ingreso</th>
+                        <th class="th border p-1">Fecha Retiro</th>
+                        <th class="th border p-1">Estado</th>
+                        <th class="th border p-1">Equipo</th>
+                        <th class="th border p-1">Marca</th>
+                        <th class="th border p-1">Modelo</th>
+                        <th class="th border p-1">Serie</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </fieldset>
+        <!-- VENTAS -->
+        <fieldset class="border p-1 my-0">
+            <legend class="w-auto text-primary my-0" style="font-size:1.4rem">Ventas</legend>
+            <table id='tbl-ventas' class="table table-responsive border m-0" style="font-size: .75rem;">
+                <thead>
+                    <tr class="bg-primary" style="color: white;">
+                        <th class="th border p-1">Fecha</th>
+                        <th class="th border p-1">Venta</th>
+                        <th class="th border p-1">Monto Total</th>
+                        <th class="th border p-1">Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </fieldset>
+
+    </div>
+
+</div>
+<script>
+    // Consulta Venta
+    function ver_venta(id_venta) {
+        $.post($SCRIPT_ROOT + '/tnd', {
+            "tienda-accion": 12, // CONSULTA Venta
+            "id_venta": id_venta
+        }, function (datos) {
+            $('#modal-venta-body').html(datos);
+        });
+        $("#modal-venta").modal("show");
+    }
+    
+
+</script>
+<div class="d-none d-xl-block col-xl-2 px-0 mx-0 justify-content-end"></div>
+
+
+{% endblock %}

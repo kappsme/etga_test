@@ -1,0 +1,323 @@
+<div class="row m-0 p-0 border">
+    <div class="col-12 p-1 alert-info text-center">
+        <label style="font-size:1rem" id="lbl-principal-lote">Registrar Lote</label>
+    </div>
+</div>
+<input type="hidden" id="id_lote_ver" name="id_lote_ver" value=0>
+<form action="{{ url_for('inv') }}" method="POST" enctype="multipart/form-data" id="form-lote">
+    <input type="hidden" name="inv-accion" value=2>
+    <input type="hidden" name="inv-accion2" value=1>
+
+
+    <div class="row">
+        <div class="col-12 col-sm-7">
+            <!-- PROVEEDOR -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="proveedor"><b>Proveedor</b></label>
+                </div>
+                <div class="col-9 col-sm-8">
+                    <div class="autocomplete" style="display: block;">
+                        <input class="form-control" type="text" name="proveedor" id="proveedor" placeholder="Proveedor"
+                            maxlength="35" value=''>
+                    </div>
+                    <script>
+                        var proveedores = [{% for p in proveedores %}
+                        "{{p.nombre}}", {% endfor %}
+                        ""
+                        ];
+                    </script>
+                </div>
+            </div>
+            <!-- FACTURA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="factura"><b> N° Factura Maestra</b></label>
+                </div>
+                <div class="col-9 col-sm-9">
+                    <input class="form-control form-control-inline" type="text" name="factura" id="factura"
+                        maxlength=65 value=0 placeholder="Factura" style="width: 85%; display: inline-block;">
+                    <a id="btn-buscarFacturaMaestra" class="btn btn-primary btn-sm p-0 my-2 mx-0">
+                        <img src="{{ url_for('static', filename='icons_svg/search.svg') }}" alt="Buscar" width="32"
+                            height="32" title="Buscar">
+                    </a>
+                    <label class="text-primary" id="lbl-inv-descuento">Desc <b>0%</b></label>
+                </div>
+            </div>
+            <hr>
+            <!-- MONTO FACTURA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="monto_factura_sin_descuento"><b>Monto en Factura</b><br>(Sin
+                        Impuestos)</label>
+                </div>
+                <div class="col-9 col-sm-4">
+                    <input class="form-control" type="number" name="monto_factura_sin_descuento"
+                        id="monto_factura_sin_descuento" value=0 placeholder="Monto de la Factura">
+                </div>
+                <div class="col-12 col-sm-5">
+                    <label class="text-primary" for="f_impuestos_incluidos">Impuestos Incluidos</label>
+                    <img src="{{ url_for('static', filename='icons_svg/info1.svg') }}" alt="Info"
+                        class="img inline p-0 m-0" style="width:1.3rem;height:1.2rem;" title="Info" tabindex="0"
+                        data-toggle="popover" data-trigger="focus" title="Información" data-placement="left"
+                        data-content="Ej. Compras Internacionales que ya incluyen el impuesto">
+                    <input type="checkbox" id="f_impuestos_incluidos">
+                </div>
+            </div>
+            <!-- MONTO FACTURA CON DESCUENTO-->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="monto_factura"><b>Monto Factura</b><br>(Con Descuento)</label>
+                </div>
+                <div class="col-9 col-sm-4">
+                    <input class="form-control" type="number" name="monto_factura" id="monto_factura" value=0
+                        placeholder="Monto de la Factura" disabled>
+                </div>
+
+            </div>
+            <!-- FECHA DE LA FACTURA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="factura"><b>Fecha Factura</b></label>
+                </div>
+                <div class="col-9 col-sm-8">
+                    <input class="form-control" type="date" name="fecha_factura" id="fecha_factura"
+                        placeholder="Fecha de la Factura">
+                </div>
+            </div>
+            <hr>
+            <!-- UNIDADES -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="unidades"><b>Unidades</b></label>
+                </div>
+                <div class="col-4 col-sm-5">
+                    <input class="form-control" type="number" name="unidades" id="unidades" value=1
+                        placeholder="Unidades del Producto">
+                </div>
+                <div class="col-5 col-sm-5">
+                    <label class="text-primary" for="unidades" id="costo_unitario_lbl">Costo
+                        Unitario<br><b>₡</b></label>
+                    <input type="hidden" id="costo_unitario" value=0>
+                </div>
+            </div>
+            <!-- ESTADO -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="estado"><b>Estado</b></label>
+                </div>
+                <div class="col-9 col-sm-8">
+                    <select class="form-control" id="estado" name="estado">
+                        <option value="1" selected>Nuevo</option>
+                        <option value="2">Usado</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- BODEGA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="ubicacion"><b>Ubicación</b></label>
+                </div>
+                <div class="col-9 col-sm-8">
+                    <input class="form-control" type="text" name="ubicacion" id="ubicacion" placeholder="Ubicación">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-5">
+            <!-- FLETE -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="flete"><b>Costo Flete</b></label>
+                </div>
+                <div class="col-9 col-sm-7">
+                    <input class="form-control" type="number" name="flete" id="flete" placeholder="Costo Flete" value=0>
+                </div>
+            </div>
+            <!-- ADUANA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="aduana"><b>Costo Aduana</b></label>
+                </div>
+                <div class="col-9 col-sm-7">
+                    <input class="form-control" type="number" name="aduana" id="aduana" placeholder="Costo Aduana"
+                        value=0>
+                </div>
+            </div>
+            <hr>
+            <!-- PRECIO VENTA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="precio"><b>Precio Venta</b></label>
+                </div>
+                <div class="col-9 col-sm-7">
+                    <input class="form-control" type="number" name="precio" id="precio" placeholder="precio">
+                </div>
+            </div>
+            <!-- UTILIDAD CALCULADA -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="unidades"><b>Utilidad</b><br>(Unidad)</label>
+                </div>
+                <div class="col-9 col-sm-7">
+                    <label class="text-primary" id="utilidad"></label>
+                </div>
+            </div>
+            <!-- PRECIO TALLER -->
+            <div class="row align-items-center p-1">
+                <div class="col-3 col-sm-2">
+                    <label class="text-primary" for="precio_a_taller"><b>Precio a Taller</b></label>
+                </div>
+                <div class="col-9 col-sm-7">
+                    <input class="form-control" type="number" name="precio_a_taller" id="precio_a_taller" placeholder="Precio a taller">
+                </div>
+            </div>
+            <br><br>
+            <!-- UTILIDAD VISIBLE AL EDITAR EL LOTE -->
+            <div id="inv_editar_lote_campos" hidden>
+                <!-- fecha Ingreso -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-sm-2">
+                        <label class="text-primary" for="username"><b>Fecha Ingreso</b></label>
+                    </div>
+                    <div class="col-9 col-sm-7">
+                        <input class="form-control" type="text" name="fecha_ingreso" id="fecha_ingreso">
+                    </div>
+                </div>
+                <!-- username -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-sm-2">
+                        <label class="text-primary" for="unidades"><b>Usuario</b></label>
+                    </div>
+                    <div class="col-9 col-sm-7">
+                        <input class="form-control" type="text" name="username" id="username">
+                    </div>
+                </div>
+                <!-- unidades disponibles -->
+                <div class="row align-items-center p-1">
+                    <div class="col-3 col-sm-2">
+                        <label class="text-primary" for="unidades"><b>Unidades Disponibles</b></label>
+                    </div>
+                    <div class="col-9 col-sm-7">
+                        <input class="form-control" type="text" name="unidades_disponibles" id="unidades_disponibles">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="hr">
+    <!-- SUBMIT Y VALIDACION -->
+    <div class="row align-items-center p-1">
+        <div class="col-5 col-sm-2">
+            <button type="button" class="btn btn-primary" id="crear-lote" name="crear-lote">
+                Registrar Lote
+            </button>
+            <button type="button" class="btn btn-primary" id="btn-editar-lote" name="btn-editar-lote" estado=0 hidden>
+                Editar Lote
+            </button>
+        </div>
+        <div class="col-7 col-sm-5">
+            <label id="alerta-lote" class="text-danger p-3" style="font-size:0.9rem;display: none;">X</label>
+            <label id="guardar-boleta-alerta" style="font-size:0.9rem;" hidden></label>
+        </div>
+    </div>
+</form>
+
+<!-- MODAL FACTURA MAESTRA -->
+<div class="modal fade" id="modal-facturaMaestra" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" style="font-size:0.9rem" id="exampleModalLabel">Factura Maestra
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <!-- PROVEEDOR -->
+                        <div class="row align-items-center p-1">
+                            <div class="col-4">
+                                <label class="text-primary" for="proveedor"><b>Proveedor</b></label>
+                            </div>
+                            <div class="col-8 col-sm-6">
+                                <div class="autocomplete" style="display: block;">
+                                    <input class="form-control" type="text" name="fm_proveedor" id="fm_proveedor"
+                                        placeholder="Proveedor" maxlength="35" value=''>
+                                </div>
+                                <script>
+                                    var proveedores = [{% for p in proveedores %}
+                                    "{{p.nombre}}", {% endfor %}
+                                    ""
+                                    ];
+                                </script>
+                            </div>
+                        </div>
+                        <!-- FACTURA -->
+                        <div class="row align-items-center p-1">
+                            <div class="col-4">
+                                <label class="text-primary" for="fm_factura"><b>Factura Maestra</b></label>
+                            </div>
+                            <div class="col-8 col-sm-6">
+                                <input class="form-control form-control-inline" type="number" name="fm_factura"
+                                    id="fm_factura" maxlength=20 value=0 placeholder="Factura">
+                            </div>
+                        </div>
+                        <!-- MONTO FACTURA -->
+                        <div class="row align-items-center p-1">
+                            <div class="col-4">
+                                <label class="text-primary" for="fm_monto_factura"><b>Monto Factura Maestra</b>(Sin
+                                    Impuestos)</label>
+                            </div>
+                            <div class="col-8 col-sm-6">
+                                <input class="form-control" type="number" name="fm_monto_factura" id="fm_monto_factura"
+                                    value=0 placeholder="Monto de la actura">
+                            </div>
+                        </div>
+                        <!-- DESCUENTO FACTURA -->
+                        <div class="row align-items-center p-1">
+                            <div class="col-4">
+                                <label class="text-primary" for="fm_monto_factura"><b>Descuento Factura
+                                        Maestra</b></label>
+                            </div>
+                            <div class="col-8 col-sm-6">
+                                <input class="form-control" type="number" name="fm_descuento_factura"
+                                    id="fm_descuento_factura" value=0 placeholder="Descuento de la actura">
+                            </div>
+                        </div>
+
+                        <!-- CALCULOS -->
+                        <div class="row align-items-center p-1">
+                            <div class="col-12">
+                                <label class="text-primary" id="fm_calculos"><b></b></label>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <label id="fm-alerta" class="text-danger p-3" style="font-size:0.9rem;display: none;"></label>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    id="cerrar-modal-pago">Cerrar</button>
+                <button id="boton-confirmar-factura-maestra" type="submit"
+                    class="btn btn-primary">GUARDAR/ACTUALIZAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Desactiva los inputs del producto para que no se pueda modificar en esta seccion -->
+<script>
+    var elementos = document.getElementById("form-lote").elements;
+    for (var i = 0; i <= elementos.length - 1; i++) {
+        if ((elementos[i].type == 'text' || elementos[i].type == 'date' || elementos[i].type == 'number')) {
+            elementos[i].value = "";
+        }
+    }
+</script>

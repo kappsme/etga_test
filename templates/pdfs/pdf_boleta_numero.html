@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>KAPP: {{session['kapp']}}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='bs441/css/bootstrap.spacelab.css') }}">
+
+</head>
+
+<body onload="javascript:window.print()">
+    
+    <div id="contenido">
+        <table class='table bordered'>
+            <tbody>
+                <!--Ciclo de Boletas-->
+                {% for i in range(copias) %}
+                <tr>
+                    <td scope="col" class="px-1 m-3">
+                        <p style="font-size:6rem" class="p-0 m-0">BOLETA</p>
+                        <p style="font-size:10rem" class="p-0 m-0">{{ id_boleta }}</p>
+                        <br>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</body>
+</html>
+
+
+ 
+     

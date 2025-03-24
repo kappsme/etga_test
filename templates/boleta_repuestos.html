@@ -1,0 +1,244 @@
+<div class="card text-white my-2 mx-2 px-0">
+	<div class="card-header text-center alert-info my-0 mx-0 py-0" style="font-size:1.1rem">
+		Reparación - Repuestos <div id='lbl-total-repuestos' class="text-primary" style="font-size: .9rem;">(Facturar ₡
+			{{ '{:0,.2f}'.format(saldo_repuestos) }})</div>
+	</div>
+	<div class="card-body px-0 py-1 my-0">
+
+		<div class="container">
+			<div class="row">
+				{% if datos_estado['id_estado']==4: %}
+				<div class="col-12 col-sm-4 align-self-center border">
+					<div class="form-row my-0 py-0">
+						<div class="form-group col-8 my-0">
+							<label class="text-primary my-0 py-0" for="repuesto"
+								style="font-size:0.75rem">Repuesto</label>
+							<div class="autocomplete">
+								<input class="form-control" type="text" name="repuesto" id="repuesto"
+									placeholder="Repuesto" style="font-size:0.9rem" maxlength="25">
+							</div>
+							<script>
+								var repuestos = [
+									{% for m in repuestos %}
+								"{{m.nombre}}",
+									{% endfor %}
+								""];
+							</script>
+						</div>
+						<div class="form-group col-4 my-0 align-self-center">
+							<label class="text-primary my-0 py-0" for="repuesto-unidades"
+								style="font-size:0.75rem">Unidades</label>
+							<input class="form-control block" type="number" id="repuesto-unidades" value=1
+								style="font-size: 1rem;" />
+						</div>
+					</div><br>
+					<div class="form-row my-0 py-0">
+						<div class="form-group col-12 my-0">
+							<div class="form-row my-0 py-0 border">
+								<div class="form-group col-12 my-0 text-center">
+									<label class="text-primary my-0 py-0" for="repuesto-costo"
+										style="font-size:0.75rem">
+										<b>Costo por Unidad (₡)</b></label>
+								</div>
+							</div>
+							<div class="form-row my-0 py-0">
+								<div class="form-group col-6 my-0">
+									<label class="text-primary my-0 py-0" for="repuesto-costo"
+										style="font-size:0.75rem">
+										Interno</label>
+									<input class="form-control" type="number" id="repuesto-costo" value="0" />
+								</div>
+								<div class="form-group col-6 my-0">
+									<label class="text-primary my-0 py-0" for="repuesto-costo-f"
+										style="font-size:0.75rem">
+										Facturar</label>
+									<input class="form-control" type="number" id="repuesto-costo-f" value="0" />
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-row my-0 py-2">
+						<div class="form-group col-6 my-0">
+							<input type="radio" id="tipo-repuesto-nuevo" name="tipo-repuesto" value=1 checked>
+							<label class="text-primary my-0" style="font-size:1rem"
+								for="tipo-repuesto-nuevo">Nuevo</label><br>
+						</div>
+						<div class="form-group col-6 my-0">
+							<input type="radio" id="tipo-repuesto-usado" name="tipo-repuesto" value=2>
+							<label class="text-primary my-0" style="font-size:1rem"
+								for="tipo-repuesto-usado">Usado</label><br>
+						</div>
+						<!--<div class="form-group col-4 my-0">
+							<input type="radio" id="tipo-repuesto-otro" name="tipo-repuesto" value=3>
+							<label class="text-primary my-0" style="font-size:1rem"
+								for="tipo-repuesto-otro">Otro</label><br>
+						</div>
+						-->
+					</div>
+					<div class="form-row my-0 py-0">
+						<div class="form-group col-12 my-0">
+							<label class="text-primary my-0 py-0" for="respuesto-proveedor"
+								style="font-size:0.75rem">Proveedor</label>
+							<input class="form-control" type="text" id="repuesto-proveedor" placeholder="Proveedor"
+								maxlength="25" />
+						</div>
+						<div id="repuesto-alerta" class="alert alert-danger m-1 p-1" role="alert"
+							style="font-size:0.85rem" hidden>
+						</div>
+					</div>
+
+				</div>
+				<div class="col-12 col-sm-1">
+					<div class="row">
+
+						<div class="col-7 col-md-12 order-md-last text-right">
+							<button id="btn-pasar-a-repuestos-modal" type="button" class="btn btn-primary"
+								style="height:5rem; width: 3rem;font-size: 1.8rem;">
+								<img src="{{ url_for('static', filename='icons_svg/caret-right.svg') }}"
+									alt="Registrar Repuesto" class="img inline" style="width:1.6rem;height:1.6rem;"
+									title="Registrar repuesto">
+							</button>
+						</div>
+						<div class="col-5 col-md-12 text-right">
+							<button id="btn-repuestos-inventario-modal" type="button" class="btn btn-primary m-0 p-0"
+								style="height:3rem; width: 3rem;font-size: 1.8rem;" data-toggle="modal"
+								data-target="#modal-repuesto-inventario">
+								<img src="{{ url_for('static', filename='icons_svg/inventario.svg') }}"
+									alt="Traer de Inventario" class="img inline" style="width:1.6rem;height:1.6rem;"
+									title="Traer de Inventario">
+							</button><br><br>
+						</div>
+					</div>
+				</div>
+
+				<!-- MODAL REPUESTO DE INVENTARIO-->
+				<div class="modal fade" id="modal-repuesto-inventario" tabindex="-1" role="dialog"
+					aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-xl" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 id='modal-repuesto-titulo' class="modal-title text-primary"
+									style="font-size:1.3rem">Inventario
+								</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="container no-gutters">
+									<div class="row">
+										<div class="col-12 col-sm-8">
+											{% include 'inv_buscar.html' %}
+										</div>
+										<div class="col-12 col-sm-4" id="espacio_carrito_carga" hidden>
+											{% include 'tienda_carrito_carga.html' %}
+										</div>
+									</div>
+								</div>
+								<script type=text/javascript
+									src="{{ url_for('static', filename='js/inventario.js') }}"></script>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal"
+									id="cerrar-modal-repuesto">Cerrar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-7 m-0 p-0">
+					{% else: %}
+					<div class="col-12 align-self-center"></div>
+					{% endif %}
+					<table id='tbl-repuestos' class="table table-responsive border m-0" style="font-size: .75rem;">
+						<thead>
+							<tr>
+								<th class="th border p-1">Repuesto<br>/Tipo</th>
+								<th class="th border p-1">Cant.</th>
+								<th class="th border p-1">Costo U. (Interno)</th>
+								<th class="th border p-1">Costo U. (Facturar)</th>
+								<th class="th border p-1">Total Interno</th>
+								<th class="th border p-1">Total Factura</th>
+								<th></th>
+							</tr>
+						</thead>
+						{% if boleta_msg[3]==0: %}
+						<tbody>
+						</tbody>
+					</table>
+					<br>
+					<span id="span-no-repuestos" class="badge w-auto badge-warning" style="font-size:0.7rem">No se
+						encontró ningún Repuesto
+						Utilizado!</span>
+					<br>
+					{% else %}
+					<tbody>
+						{% for reps in boleta_msg[3] %}
+						<tr {% if reps['estado']==0: %}class="alert-warning" {% endif %}>
+							<td class="th border p-1">{% if reps['estado']==0: %}<del>
+									{% endif %}{{ reps['nombre'] }}<br>/{{ reps['tipo_repuesto'] }}</del></td>
+							<td class="th border p-1">{% if reps['estado']==0: %}<del>
+									{% endif %}{{ reps['cantidad'] }}</del></td>
+							<td class="th border p-1">{% if reps['estado']==0: %}<del>
+									{% endif %}{{ '{:0,.0f}'.format(reps['costo']) }}</del></td>
+							<td class="th border p-1">{% if reps['estado']==0: %}<del>
+									{% endif %}{{ '{:0,.0f}'.format(reps['costo_factura']) }}</del></td>
+							<td class="th border p-1">{% if reps['estado']==0: %}<del>
+									{% endif %}{{ '{:0,.0f}'.format(reps['costo_total']) }}</del></td>
+							<td class="th border p-1">{% if reps['estado']==0: %}<del>
+									{% endif %}{{ '{:0,.0f}'.format(reps['costo_total_factura']) }}</del></td>
+							<td class="th border p-1">
+								{% if reps['estado']==1 and datos_estado['id_estado']==4: %}
+								<button id="anular-repuesto-modal" class="btn btn-primary p-0 m-0"
+									style="width:1.8rem;height:1.8rem;" id_repuesto="{{ reps['id'] }}"
+									repuesto="{{ reps['nombre'] }}">
+									<img src="{{ url_for('static', filename='icons_svg/delete.svg') }}" alt="Anular"
+										class="img inline p-0 m-0" style="width:1.7rem;height:1.3rem;" title="Anular">
+								</button>
+								{% endif %}
+								{% if reps['estado']==0 %}
+								Anulado
+								{% endif %}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					</table>
+					<br>
+					<span id="span-no-repuestos" class="badge w-auto badge-warning" style="font-size:0.7rem"
+						hidden></span>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+</div>
+
+
+
+<!-- MODAL REPUESTO -->
+<div class="modal fade" id="modal-repuesto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 id='modal-repuesto-titulo' class="modal-title text-primary" style="font-size:1.3rem">
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label id="modal-repuesto-body" class="text-primary my-0" style="font-size:1.2rem">
+				</label>
+				<input id="modal-repuesto-valor" type="hidden">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					id="cerrar-modal-repuesto">Cerrar</button>
+				<button id="btn-modal-repuesto-confirmacion" class="btn btn-primary">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
