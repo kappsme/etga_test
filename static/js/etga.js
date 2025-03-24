@@ -1791,6 +1791,8 @@ $(document).ready(function () {
                 document.getElementById('collapsePago').hidden = true;
                 document.getElementById('tipo-cargo-otro').checked = true
                 document.getElementById('concepto-c').value = 'Cargo de Garantía Extendida (' + $("#nuevo-dias-garantia").val() + ' días)'
+                document.getElementById('cargo-pago').hidden = true;
+                document.getElementById('cargo-otro').hidden = false;
                 $('#modalNotificacion').modal('show');
             }
             )
