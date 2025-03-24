@@ -129,7 +129,7 @@ def datos_estado(mysql, id_boleta):
     )
     datos_dias = cursor.fetchone()
     dias_bodegaje_sin_retiro = int(datos_dias["sin_retiro"])
-    sql="""SELECT id_estado, date_format(be.fecha,'%%Y-%%b-%%d %%h:%%i%%p') fecha, username,
+    sql="""SELECT id_estado, date_format(be.fecha,'%Y-%b-%d %h:%i%p') fecha, username,
                 case when be.id_estado=6 and b.equipo_retirado = 0 and timestampdiff(day,be.fecha,sysdate())>={0} then 1 
 				    when be.id_estado=7 and b.equipo_retirado = 0 and timestampdiff(day,be.fecha,sysdate())>={0} then 1 
                 else 0 end bodegaje 
