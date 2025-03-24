@@ -16,7 +16,7 @@ services:
     networks:
       - mynet
     #entrypoint: [ 'bash', '-c', 'sleep 5 && ${MYSQL_ROOT_CONNECTION} < ${MYSQL_DUMP_FILE} && ${MYSQL_ROOT_CONNECTION} -e "${GRANTS_KAPPDB_SCHEMA}" && ${MYSQL_ROOT_CONNECTION} -e "${GRANTS_APP_SCHEMA}"']
-  etga:
+  etga_test:
     #platform: linux/arm64/v8 # SnapDragon Processors and Mac M-Series
     #platform: linux/amd64 # WINDOWS x86 / MAC x86
     image: kennycarcamo/kapps:etga

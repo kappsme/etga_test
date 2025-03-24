@@ -316,7 +316,7 @@ $(document).ready(function () {
         else if ($('#tipo-documento').val() != 1 && ($('#nombres').val() == "" || $('#apellidos').val() == "")) {
             $('#guardar-alerta').text("Los Nombres y Apellidos son obligatorios");
         }
-        else if ($('#tipo-documento').val() == 4 && $('#documento').val().length !=10 ) {
+        else if ($('#tipo-documento').val() == 4 && $('#documento').val().length != 10) {
             $('#guardar-alerta').text("Formato de Cédula Jurídica Incorrecto (Debe tener 10 dígitos)");
         }
         else if ($('#telefono').val() < 20000000 || $('#telefono').val() > 89999999) {
@@ -1296,7 +1296,7 @@ $(document).ready(function () {
                     document.getElementById("out").submit();
                 }
                 espera_off();
-                if (datos.substr(0,1) == "0") {
+                if (datos.substr(0, 1) == "0") {
                     $('#modal-ingreso-elemento-header').text("Nuevo Tipo de Repuesto detectado!").show();
                     $('#modal-ingreso-elemento-label').html("El repuesto <b>" + $('#repuesto').val().toUpperCase() + "</b> no se encuentra en el Catálogo de Repuestos de esta KAPP.<br><br>¿Desea agregarlo?");
                     $('#modal-ingreso-elemento-accion').val('repuesto');
@@ -1305,7 +1305,7 @@ $(document).ready(function () {
                     $('#modal-ingreso-elemento').modal('show');
                 }
                 else {
-                    if ((datos.substr(1,1) == "0") && parseFloat($('#repuesto-unidades').val() * $('#repuesto-costo-f').val()) + parseFloat($('#saldo-repuestos').val()) > parseFloat($('#saldo-cotizacion').val())) {
+                    if ((datos.substr(1, 1) == "0") && parseFloat($('#repuesto-unidades').val() * $('#repuesto-costo-f').val()) + parseFloat($('#saldo-repuestos').val()) > parseFloat($('#saldo-cotizacion').val())) {
                         $('#modal-ingreso-elemento-header').text("Este repuesto no puede ingresarse").show();
                         $('#modal-ingreso-elemento-label').html("El repuesto <b>" + $('#repuesto').val().toUpperCase() + "</b> no se puede ingresar.<br><br>El monto total de repuestos sobrepasa el monto de cotización entregada al cliente");
                         document.getElementById('btn-ingreso-elemento-confirmacion').hidden = true;
@@ -1775,18 +1775,24 @@ $(document).ready(function () {
     // BOTON APLICAR DESCUENTO
     $(document).on('click', "#modal-dias-garantia-btn-confirmar", function (e) {
         // document.getElementById("modal-descuento-alerta").style.visibility = "hidden";
-        if ($("#nuevo-dias-garantia").val()>0) {
+        if ($("#nuevo-dias-garantia").val() > 0) {
             $.post($SCRIPT_ROOT + '/cambio_estado', {
                 id_boleta: $('#id-boleta-interna').val(),
                 tipo_accion: 13, // CAMBIO DE DIAS DE GARANTIA
-                tipo_accion2: 0, 
+                tipo_accion2: 0,
                 nuevo_dias_garantia: $("#nuevo-dias-garantia").val(), // NUEVO DIAS DE GARANTIA 
             }, function (datos) {
-
-                    $('#id-boleta-i').val($('#id-boleta-interna').val());
-                    $('#tipo-display-i').val(6); // VISUALIZAR
-                    document.getElementById("form-buscar-boleta-i").submit();
-                }
+                document.getElementById('modalNotificacion-imagen3').hidden = false;
+                document.getElementById('modalNotificacion-imagen1').hidden = true;
+                document.getElementById('modalNotificacion-imagen2').hidden = true;
+                document.getElementById('modalNotificacion-mensaje').innerHTML = "Por favor, aplique un cargo por la Garantía Extendida de " + $("#nuevo-dias-garantia").val() + " días";
+                document.getElementById('btn-modal-cambiar-dias-garantia').innerHTML = 'Garantia Extendida (' + $("#nuevo-dias-garantia").val() + ' días)';
+                document.getElementById('collapseCargo').hidden = false;
+                document.getElementById('collapsePago').hidden = true;
+                document.getElementById('tipo-cargo-otro').checked = true
+                document.getElementById('concepto-c').value = 'Cargo de Garantía Extendida (' + $("#nuevo-dias-garantia").val() + ' días)'
+                $('#modalNotificacion').modal('show');
+            }
             )
         }
     });
