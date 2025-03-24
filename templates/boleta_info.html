@@ -41,6 +41,9 @@
 				{% elif datos_estado['id_estado']==6: %}
 				<span class="badge w-auto" style="font-size:0.8rem;background-color: teal; color:white;">En
 					Facturación</span>
+				{% elif datos_estado['id_estado']==7 and datos_estado['bodegaje']==1: %}
+				<span class="badge w-auto" style="font-size:0.8rem;background-color:darkslategrey; color:white;">
+					En Bodegaje</span>
 				{% elif datos_estado['id_estado']==7: %}
 				<span class="badge w-auto" style="font-size:0.8rem;background-color:darkslategrey; color:white;">
 					Rechazada</span>

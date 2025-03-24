@@ -123,12 +123,22 @@ def datos_estado(mysql, id_boleta):
     cursor.execute('SET lc_time_names = "es_ES"')
     id_boleta = int(id_boleta)
     cursor.execute(
-        'SELECT id_estado, date_format(fecha,"%%Y-%%b-%%d %%h:%%i%%p") fecha, username \
-                FROM boletas_estados be left join kapps_db.accounts a on be.id_usuario=a.id \
-                WHERE be.id = (SELECT MAX(be2.id) FROM boletas_estados be2 \
-                    WHERE be2.id_boleta = %s)',
-        [id_boleta],
+            """select (select contenido from datos where id=3) rechazo, 
+            (select contenido from datos where id=4) sin_retiro 
+            from dual"""
     )
+    datos_dias = cursor.fetchone()
+    dias_bodegaje_sin_retiro = int(datos_dias["sin_retiro"])
+    sql="""SELECT id_estado, date_format(be.fecha,'%%Y-%%b-%%d %%h:%%i%%p') fecha, username,
+                case when be.id_estado=6 and b.equipo_retirado = 0 and timestampdiff(day,be.fecha,sysdate())>={0} then 1 
+				    when be.id_estado=7 and b.equipo_retirado = 0 and timestampdiff(day,be.fecha,sysdate())>={0} then 1 
+                else 0 end bodegaje 
+            FROM boletas_estados be left join kapps_db.accounts a on be.id_usuario=a.id
+            left join boletas b on b.id_boleta=be.id_boleta
+                WHERE be.id = (SELECT MAX(be2.id) FROM boletas_estados be2 
+                    WHERE be2.id_boleta = {1})""".format(dias_bodegaje_sin_retiro,id_boleta)
+    print(sql)
+    cursor.execute(sql)
     datos = cursor.fetchone()
     cursor.close()
     return datos
