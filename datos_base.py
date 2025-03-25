@@ -137,7 +137,6 @@ def datos_estado(mysql, id_boleta):
             left join boletas b on b.id_boleta=be.id_boleta
                 WHERE be.id = (SELECT MAX(be2.id) FROM boletas_estados be2 
                     WHERE be2.id_boleta = {1})""".format(dias_bodegaje_sin_retiro,id_boleta)
-    print(sql)
     cursor.execute(sql)
     datos = cursor.fetchone()
     cursor.close()
