@@ -1134,7 +1134,7 @@ def cambio_estado():
                 return "NO-CORREO"
             else:
                 destinatario = str(datos["correo"])
-                envio_correo(5, destinatario, adjunto="", extra="")
+                # envio_correo(5, destinatario, adjunto="", extra="")
             cursor.execute(
                 "insert into boletas_comentarios (id_boleta, comentario, id_usuario, tipo) values (%s,%s,%s,4)",
                 [
