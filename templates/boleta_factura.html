@@ -8,6 +8,14 @@
 	<button id="btn-cerrar-boleta-sin-pagos" class="btn btn-danger mx-1 px-0 text-center" style="height: 1.9rem;">
 		<p style="font-size:0.9rem;">Cerrar Boleta</p>
 	</button>
+	<br><br>
+		<button id="btn-descuento" class="btn btn-warning btn-sm" data-toggle="modal"
+						data-target="#modal-descuento">
+						Descuento
+					</button>
+					<button id="btn-modal-cambiar-dias-garantia" class="btn btn-warning btn-sm" data-toggle="modal"
+					data-target="#modal-cambio-dias-garantia">
+					Días Garantía ({{ datos_boleta['dias_garantia'] }})
 	{% endif %}
 	{% else: %}
 	<div class="row">
@@ -179,7 +187,7 @@
 					</table>
 
 					<!-- BOTON PARA APLICAR DESCUENTOS - DATOS COMPROBANTE NO EXISTE-->
-					{% if boleta_msg[8]==0: %}
+					<!-- {% if boleta_msg[8]==0: %} -->
 					<br>
 					<button id="btn-descuento" class="btn btn-warning btn-sm" data-toggle="modal"
 						data-target="#modal-descuento">
@@ -189,7 +197,7 @@
 					data-target="#modal-cambio-dias-garantia">
 					Días Garantía ({{ datos_boleta['dias_garantia'] }})
 				</button>
-					{% endif %}
+					<!-- {% endif %} -->
 					
 								<hr>
 					<div class="row">
