@@ -1126,7 +1126,7 @@ def cambio_estado():
                 return "NO-CORREO"
             else:
                 destinatario = str(datos["correo"])
-                # envio_correo(5, destinatario, adjunto="", extra="")
+                envio_correo(5, destinatario, adjunto="", extra="")
             cursor.execute(
                 "insert into boletas_comentarios (id_boleta, comentario, id_usuario, tipo) values (%s,%s,%s,4)",
                 [
@@ -1984,19 +1984,24 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
             mensaje.attach("comprobante" + extra + ".pdf", "application/pdf", fp.read())
         mail.send(mensaje)
     if tipo_mensaje == 5:  # ENVIO DE NOTIFICACION DE RECHAZO
-        mensaje = Message(
-            "Notificación de Electrónica Torres",
-            sender=remitente,
-            recipients=[destinatario],
-        )
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute(
             "select contenido from datos where id=10",
         )
         resultado = cursor.fetchone()
+        mensaje_html = resultado["contenido"]
         cursor.close()
-        mensaje.body = urllib.parse.unquote(resultado["contenido"])
-        mail.send(mensaje)
+        with app_etga_test.app_context():
+            mail.init_app(app_etga_test)
+            
+            msg = EmailMessage(
+            "Notificación de Electrónica Torres",
+            mensaje_html,
+            "noreply@kapps.me",
+            [destinatario],
+            )
+            msg.content_subtype = 'html'
+        msg.send()        
     if tipo_mensaje == 6:  # INTERNO: ENVIO DE CODIGOS PARA RESTABLECER CONTRASEÑA
         app_etga_test.config["MAIL_USERNAME"] = "noreply@kapps.me"
         app_etga_test.config["MAIL_PASSWORD"] = "Qw@uUhF3B!HK"
