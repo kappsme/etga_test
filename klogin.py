@@ -146,7 +146,6 @@ def kcrud_usuario(mysql, accion, parametro, parametro2, aplication_id, parametro
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SET session time_zone = '-6:00'")
     if accion == 0:  # ANULA SESIONES
-        print("KENNY")
         cursor.execute(
             "delete from kapps_db.accounts_log where id_account=%s", [int(parametro)]
         )

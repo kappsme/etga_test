@@ -19,7 +19,7 @@ from flask import (
 from flask_mysqldb import MySQL
 from datetime import datetime
 from fpdf import FPDF, HTMLMixin
-from flask_mail import Mail, Message
+# from flask_mail import Message
 import re
 import os
 import MySQLdb
@@ -34,6 +34,8 @@ import base64
 from collections import Counter
 import math
 from dotenv import load_dotenv
+from flask_mailman import Mail, EmailMessage
+
 
 
 
@@ -48,7 +50,6 @@ FOLDER_INV_IMAGENES = "static/inv_imagenes/"
 
 class MyFPDF(FPDF, HTMLMixin):
     pass
-
 
 app_etga_test = Flask(__name__)
 app_etga_test.config["PDF_FOLDER"] = "templates/pdfs/"
@@ -74,15 +75,6 @@ app_etga_test.config["MAIL_PORT"] = os.getenv('MAIL_PORT')
 app_etga_test.config["MAIL_USERNAME"] = os.getenv('MAIL_USERNAME')
 app_etga_test.config["MAIL_PASSWORD"] = os.getenv('MAIL_PASSWORD')
 remitente = os.getenv('MAIL_SENDER')
-
-
-"""
-app_etga.config["MAIL_SERVER"] = "smtpout.secureserver.net"
-app_etga.config["MAIL_PORT"] = 465
-app_etga.config["MAIL_USERNAME"] = "servicioalcliente@electronicatorrescr.com"
-app_etga.config["MAIL_PASSWORD"] = "Romanos12:21"
-remitente = "servicioalcliente@electronicatorrescr.com"
-"""
 
 app_etga_test.config["MAIL_USE_TLS"] = False
 app_etga_test.config["MAIL_USE_SSL"] = False
@@ -1953,6 +1945,8 @@ def comprobante_venta_pdf(id_venta):
 
 # ENVIO CORREO
 def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
+    
+    
     if tipo_mensaje == 1:  # ENVIO DE RECIBO
         mensaje = Message(
             "Recibo Electrónica Torres", sender=remitente, recipients=[destinatario]
@@ -2004,11 +1998,9 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
         mensaje.body = urllib.parse.unquote(resultado["contenido"])
         mail.send(mensaje)
     if tipo_mensaje == 6:  # INTERNO: ENVIO DE CODIGOS PARA RESTABLECER CONTRASEÑA
-        mensaje = Message(
-            "Restablecer Contraseña de KAPPS.me",
-            sender=remitente,
-            recipients=[destinatario],
-        )
+        app_etga_test.config["MAIL_USERNAME"] = "noreply@kapps.me"
+        app_etga_test.config["MAIL_PASSWORD"] = "Qw@uUhF3B!HK"
+
         if extra["boton"] == 1:
             bgc = "#426A96"
         if extra["boton"] == 2:
@@ -2016,7 +2008,7 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
         if extra["boton"] == 3:
             bgc = "#CD7102"
         # mensaje.body =  urllib.parse.unquote(resultado["contenido"]+"recuperar_password/")
-        mensaje.html = (
+        mensaje_html = (
             "<h3>Para configurar una nueva contraseña, ponga esta información en la pantalla donde se le solicitan.<br><br><h2>Código: "
             + extra["clave"]
             + "<br>Presiona el Botón: <code style='color:white;background-color:"
@@ -2025,7 +2017,20 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
             + str(extra["boton"])
             + "&nbsp;</code>&nbsp;</h2><br><br><small class='text-muted' style='font-size:0.9rem'>Datos válidos por 60 minutos</small>"
         )
-        mail.send(mensaje)
+        with app_etga_test.app_context():
+            mail.init_app(app_etga_test)
+
+
+            msg = EmailMessage(
+            "Kapps.me - Recuperar Clave de Usuario",
+            mensaje_html,
+            "noreply@kapps.me",
+            [destinatario],
+            )
+            msg.content_subtype = 'html'
+        msg.send()
+        app_etga_test.config["MAIL_USERNAME"] = os.getenv('MAIL_USERNAME')
+        app_etga_test.config["MAIL_PASSWORD"] = os.getenv('MAIL_PASSWORD')
         return "enviado"
     if tipo_mensaje == 7:  # ENVIO DE COMPROBANTE VENTA
         mensaje = Message(
@@ -2040,15 +2045,25 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
             )
         mail.send(mensaje)
     if tipo_mensaje == 8:  # INTERNO: ENVIO DE CONTRASEÑA A USUARIO NUEVO
-        mensaje = Message(
-            "Contraseña para KAPPS.me",
-            sender=remitente,
-            recipients=[destinatario],
+        app_etga_test.config["MAIL_USERNAME"] = "noreply@kapps.me"
+        app_etga_test.config["MAIL_PASSWORD"] = "Qw@uUhF3B!HK"
+        mensaje_html = (
+            "<h3>Buen día " + extra[0] + "<br><br>Esta es la clave para ingresar a Kapps.me. Su nombre de usuario lo tiene su administrador. Puede solicitarlo.<br><br><br>" 
+            + "<h2>"+extra[1]+"</h2>"
         )
-        mensaje.html = (
-            "<h3>Buen día " + extra[0] + "<br><br>Esta es la contraseña para ingresar a Kapps.me. El usuario se lo entregará su administrador.<br><br><br>" \
-                "<h2>"+extra[1]+"</h2>")
-        mail.send(mensaje)
+        with app_etga_test.app_context():
+            mail.init_app(app_etga_test)
+            
+            msg = EmailMessage(
+            "Kapps.me - Clave de Usuario",
+            mensaje_html,
+            "noreply@kapps.me",
+            [destinatario],
+            )
+            msg.content_subtype = 'html'
+        msg.send()
+        app_etga_test.config["MAIL_USERNAME"] = os.getenv('MAIL_USERNAME')
+        app_etga_test.config["MAIL_PASSWORD"] = os.getenv('MAIL_PASSWORD')
         return "enviado"
     return "OK"
 
