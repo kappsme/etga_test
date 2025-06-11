@@ -1447,9 +1447,10 @@ def pdfs_mail():
         return "Enviado"
     if tipo_accion == 2:  # ENVIAR BOLETA PDF POR CORREO
         pdf = boleta_pdf(id_boleta)
+        print(app_etga_test.root_path)
         archivo = (
             app_etga_test.root_path
-            + "\\templates\pdf_repository\\boleta_"
+            + "//templates//pdf_repository//boleta_"
             + str(id_boleta)
             + ".pdf"
         )
@@ -1956,13 +1957,23 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
             mensaje.attach("Recibo_" + extra + ".pdf", "application/pdf", fp.read())
         mail.send(mensaje)
     if tipo_mensaje == 2:  # ENVIO DE BOLETA
-        mensaje = Message(
-            "Boleta Electrónica Torres", sender=remitente, recipients=[destinatario]
+        
+        mensaje_html = (
+            "<h3>Buen día<br><br>Adjunto encontrará la Boleta generada en su visita a Electrónica Torres<br><br><h2>Número de Boleta: <b>"
+            + extra + "</b></h3>"
         )
-        mensaje.body = "Buen día. Adjunto encontrará la Boleta generada en su visita a Electrónica Torres"
-        with app_etga_test.open_resource(adjunto) as fp:
-            mensaje.attach("Boleta_" + extra + ".pdf", "application/pdf", fp.read())
-        mail.send(mensaje)
+        with app_etga_test.app_context():
+            mail.init_app(app_etga_test)
+            msg = EmailMessage(
+           "Electrónica Torres - Boleta",
+            mensaje_html,
+            app_etga_test.config["MAIL_USERNAME"],
+            [destinatario],
+            )
+            msg.content_subtype = 'html'
+            print("adjunto", adjunto)
+            msg.attach(adjunto,"Boleta_" + extra + ".pdf", "application/pdf")
+        msg.send()
     if tipo_mensaje == 3:  # ENVIO DE COTIZACION
         mensaje = Message(
             "Cotización de Electrónica Torres",
