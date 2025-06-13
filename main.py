@@ -1418,26 +1418,36 @@ def pdfs_mail():
     id_cliente = int(request.form["id_cliente"])
     pdf = MyFPDF()
     pdf.add_page()
-    pdf.set_font("arial", size=10)
+    pdf.set_font("Arial", size=10)
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SET lc_time_names = "es_ES"')
+    if id_cliente == -1:
+        cursor.execute("SELECT id_cliente FROM etga.venta_ventas where id=%s", [id_boleta])
+        datos = cursor.fetchone()    
+        id_cliente = datos["id_cliente"]
     cursor.execute("SELECT correo from tx_clientes where id = %s", [id_cliente])
     datos = cursor.fetchone()
     cursor.close()
     if datos is None:
-        return "NO-CORREO"
+            return "NO-CORREO"
     else:
         destinatario = str(datos["correo"])
     if tipo_accion == 1:  # ENVIAR MOVIMIENTO PDF POR CORREO
+        pdf = MyFPDF(unit="mm", format=(73, 200))
+        pdf.add_page()
+        pdf.set_font("Arial", size=10)
         id_movimiento = int(request.form["id_movimiento"])
         mov = datos_base.datos_movimiento_unico(mysql, id_movimiento)
         html_source = render_template(
             "pdfs/movimiento.html", id_boleta=id_boleta, mov=mov
         )
+        # print(html_source)
         pdf.write_html(html_source)
+        
+        # pdf.write_html(html_source)
         archivo = (
             app_etga_test.root_path
-            + "\\templates\pdf_repository\\recibo_"
+             + "/templates/pdf_repository/recibo_"
             + str(id_movimiento)
             + ".pdf"
         )
@@ -1509,7 +1519,7 @@ def pdfs_mail():
         pdf = comprobante[0]
         archivo = (
             app_etga_test.root_path
-            + "\\templates\pdf_repository\\comprobante_"
+            + "/templates/pdf_repository/comprobante_"
             + str(comprobante[1])
             + ".pdf"
         )
@@ -1522,18 +1532,15 @@ def pdfs_mail():
         pdf = comprobante
         archivo = (
             app_etga_test.root_path
-            + "\\templates\pdf_repository\\comprobante_venta_"
+            + "/templates/pdf_repository/comprobante_venta_"
             + str(id_venta)
             + ".pdf"
         )
         pdf.output(archivo, "F")
-        envio_correo(7, destinatario, archivo, id_venta)
+        envio_correo(7, destinatario, archivo, str(id_venta))
         return "Enviado"
 
-
 # CREA PDF BOLETA
-
-
 def boleta_pdf(id_boleta):
     pdf = MyFPDF(unit="mm", format=(73, 285))
     pdf.add_page()
@@ -1947,13 +1954,22 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
     
     
     if tipo_mensaje == 1:  # ENVIO DE RECIBO
-        mensaje = Message(
-            "Recibo Electrónica Torres", sender=remitente, recipients=[destinatario]
+        adjunto = app_etga_test.root_path + "/templates/pdf_repository/recibo_"+ str(extra)+ ".pdf"
+        mensaje_html = (
+            "<h3>Buen día<br><br>Adjunto encontrará el recibo solicitado por su pago en Electrónica Torres<br><br><h2>Número de Recibo: <b>"
+            + extra + "</b></h3>"
         )
-        mensaje.body = "Buen día. Adjunto encontrará el recibo solicitado por su pago en Electrónica Torres"
-        with app_etga_test.open_resource(adjunto) as fp:
-            mensaje.attach("Recibo_" + extra + ".pdf", "application/pdf", fp.read())
-        mail.send(mensaje)
+        with app_etga_test.app_context():
+            mail.init_app(app_etga_test)
+            msg = EmailMessage(
+           "Electrónica Torres - Recibo",
+            mensaje_html,
+            app_etga_test.config["MAIL_USERNAME"],
+            [destinatario],
+            )
+            msg.content_subtype = 'html'
+            msg.attach_file(adjunto, 'application/pdf')
+        msg.send() 
     if tipo_mensaje == 2:  # ENVIO DE BOLETA
         adjunto = app_etga_test.root_path + "/templates/pdf_repository/boleta_"+ str(extra)+ ".pdf"
         mensaje_html = (
@@ -1990,15 +2006,22 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
             msg.attach_file(adjunto, 'application/pdf')
         msg.send() 
     if tipo_mensaje == 4:  # ENVIO DE COMPROBANTE
-        mensaje = Message(
-            "Comprobante de Electrónica Torres",
-            sender=remitente,
-            recipients=[destinatario],
+        adjunto = app_etga_test.root_path + "/templates/pdf_repository/comprobante_"+ str(extra)+ ".pdf"
+        mensaje_html = (
+            "<h3>Buen día<br><br>Adjunto encontrará el comprobante de Pago para la Reparación de su equipo en Electrónica Torres<br><br><h2>Número de Comprobante: <b>"
+            + extra + "</b></h3>"
         )
-        mensaje.body = "Buen día.\nAdjunto encontrará el comprobante de Pago para la Reparación de su equipo en Electrónica Torres"
-        with app_etga_test.open_resource(adjunto) as fp:
-            mensaje.attach("comprobante" + extra + ".pdf", "application/pdf", fp.read())
-        mail.send(mensaje)
+        with app_etga_test.app_context():
+            mail.init_app(app_etga_test)
+            msg = EmailMessage(
+           "Electrónica Torres - Comprobante",
+            mensaje_html,
+            app_etga_test.config["MAIL_USERNAME"],
+            [destinatario],
+            )
+            msg.content_subtype = 'html'
+            msg.attach_file(adjunto, 'application/pdf')
+        msg.send()         
     if tipo_mensaje == 5:  # ENVIO DE NOTIFICACION DE RECHAZO
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute(
@@ -2054,17 +2077,22 @@ def envio_correo(tipo_mensaje, destinatario, adjunto=0, extra=0):
         app_etga_test.config["MAIL_PASSWORD"] = os.getenv('MAIL_PASSWORD')
         return "enviado"
     if tipo_mensaje == 7:  # ENVIO DE COMPROBANTE VENTA
-        mensaje = Message(
-            "Comprobante de Venta de Electrónica Torres",
-            sender=remitente,
-            recipients=[destinatario],
+        adjunto = app_etga_test.root_path + "/templates/pdf_repository/comprobante_venta_"+ str(extra)+ ".pdf"
+        mensaje_html = (
+            "<h3>Buen día<br><br>Adjunto encontrará el comprobante de Pago por su compra en Electrónica Torres<br><br><h2>Número de Comprobante: <b>"
+            + extra + "</b></h3>"
         )
-        mensaje.body = "Buen día.\nAdjunto encontrará el comprobante de Pago por su compra en Electrónica Torres"
-        with app_etga_test.open_resource(adjunto) as fp:
-            mensaje.attach(
-                "comprobante" + str(extra) + ".pdf", "application/pdf", fp.read()
+        with app_etga_test.app_context():
+            mail.init_app(app_etga_test)
+            msg = EmailMessage(
+           "Electrónica Torres - Comprobante de Venta",
+            mensaje_html,
+            app_etga_test.config["MAIL_USERNAME"],
+            [destinatario],
             )
-        mail.send(mensaje)
+            msg.content_subtype = 'html'
+            msg.attach_file(adjunto, 'application/pdf')
+        msg.send()
     if tipo_mensaje == 8:  # INTERNO: ENVIO DE CONTRASEÑA A USUARIO NUEVO
         app_etga_test.config["MAIL_USERNAME"] = "noreply@kapps.me"
         app_etga_test.config["MAIL_PASSWORD"] = "Qw@uUhF3B!HK"
