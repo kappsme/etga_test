@@ -1,4 +1,5 @@
-FROM python:3.11.11-bullseye
+FROM python:3.11.13-bullseye
+
 WORKDIR /app
 
 COPY requirements.txt .
